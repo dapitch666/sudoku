@@ -9,17 +9,14 @@ public class Solver {
     static final String defaultPuzzle = "85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.";
 
     static boolean solveSudoku(Sudoku sudoku, int index) {
-        if (index == N * N)
-            return true;
+        if (index == N * N) return true;
 
-        if (sudoku.solution[index] != 0)
-            return solveSudoku(sudoku, index + 1);
+        if (sudoku.solution[index] != 0) return solveSudoku(sudoku, index + 1);
 
         for (int digit : DIGITS) {
             if (sudoku.isValidMove(index, digit)) {
                 sudoku.set(index, digit);
-                if (solveSudoku(sudoku, index + 1))
-                    return true;
+                if (solveSudoku(sudoku, index + 1)) return true;
                 sudoku.backtrack(index, digit);
             }
         }
@@ -30,12 +27,20 @@ public class Solver {
     public static void main(String[] args) {
         Timer timer = new Timer();
         Sudoku sudoku = new Sudoku(args.length == 0 ? defaultPuzzle : args[0]);
-        if (!solveSudoku(sudoku, 0)) {
-            System.out.println("No solution found!");
-            System.out.println(Printer.printOne(sudoku.puzzle));
+        if (!Utils.isValidPuzzle(sudoku.puzzle)) {
+            System.out.println("Invalid input!");
             return;
         }
-        System.out.println(Printer.printBoth(sudoku.puzzle, sudoku.solution));
+        if (Utils.isAlreadySolved(sudoku.puzzle)) {
+            System.out.println("Puzzle is already solved!");
+            return;
+        }
+        if (!solveSudoku(sudoku, 0)) {
+            System.out.println("No solution found!");
+            System.out.println(PrintUtils.printOne(sudoku.puzzle));
+            return;
+        }
+        System.out.println(PrintUtils.printBoth(sudoku.puzzle, sudoku.solution));
         System.out.println(timer.duration());
         System.out.println("Number of backtracks: " + backtrackCount);
     }

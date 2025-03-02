@@ -39,24 +39,24 @@ public class Sudoku {
     }
 
     private String sanitize(String input) {
-        return String.format("%-" + (81) + "s", input)
+        return String.format("%-" + (N * N) + "s", input)
                 .replaceAll("[^0-9]", "0")
-                .substring(0, 81);
+                .substring(0, N * N);
     }
 
     public boolean isValidMove(int index, int digit) {
         return !row(index).get(digit) && !column(index).get(digit) && !square(index).get(digit);
     }
 
-    public BitSet row(int i) {
+    private BitSet row(int i) {
         return rows[i / N];
     }
 
-    public BitSet column(int i) {
+    private BitSet column(int i) {
         return cols[i % N];
     }
 
-    public BitSet square(int i) {
+    private BitSet square(int i) {
         return squares[(i / N) / 3 * 3 + (i % N) / 3];
     }
 }

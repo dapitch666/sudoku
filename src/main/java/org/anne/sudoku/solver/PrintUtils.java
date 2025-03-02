@@ -1,6 +1,6 @@
 package org.anne.sudoku.solver;
 
-public class Printer {
+public class PrintUtils {
     private static final String BAR = "+-------+-------+-------+";
     private static final String GAP = "      ";
 
@@ -19,11 +19,7 @@ public class Printer {
     }
 
     public static String printOne(String puzzle) {
-        int[] puzzleArray = new int[81];
-        for (int i = 0; i < 81; i++) {
-            puzzleArray[i] = puzzle.charAt(i) - '0';
-        }
-        return printOne(puzzleArray);
+        return printOne(Utils.stringToArray(puzzle));
     }
 
     public static String printBoth(int[] puzzle, int[] solution) {
@@ -41,6 +37,10 @@ public class Printer {
         return sb.toString();
     }
 
+    public static String printBoth(String puzzle, int[] solution) {
+        return printBoth(Utils.stringToArray(puzzle), solution);
+    }
+
     private static String rowString(int[] grid, int r) {
         StringBuilder row = new StringBuilder();
         for (int s = r * 9; s < (r + 1) * 9; ++s) {
@@ -51,13 +51,5 @@ public class Printer {
             row.append(s % 9 == 2 || s % 9 == 5 || s % 9 == 8 ? " | " : " ");
         }
         return row.toString();
-    }
-
-    public static String printBoth(String puzzle, int[] solution) {
-        int[] puzzleArray = new int[81];
-        for (int i = 0; i < 81; i++) {
-            puzzleArray[i] = puzzle.charAt(i) - '0';
-        }
-        return printBoth(puzzleArray, solution);
     }
 }
