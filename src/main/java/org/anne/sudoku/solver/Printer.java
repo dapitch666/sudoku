@@ -1,20 +1,44 @@
 package org.anne.sudoku.solver;
 
 public class Printer {
-    public static void print(int[] puzzle, int[] solution) {
-        String bar = "+-------+-------+-------+";
-        String gap = "      ";
-        if (solution == null) solution = new int[81];
+    private static final String BAR = "+-------+-------+-------+";
+    private static final String GAP = "      ";
 
-        System.out.format("\n%-26s%s%s", "Puzzle:", gap, "Solution:");
-        System.out.format("\n%-23s%s%s\n", bar, gap + " ", bar);
+    public static String printOne(int[] puzzle) {
+        StringBuilder sb = new StringBuilder();
 
+        sb.append("\nPuzzle:\n").append(BAR);
         for (int r = 0; r < 9; ++r) {
-            System.out.println(rowString(puzzle, r) + gap + rowString(solution, r));
+            sb.append("\n").append(rowString(puzzle, r));
             if (r == 2 || r == 5 || r == 8) {
-                System.out.println(bar + gap + " " + bar);
+                sb.append("\n").append(BAR);
             }
         }
+        sb.append("\n");
+        return sb.toString();
+    }
+
+    public static String printOne(String puzzle) {
+        int[] puzzleArray = new int[81];
+        for (int i = 0; i < 81; i++) {
+            puzzleArray[i] = puzzle.charAt(i) - '0';
+        }
+        return printOne(puzzleArray);
+    }
+
+    public static String printBoth(int[] puzzle, int[] solution) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("\n%-26s%s%s", "Puzzle:", GAP, "Solution:"));
+        sb.append(String.format("\n%-23s%s%s\n", BAR, GAP + " ", BAR));
+
+        for (int r = 0; r < 9; ++r) {
+            sb.append(String.format("%s%s%s\n", rowString(puzzle, r), GAP, rowString(solution, r)));
+            if (r == 2 || r == 5 || r == 8) {
+                sb.append(String.format("%s%s %s\n", BAR, GAP, BAR));
+            }
+        }
+        return sb.toString();
     }
 
     private static String rowString(int[] grid, int r) {
@@ -29,11 +53,11 @@ public class Printer {
         return row.toString();
     }
 
-    public static void print(String puzzle, int[] mat) {
+    public static String printBoth(String puzzle, int[] solution) {
         int[] puzzleArray = new int[81];
         for (int i = 0; i < 81; i++) {
             puzzleArray[i] = puzzle.charAt(i) - '0';
         }
-        print(puzzleArray, mat);
+        return printBoth(puzzleArray, solution);
     }
 }
