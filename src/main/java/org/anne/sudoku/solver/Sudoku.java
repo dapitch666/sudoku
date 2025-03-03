@@ -1,7 +1,7 @@
 package org.anne.sudoku.solver;
 
 public class Sudoku {
-    private static final int N = 9;
+    public static final int N = 9;
     final String puzzle;
     final int[] solution = new int[N * N];
     private final boolean[][] rows = new boolean[N][N + 1];

@@ -1,5 +1,7 @@
 package org.anne.sudoku.solver;
 
+import org.anne.sudoku.Utils;
+
 public class PrintUtils {
     private static final String BAR = "+-------+-------+-------+";
     private static final String GAP = "      ";

@@ -1,6 +1,8 @@
 package org.anne.sudoku.solver;
 
 
+import org.anne.sudoku.Utils;
+
 public class Solver {
     static final int N = 9;
     static final int[] DIGITS = {1, 2, 3, 4, 5, 6, 7, 8, 9};

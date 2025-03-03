@@ -1,4 +1,4 @@
-package org.anne.sudoku.solver;
+package org.anne.sudoku;
 
 public class Utils {
     public static int[] stringToArray(String puzzle) {
