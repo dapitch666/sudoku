@@ -19,7 +19,7 @@ public class SolverParameterizedTest {
     })
     void testMainWithParameterizedInput(String input, String expectedSolution) {
         Sudoku sudoku = new Sudoku(input);
-        if (Solver.solveSudoku(sudoku, 0)) {
+        if (Solver.solveSudoku(sudoku)) {
             String solution = Arrays.stream(sudoku.solution).mapToObj(String::valueOf).collect(Collectors.joining());
             assertEquals(expectedSolution, solution);
         }

@@ -25,7 +25,7 @@ class SolverTest {
                 5, 9, 8, 7, 3, 6, 2, 4, 1
         };
 
-        Solver.solveSudoku(sudoku, 0);
+        Solver.solveSudoku(sudoku);
         assertArrayEquals(expectedSolution, sudoku.solution);
     }
 

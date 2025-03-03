@@ -1,22 +1,15 @@
 package org.anne.sudoku.solver;
 
-import java.util.BitSet;
-
 public class Sudoku {
     private static final int N = 9;
     final String puzzle;
     final int[] solution = new int[N * N];
-    private final BitSet[] rows = new BitSet[N];
-    private final BitSet[] cols = new BitSet[N];
-    private final BitSet[] squares = new BitSet[N];
+    private final boolean[][] rows = new boolean[N][N + 1];
+    private final boolean[][] cols = new boolean[N][N + 1];
+    private final boolean[][] squares = new boolean[N][N + 1];
 
     public Sudoku(String input) {
         puzzle = sanitize(input);
-        for (int i = 0; i < N; i++) {
-            rows[i] = new BitSet(N + 1);
-            cols[i] = new BitSet(N + 1);
-            squares[i] = new BitSet(N + 1);
-        }
         for (int i = 0; i < N * N; i++) {
             set(i, puzzle.charAt(i) - '0');
         }
@@ -25,17 +18,17 @@ public class Sudoku {
     public void set(int index, int digit) {
         solution[index] = digit;
         if (digit != 0) {
-            row(index).set(digit);
-            column(index).set(digit);
-            square(index).set(digit);
+            rows[index / N][digit] = true;
+            cols[index % N][digit] = true;
+            squares[(index / N) / 3 * 3 + (index % N) / 3][digit] = true;
         }
     }
 
     public void backtrack(int index, int digit) {
         solution[index] = 0;
-        row(index).clear(digit);
-        column(index).clear(digit);
-        square(index).clear(digit);
+        rows[index / N][digit] = false;
+        cols[index % N][digit] = false;
+        squares[(index / N) / 3 * 3 + (index % N) / 3][digit] = false;
     }
 
     private String sanitize(String input) {
@@ -45,18 +38,32 @@ public class Sudoku {
     }
 
     public boolean isValidMove(int index, int digit) {
-        return !row(index).get(digit) && !column(index).get(digit) && !square(index).get(digit);
+        return !rows[index / N][digit] && !cols[index % N][digit] && !squares[(index / N) / 3 * 3 + (index % N) / 3][digit];
     }
 
-    private BitSet row(int i) {
-        return rows[i / N];
+    private int countCandidates(int index) {
+        int count = 0;
+        for (int digit = 1; digit <= N; digit++) {
+            if (isValidMove(index, digit)) {
+                count++;
+            }
+        }
+        return count;
     }
 
-    private BitSet column(int i) {
-        return cols[i % N];
-    }
-
-    private BitSet square(int i) {
-        return squares[(i / N) / 3 * 3 + (i % N) / 3];
+    public int bestIndex() {
+        int minCandidates = N + 1;
+        int bestIndex = -1;
+        for (int i = 0; i < N * N; i++) {
+            if (solution[i] == 0) {
+                int options = countCandidates(i);
+                if (options == 0) return i;
+                if (options < minCandidates) {
+                    minCandidates = options;
+                    bestIndex = i;
+                }
+            }
+        }
+        return bestIndex;
     }
 }
