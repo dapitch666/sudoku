@@ -43,6 +43,10 @@ public class PrintUtils {
         return printBoth(Utils.stringToArray(puzzle), solution);
     }
 
+    public static String printBoth(String puzzle, String solution) {
+        return printBoth(Utils.stringToArray(puzzle), Utils.stringToArray(solution));
+    }
+
     private static String rowString(int[] grid, int r) {
         StringBuilder row = new StringBuilder();
         for (int s = r * 9; s < (r + 1) * 9; ++s) {

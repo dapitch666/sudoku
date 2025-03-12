@@ -8,7 +8,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.Random;
 
-public class WebCrawler {
+public class WebSudoku {
 
     private static final String URL = "https://www.websudoku.com/?";
 
@@ -36,7 +36,7 @@ public class WebCrawler {
 
         Document document = Jsoup.connect(frameUrl).get();
 
-        Element solutionElement = document.getElementById("cheat"); // Adjust the selector based on the actual HTML structure
+        Element solutionElement = document.getElementById("cheat");
         Element maskElement = document.getElementById("editmask");
 
         if (maskElement == null || solutionElement == null) {
@@ -50,7 +50,7 @@ public class WebCrawler {
     }
 
     public static void main(String[] args) {
-        WebCrawler crawler = new WebCrawler();
+        WebSudoku crawler = new WebSudoku();
         Random random = new Random();
         int id = random.nextInt(Integer.MAX_VALUE);
         try {

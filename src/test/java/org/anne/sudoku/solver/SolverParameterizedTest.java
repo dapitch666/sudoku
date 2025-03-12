@@ -28,7 +28,7 @@ public class SolverParameterizedTest {
     })
     void testMainWithParameterizedInput(String input, String expectedSolution) {
         Sudoku sudoku = new Sudoku(input);
-        if (Solver.solveSudoku(sudoku)) {
+        if (Solver.solve(sudoku)) {
             String solution = Arrays.stream(sudoku.solution).mapToObj(String::valueOf).collect(Collectors.joining());
             assertEquals(expectedSolution, solution);
         }

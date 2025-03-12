@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SolverTest {
 
     @Test
-    void solveSudoku() {
+    void solve() {
         Sudoku sudoku = new Sudoku("85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.");
 
         int[] expectedSolution = {
@@ -25,7 +25,7 @@ class SolverTest {
                 5, 9, 8, 7, 3, 6, 2, 4, 1
         };
 
-        Solver.solveSudoku(sudoku);
+        Solver.solve(sudoku);
         assertArrayEquals(expectedSolution, sudoku.solution);
     }
 

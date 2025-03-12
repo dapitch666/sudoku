@@ -4,7 +4,8 @@ public class Utils {
     public static int[] stringToArray(String puzzle) {
         int[] puzzleArray = new int[81];
         for (int i = 0; i < 81; i++) {
-            puzzleArray[i] = puzzle.charAt(i) - '0';
+            char c = puzzle.charAt(i);
+            puzzleArray[i] = c == '.' ? 0 : c - '0';
         }
         return puzzleArray;
     }
@@ -54,5 +55,13 @@ public class Utils {
             }
         }
         return true;
+    }
+
+    public static String arrayToString(int[] puzzle) {
+        StringBuilder sb = new StringBuilder();
+        for (int i : puzzle) {
+            sb.append(i == 0 ? "." : String.valueOf(i));
+        }
+        return sb.toString();
     }
 }

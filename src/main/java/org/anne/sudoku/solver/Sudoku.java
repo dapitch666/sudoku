@@ -2,8 +2,8 @@ package org.anne.sudoku.solver;
 
 public class Sudoku {
     public static final int N = 9;
-    final String puzzle;
-    final int[] solution = new int[N * N];
+    public final String puzzle;
+    public final int[] solution = new int[N * N];
     private final boolean[][] rows = new boolean[N][N + 1];
     private final boolean[][] cols = new boolean[N][N + 1];
     private final boolean[][] squares = new boolean[N][N + 1];
@@ -22,6 +22,10 @@ public class Sudoku {
             cols[index % N][digit] = true;
             squares[(index / N) / 3 * 3 + (index % N) / 3][digit] = true;
         }
+    }
+
+    public int get(int index) {
+        return solution[index];
     }
 
     public void backtrack(int index, int digit) {
