@@ -1,9 +1,14 @@
 package org.anne.sudoku.solver;
 
+import org.anne.sudoku.Utils;
+
+import static org.anne.sudoku.Constants.DIGITS;
+
 public class Sudoku {
     public static final int N = 9;
     public final String puzzle;
-    public final int[] solution = new int[N * N];
+    public String solution;
+    public final int[] grid = new int[N * N];
     private final boolean[][] rows = new boolean[N][N + 1];
     private final boolean[][] cols = new boolean[N][N + 1];
     private final boolean[][] squares = new boolean[N][N + 1];
@@ -13,10 +18,11 @@ public class Sudoku {
         for (int i = 0; i < N * N; i++) {
             set(i, puzzle.charAt(i) - '0');
         }
+        // if (solve()) solution = Utils.arrayToString(grid);
     }
 
     public void set(int index, int digit) {
-        solution[index] = digit;
+        grid[index] = digit;
         if (digit != 0) {
             rows[index / N][digit] = true;
             cols[index % N][digit] = true;
@@ -24,12 +30,26 @@ public class Sudoku {
         }
     }
 
+    public boolean solve() {
+        int index = bestIndex();
+        if (index == -1) return true; // All cells are filled, sudoku is solved
+
+        for (int digit : DIGITS) {
+            if (isValidMove(index, digit)) {
+                set(index, digit);
+                if (solve()) return true;
+                backtrack(index, digit);
+            }
+        }
+        return false;
+    }
+
     public int get(int index) {
-        return solution[index];
+        return grid[index];
     }
 
     public void backtrack(int index, int digit) {
-        solution[index] = 0;
+        grid[index] = 0;
         rows[index / N][digit] = false;
         cols[index % N][digit] = false;
         squares[(index / N) / 3 * 3 + (index % N) / 3][digit] = false;
@@ -59,7 +79,7 @@ public class Sudoku {
         int minCandidates = N + 1;
         int bestIndex = -1;
         for (int i = 0; i < N * N; i++) {
-            if (solution[i] == 0) {
+            if (grid[i] == 0) {
                 int options = countCandidates(i);
                 if (options == 0) return i;
                 if (options < minCandidates) {

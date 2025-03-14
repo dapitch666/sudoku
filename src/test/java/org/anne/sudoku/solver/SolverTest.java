@@ -26,7 +26,7 @@ class SolverTest {
         };
 
         Solver.solve(sudoku);
-        assertArrayEquals(expectedSolution, sudoku.solution);
+        assertArrayEquals(expectedSolution, sudoku.grid);
     }
 
     @Test

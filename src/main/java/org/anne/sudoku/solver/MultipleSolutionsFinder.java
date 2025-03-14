@@ -17,7 +17,7 @@ public class MultipleSolutionsFinder {
         if (index == N * N) {
             return 1;
         }
-        if (sudoku.solution[index] != 0) {
+        if (sudoku.grid[index] != 0) {
             return count(sudoku, index + 1);
         }
         int solutions = 0;

@@ -5,7 +5,7 @@ import org.anne.sudoku.solver.PrintUtils;
 import org.anne.sudoku.solver.Sudoku;
 import org.anne.sudoku.solver.Timer;
 
-import java.util.Random;
+import java.util.*;
 
 import static org.anne.sudoku.solver.MultipleSolutionsFinder.countSolutions;
 
@@ -49,10 +49,10 @@ public class PuzzleGenerator {
             tryRemoveNumbers(puzzle, pair);
         }
 
-        // Eventually remove numbers one by one until there are 20 numbers left
-        for (int i = 0; i < 81 && countRemainingNumbers(puzzle) > 20; i++) {
-            if (puzzle[i] == 0) continue;
-
+        // Eventually remove numbers one by one ensuring the puzzle has a unique solution
+        List<Integer> remaining = getRemainingPositions(puzzle);
+        Collections.shuffle(remaining);
+        for (int i : remaining) {
             int temp = puzzle[i];
             puzzle[i] = 0;
 
@@ -62,6 +62,16 @@ public class PuzzleGenerator {
         }
 
         return Utils.arrayToString(puzzle);
+    }
+
+    private List<Integer> getRemainingPositions(int[] puzzle) {
+        List<Integer> remaining = new ArrayList<>();
+        for (int i = 0; i < 81; i++) {
+            if (puzzle[i] != 0) {
+                remaining.add(i);
+            }
+        }
+        return remaining;
     }
 
     private static boolean hasMultipleSolutions(int[] puzzle) {
@@ -116,8 +126,8 @@ public class PuzzleGenerator {
     public static void main(String[] args) {
         Timer timer = new Timer();
         SolutionGenerator solutionGenerator = new SolutionGenerator();
-        // String solution = solutionGenerator.generate();
-        String solution = "241679385873425619659813742962748531714532968385196427527361894138954276496287153";
+        String solution = solutionGenerator.generate();
+        // String solution = "241679385873425619659813742962748531714532968385196427527361894138954276496287153";
         String puzzle = new PuzzleGenerator(solution).generate();
         System.out.println(PrintUtils.printBoth(puzzle, solution));
         System.out.println(timer.duration());

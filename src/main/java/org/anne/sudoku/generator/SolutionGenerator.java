@@ -22,7 +22,7 @@ public class SolutionGenerator {
             fillLastSquare(sudoku);
             Solver.solve(sudoku);
         }
-        return Utils.arrayToString(sudoku.solution);
+        return Utils.arrayToString(sudoku.grid);
     }
 
     private void fillDiagonal(Sudoku sudoku) {

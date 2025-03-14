@@ -44,7 +44,7 @@ public class Solver {
             System.out.println(PrintUtils.printOne(sudoku.puzzle));
             return;
         }
-        System.out.println(PrintUtils.printBoth(sudoku.puzzle, sudoku.solution));
+        System.out.println(PrintUtils.printBoth(sudoku.puzzle, sudoku.grid));
         System.out.println(timer.duration());
         System.out.println("Number of backtracks: " + backtrackCount);
     }
