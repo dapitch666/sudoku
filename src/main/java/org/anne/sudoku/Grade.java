@@ -15,6 +15,40 @@ public enum Grade {
         this.level = level;
     }
 
+    public static Grade fromScore(int score) {
+        if (score < 0) {
+            return UNKNOWN;
+        }
+        if (score < 10) {
+            return VERY_EASY;
+        }
+        if (score < 20) {
+            return EASY;
+        }
+        if (score < 30) {
+            return MODERATE;
+        }
+        if (score < 40) {
+            return HARD;
+        }
+        if (score < 50) {
+            return VERY_HARD;
+        }
+        return INSANE;
+    }
+
+    public static Grade fromSudokuWiki(String wiki) {
+        return switch (wiki) {
+            case "Gentle/Very Easy Grade" -> VERY_EASY;
+            case "Gentle/Easy Grade" -> EASY;
+            case "Moderate Grade" -> MODERATE;
+            case "Tough Grade" -> HARD;
+            case "Very Hard Grade" -> VERY_HARD;
+            case "Extreme Grade" -> INSANE;
+            default -> UNKNOWN;
+        };
+    }
+
     public int getLevel() {
         return level;
     }

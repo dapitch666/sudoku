@@ -1,13 +1,16 @@
 package org.anne.sudoku.solver;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.Utils;
+import org.anne.sudoku.crawler.SudokuWiki;
 
 import static org.anne.sudoku.Constants.DIGITS;
 
 public class Sudoku {
     public static final int N = 9;
     public final String puzzle;
-    public String solution;
+    private String solution;
+    private Grade grade;
     public final int[] grid = new int[N * N];
     private final boolean[][] rows = new boolean[N][N + 1];
     private final boolean[][] cols = new boolean[N][N + 1];
@@ -28,6 +31,21 @@ public class Sudoku {
             cols[index % N][digit] = true;
             squares[(index / N) / 3 * 3 + (index % N) / 3][digit] = true;
         }
+    }
+
+    public Grade getGrade() {
+        if (grade == null) {
+            grade = new SudokuWiki().getGrade(puzzle);
+        }
+        return grade;
+    }
+
+    public String getSolution() {
+        if (solution == null) {
+            solve();
+            solution = Utils.arrayToString(grid);
+        }
+        return solution;
     }
 
     public boolean solve() {

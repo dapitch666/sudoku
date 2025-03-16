@@ -9,8 +9,8 @@ import java.util.*;
 
 import static org.anne.sudoku.solver.MultipleSolutionsFinder.countSolutions;
 
-// TODO: Add a limit to the number of iterations to avoid endless loops
 // TODO: Work with a Sudoku object instead of an array or use an array everywhere instead of a String
+// TODO: Improve the process as it can lead to multiple solutions
 
 public class PuzzleGenerator {
     final String solution;
@@ -41,13 +41,16 @@ public class PuzzleGenerator {
         }
 
         // Then remove numbers by pairs until there are 30 numbers left
-        while (countRemainingNumbers(puzzle) > 30) {
+        int count = 0;
+        while (countRemainingNumbers(puzzle) > 30 && count < 100) {
             int pos = rand.nextInt(81);
             if (puzzle[pos] == 0) continue;
 
             int[] pair = {pos, getOpposite(pos)};
             tryRemoveNumbers(puzzle, pair);
+            count++;
         }
+        System.out.println(count);
 
         // Eventually remove numbers one by one ensuring the puzzle has a unique solution
         List<Integer> remaining = getRemainingPositions(puzzle);
@@ -62,6 +65,14 @@ public class PuzzleGenerator {
         }
 
         return Utils.arrayToString(puzzle);
+    }
+
+    public List<Sudoku> generate(int count) {
+        List<Sudoku> puzzles = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            puzzles.add(new Sudoku(generate()));
+        }
+        return puzzles;
     }
 
     private List<Integer> getRemainingPositions(int[] puzzle) {
@@ -125,8 +136,7 @@ public class PuzzleGenerator {
 
     public static void main(String[] args) {
         Timer timer = new Timer();
-        SolutionGenerator solutionGenerator = new SolutionGenerator();
-        String solution = solutionGenerator.generate();
+        String solution = new SolutionGenerator().generate();
         // String solution = "241679385873425619659813742962748531714532968385196427527361894138954276496287153";
         String puzzle = new PuzzleGenerator(solution).generate();
         System.out.println(PrintUtils.printBoth(puzzle, solution));

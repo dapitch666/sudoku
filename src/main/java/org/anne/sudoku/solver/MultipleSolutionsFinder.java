@@ -7,7 +7,8 @@ public class MultipleSolutionsFinder {
     static final int[] DIGITS = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     // static final String defaultPuzzle = "85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.";
     // static final String defaultPuzzle = "..7........1....3..5..4.6...4....7...6...3........1..2.....7.......6..8...2.....1";
-    static final String defaultPuzzle = "46..2..8339.1.6.5..827436.96.325.8......3......9.175.69.456837..7.3.2.6883..7..25";
+    // static final String defaultPuzzle = "46..2..8339.1.6.5..827436.96.325.8......3......9.175.69.456837..7.3.2.6883..7..25";
+    static final String defaultPuzzle = "000000000560000079790106030300907000209803507000405008010604082620000045000000000";
 
     public static int countSolutions(Sudoku sudoku) {
         return count(sudoku, 0);
