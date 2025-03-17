@@ -27,9 +27,9 @@ public class SolverParameterizedTest {
             "97.84.25.5.27..436.1.526978.619.4.25.4736518.35.2.876.695137.4.134..25.7.28.59.13, 976843251582791436413526978861974325247365189359218764695137842134682597728459613",
     })
     void testMainWithParameterizedInput(String input, String expectedSolution) {
-        Sudoku sudoku = new Sudoku(input);
-        if (Solver.solve(sudoku)) {
-            String solution = Arrays.stream(sudoku.grid).mapToObj(String::valueOf).collect(Collectors.joining());
+        Solver solver = new Solver(input);
+        if (solver.solve()) {
+            String solution = Arrays.stream(solver.grid).mapToObj(String::valueOf).collect(Collectors.joining());
             assertEquals(expectedSolution, solution);
         }
     }

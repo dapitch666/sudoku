@@ -11,7 +11,7 @@ class SolverTest {
 
     @Test
     void solve() {
-        Sudoku sudoku = new Sudoku("85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.");
+        Solver solver = new Solver("85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.");
 
         int[] expectedSolution = {
                 8, 5, 9, 6, 1, 2, 4, 3, 7,
@@ -25,8 +25,8 @@ class SolverTest {
                 5, 9, 8, 7, 3, 6, 2, 4, 1
         };
 
-        Solver.solve(sudoku);
-        assertArrayEquals(expectedSolution, sudoku.grid);
+        solver.solve();
+        assertArrayEquals(expectedSolution, solver.grid);
     }
 
     @Test

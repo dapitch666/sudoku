@@ -1,9 +1,13 @@
 package org.anne.sudoku.pdf;
 
+import com.itextpdf.io.font.FontProgram;
+import com.itextpdf.io.font.FontProgramFactory;
+import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.Color;
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceCmyk;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
@@ -13,13 +17,12 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.Style;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.*;
-import org.anne.sudoku.generator.PuzzleGenerator;
-import org.anne.sudoku.generator.SolutionGenerator;
-import org.anne.sudoku.solver.Sudoku;
+import org.anne.sudoku.Sudoku;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +39,7 @@ public class PdfGenerator {
     private static final Color blueColor = new DeviceRgb(0, 0, 255);
     private static final int NUMBER_OF_PUZZLES = 8;
     private static final ImageData LINK_TO_SOLUTION;
+    public static final String SCRIPT = "src/main/resources/Kalam-Regular.ttf";
 
     static {
         try {
@@ -58,12 +62,11 @@ public class PdfGenerator {
 
         addCover(document);
 
-        document.setTopMargin(90f);
+        document.setTopMargin(50f);
 
         List<Sudoku> sudokuList = new ArrayList<>();
         for (int i = 0; i < NUMBER_OF_PUZZLES; i++) {
-            String puzzle = new PuzzleGenerator(new SolutionGenerator().generate()).generate();
-            Sudoku sudoku = new Sudoku(puzzle);
+            Sudoku sudoku = new Sudoku();
             sudokuList.add(sudoku);
         }
         sudokuList.sort(Comparator.comparing(Sudoku::getGrade));
@@ -156,35 +159,52 @@ public class PdfGenerator {
     private static Table gridTable(Sudoku sudoku, boolean solution) throws IOException {
         float multiplier = solution ? 0.4f : 1;
         float cellSize = CELL_SIZE * multiplier;
-        float fontSize = 36 * multiplier;
         float borderSize = 0.8f * multiplier;
         PdfFont numberFont = PdfFontFactory.createFont(StandardFonts.COURIER);
+        FontProgram fontProgram = FontProgramFactory.createFont(SCRIPT);
+        PdfFont scriptFont = PdfFontFactory.createFont(fontProgram, PdfEncodings.WINANSI, PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
+
+        Style editableStyle = new Style()
+                .setFont(scriptFont)
+                .setFontSize(36 * multiplier)
+                .setFontColor(ColorConstants.BLACK, 0.7f)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE);
+
+        Style nonEditableStyle = new Style()
+                .setFont(numberFont)
+                .setFontSize(36 * multiplier)
+                .setBackgroundColor(lightBlueColor)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE);
+
         Table grid = new Table(9)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setHorizontalAlignment(HorizontalAlignment.CENTER);
 
-        String puzzle = solution ? sudoku.getSolution() : sudoku.puzzle;
+        String puzzle = solution ? sudoku.grid : sudoku.getPuzzle();
 
         for (int i = 0; i < puzzle.length(); i++) {
             char c = puzzle.charAt(i);
-            boolean isEmpty = c == '0';
-            Cell cell = new Cell().add(new Paragraph(isEmpty ? "" : String.valueOf(c)))
+            boolean isEmpty = c == '.';
+
+            Paragraph paragraph = new Paragraph(isEmpty ? "" : String.valueOf(c)).setWidth(cellSize).setHeight(cellSize);
+
+            Cell cell = new Cell()
                     .setWidth(cellSize)
                     .setHeight(cellSize)
-                    .setBorder(new SolidBorder(blueColor, borderSize));
+                    .setBorder(new SolidBorder(blueColor, borderSize))
+                    .setMarginTop(0f)
+                    .setMarginBottom(0f);
             if (!isEmpty) {
-                cell
-                        .setFont(numberFont)
-                        .setFontSize(fontSize)
-                        .setTextAlignment(TextAlignment.CENTER)
-                        .setVerticalAlignment(VerticalAlignment.MIDDLE);
-                if (!solution) {
-                    cell.setBackgroundColor(lightBlueColor);
-                }
+                cell.addStyle(sudoku.isEditable(i) ? editableStyle : nonEditableStyle);
             }
+            cell.add(paragraph);
             grid.addCell(cell);
-            cell.setBorderBottom(getBorder(cell.getRow(), borderSize * 2));
-            cell.setBorderRight(getBorder(cell.getCol(), borderSize * 2));
+            paragraph.setProperty(Property.OVERFLOW_Y, OverflowPropertyValue.VISIBLE);
+            if (solution) paragraph.setFixedLeading(18f);
+            cell.setBorderBottom(getBorder(cell.getRow(), borderSize * 4));
+            cell.setBorderRight(getBorder(cell.getCol(), borderSize * 4));
         }
         grid.setNextRenderer(new RoundedBorderTableRenderer(grid, borderSize * 4, borderSize * 2, blueColor));
         return grid;

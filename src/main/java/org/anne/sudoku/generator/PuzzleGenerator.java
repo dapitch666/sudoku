@@ -2,14 +2,13 @@ package org.anne.sudoku.generator;
 
 import org.anne.sudoku.Utils;
 import org.anne.sudoku.solver.PrintUtils;
-import org.anne.sudoku.solver.Sudoku;
+import org.anne.sudoku.solver.Solver;
 import org.anne.sudoku.solver.Timer;
 
 import java.util.*;
 
 import static org.anne.sudoku.solver.MultipleSolutionsFinder.countSolutions;
 
-// TODO: Work with a Sudoku object instead of an array or use an array everywhere instead of a String
 // TODO: Improve the process as it can lead to multiple solutions
 
 public class PuzzleGenerator {
@@ -67,14 +66,6 @@ public class PuzzleGenerator {
         return Utils.arrayToString(puzzle);
     }
 
-    public List<Sudoku> generate(int count) {
-        List<Sudoku> puzzles = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            puzzles.add(new Sudoku(generate()));
-        }
-        return puzzles;
-    }
-
     private List<Integer> getRemainingPositions(int[] puzzle) {
         List<Integer> remaining = new ArrayList<>();
         for (int i = 0; i < 81; i++) {
@@ -86,7 +77,7 @@ public class PuzzleGenerator {
     }
 
     private static boolean hasMultipleSolutions(int[] puzzle) {
-        return countSolutions(new Sudoku(Utils.arrayToString(puzzle))) > 1;
+        return countSolutions(new Solver(Utils.arrayToString(puzzle))) > 1;
     }
 
     private static boolean tryRemoveNumbers(int[] grid, int[] positions) {
