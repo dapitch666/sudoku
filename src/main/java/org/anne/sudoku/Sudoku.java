@@ -3,6 +3,8 @@ package org.anne.sudoku;
 import org.anne.sudoku.crawler.SudokuWiki;
 import org.anne.sudoku.generator.PuzzleGenerator;
 import org.anne.sudoku.generator.SolutionGenerator;
+import org.anne.sudoku.solver.MultipleSolutionsFinder;
+import org.anne.sudoku.utils.Utils;
 
 public class Sudoku {
     public final String grid;
@@ -46,11 +48,24 @@ public class Sudoku {
         return mask.charAt(position) == '0';
     }
 
+    public boolean isValid() {
+        String puzzle = getPuzzle();
+        return Utils.isValidPuzzle(puzzle)
+                && !Utils.isAlreadySolved(puzzle)
+                && MultipleSolutionsFinder.hasSingleSolutions(puzzle);
+    }
+
+    public int getClueCount() {
+        return (int) mask.chars().filter(c -> c == '1').count();
+    }
+
     public static void main(String[] args) {
         Sudoku sudoku = new Sudoku();
         System.out.println(sudoku.getPuzzle());
         System.out.println(sudoku.grid);
         System.out.println(sudoku.mask);
+        System.out.println(sudoku.isValid());
         System.out.println(sudoku.getGrade());
+        System.out.println(sudoku.getClueCount());
     }
 }

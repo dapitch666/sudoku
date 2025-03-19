@@ -1,9 +1,9 @@
 package org.anne.sudoku.generator;
 
-import org.anne.sudoku.Utils;
-import org.anne.sudoku.solver.PrintUtils;
+import org.anne.sudoku.utils.Utils;
+import org.anne.sudoku.utils.PrintUtils;
 import org.anne.sudoku.solver.Solver;
-import org.anne.sudoku.solver.Timer;
+import org.anne.sudoku.utils.Timer;
 
 import java.util.*;
 

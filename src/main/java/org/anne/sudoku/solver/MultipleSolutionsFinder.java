@@ -1,6 +1,8 @@
 package org.anne.sudoku.solver;
 
-import org.anne.sudoku.Utils;
+import org.anne.sudoku.utils.PrintUtils;
+import org.anne.sudoku.utils.Timer;
+import org.anne.sudoku.utils.Utils;
 
 public class MultipleSolutionsFinder {
     static final int N = 9;
@@ -8,7 +10,12 @@ public class MultipleSolutionsFinder {
     // static final String defaultPuzzle = "85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.";
     // static final String defaultPuzzle = "..7........1....3..5..4.6...4....7...6...3........1..2.....7.......6..8...2.....1";
     // static final String defaultPuzzle = "46..2..8339.1.6.5..827436.96.325.8......3......9.175.69.456837..7.3.2.6883..7..25";
-    static final String defaultPuzzle = "19.34..82....7....2.7.6.3.47.2.9.8.3.1.....4.6.4.1.2.95.1.3.9.8....5....47..86.25";
+    static final String defaultPuzzle = "5.43697.12367.1849...248...45......76974.23583......64...175...7419.65839.58341.2";
+
+    public static boolean hasSingleSolutions(String puzzle) {
+        Solver solver = new Solver(puzzle);
+        return countSolutions(solver) == 1;
+    }
 
     public static int countSolutions(Solver solver) {
         return count(solver, 0);
