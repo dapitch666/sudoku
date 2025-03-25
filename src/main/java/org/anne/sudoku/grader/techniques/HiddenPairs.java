@@ -14,8 +14,7 @@ public class HiddenPairs implements SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                List<Cell> cells = Arrays.stream(grid.getCells(unitType, unitIndex)).filter(Cell::isNotSolved).toList();
-                Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(cells, list -> list.size() == 2);
+                Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(grid.getCells(unitType, unitIndex), list -> list.size() == 2);
                 for (int i : map.keySet()) {
                     for (int j : map.keySet()) {
                         if (i == j || !map.get(i).equals(map.get(j))) {

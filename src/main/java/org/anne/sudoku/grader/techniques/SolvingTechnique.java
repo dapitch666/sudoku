@@ -8,10 +8,6 @@ import java.util.List;
 public interface SolvingTechnique {
     List<Cell> apply(Grid grid, StringBuilder sb);
 
-    default void log(String message) {
-        // System.out.println(message);
-    }
-
     default void incrementCounter(int[] counter) {
         counter[0]++;
     }

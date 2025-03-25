@@ -5,27 +5,27 @@ import java.util.List;
 
 public class Cell {
     int row;
-    int column;
-    int square;
+    int col;
+    int box;
     int value;
     List<Integer> candidates;
     String position;
     boolean justSolved = false;
 
-    public Cell(int row, int column) {
+    public Cell(int row, int col) {
         String LETTERS = "ABCDEFGHJ";
         this.row = row;
-        this.column = column;
-        this.square = (row / 3) * 3 + column / 3;
+        this.col = col;
+        this.box = (row / 3) * 3 + col / 3;
         this.value = 0;
         this.candidates = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
-        this.position = String.format("%s%s", LETTERS.charAt(row), column + 1);
+        this.position = String.format("%s%s", LETTERS.charAt(row), col + 1);
     }
 
-    public Cell(int row, int column, int value) {
+    public Cell(int row, int col, int value) {
         this.row = row;
-        this.column = column;
-        this.square = (row / 3) * 3 + column / 3;
+        this.col = col;
+        this.box = (row / 3) * 3 + col / 3;
         setValue(value);
     }
 
@@ -33,12 +33,12 @@ public class Cell {
         return row;
     }
 
-    public int getColumn() {
-        return column;
+    public int getCol() {
+        return col;
     }
 
-    public int getSquare() {
-        return square;
+    public int getBox() {
+        return box;
     }
 
     public int getValue() {
@@ -95,14 +95,14 @@ public class Cell {
     }
 
     public boolean isPeer(Cell other) {
-        return this != other && (row == other.row || column == other.column || square == other.square);
+        return this != other && (row == other.row || col == other.col || box == other.box);
     }
 
     public List<UnitType> getCommonUnitType(Cell other) {
         List<UnitType> unitTypes = new ArrayList<>();
         if (this.row == other.row) unitTypes.add(UnitType.ROW);
-        if (this.column == other.column) unitTypes.add(UnitType.COLUMN);
-        if (this.square == other.square) unitTypes.add(UnitType.SQUARE);
+        if (this.col == other.col) unitTypes.add(UnitType.COL);
+        if (this.box == other.box) unitTypes.add(UnitType.BOX);
         return unitTypes;
     }
 }

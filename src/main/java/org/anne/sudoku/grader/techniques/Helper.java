@@ -2,10 +2,7 @@ package org.anne.sudoku.grader.techniques;
 
 import org.anne.sudoku.grader.Cell;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class Helper {
@@ -26,9 +23,7 @@ public class Helper {
         return map;
     }
 
-    static Predicate <List<Cell>> listSizeEqualsTwo = (possibleCells) -> possibleCells.size() == 2;
-    static Predicate <List<Cell>> listSizeEqualsTree = (possibleCells) -> possibleCells.size() == 3;
-    static Predicate <List<Cell>> listSizeEqualsFour = (possibleCells) -> possibleCells.size() == 4;
-    static Predicate <List<Cell>> listSizeLessThanThree = (possibleCells) -> possibleCells.size() == 2 || possibleCells.size() == 3;
-    static Predicate <List<Cell>> listSizeLessThanFour = (possibleCells) -> possibleCells.size() >= 2 && possibleCells.size() <= 4;
+    public static Map<Integer, List<Cell>> getPossibleCellsMap(Cell[] unit, Predicate<List<Cell>> predicate) {
+        return getPossibleCellsMap(Arrays.stream(unit).toList(), predicate);
+    }
 }

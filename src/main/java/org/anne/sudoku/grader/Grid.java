@@ -54,21 +54,21 @@ public class Grid {
         return colCells;
     }
 
-    Cell[] getSquare(int square) {
-        Cell[] squareCells = new Cell[9];
-        int row = square / 3;
-        int col = square % 3;
+    Cell[] getBox(int box) {
+        Cell[] boxCells = new Cell[9];
+        int row = box / 3;
+        int col = box % 3;
         for (int i = 0; i < 9; i++) {
-            squareCells[i] = cells[(row * 3 + i / 3) * 9 + col * 3 + i % 3];
+            boxCells[i] = cells[(row * 3 + i / 3) * 9 + col * 3 + i % 3];
         }
-        return squareCells;
+        return boxCells;
     }
 
     public Cell[] getCells(UnitType unitType, int unitIndex) {
         return switch (unitType) {
             case ROW -> getRow(unitIndex);
-            case COLUMN -> getCol(unitIndex);
-            case SQUARE -> getSquare(unitIndex);
+            case COL -> getCol(unitIndex);
+            case BOX -> getBox(unitIndex);
         };
     }
 
@@ -78,8 +78,8 @@ public class Grid {
 
     public Cell[] getPeers(Cell cell) {
         Set<Cell> peers = Arrays.stream(getRow(cell.getRow())).collect(Collectors.toSet());
-        peers.addAll(Arrays.stream(getCol(cell.getColumn())).collect(Collectors.toSet()));
-        peers.addAll(Arrays.stream(getSquare(cell.getSquare())).collect(Collectors.toSet()));
+        peers.addAll(Arrays.stream(getCol(cell.getCol())).collect(Collectors.toSet()));
+        peers.addAll(Arrays.stream(getBox(cell.getBox())).collect(Collectors.toSet()));
         return peers.stream().filter(c -> c != cell).toArray(Cell[]::new);
     }
 
@@ -109,8 +109,8 @@ public class Grid {
     public void showPossible() {
         for (Cell cell : getUnsolvedCells()) {
             Set<Integer> values = Arrays.stream(getRow(cell.getRow())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet());
-            values.addAll(Arrays.stream(getCol(cell.getColumn())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet()));
-            values.addAll(Arrays.stream(getSquare(cell.getSquare())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet()));
+            values.addAll(Arrays.stream(getCol(cell.getCol())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet()));
+            values.addAll(Arrays.stream(getBox(cell.getBox())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet()));
             for (int value : values) {
                 cell.removeCandidate(value);
             }

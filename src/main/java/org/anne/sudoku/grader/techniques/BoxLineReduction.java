@@ -16,13 +16,12 @@ public class BoxLineReduction implements SolvingTechnique {
     public List<Cell> apply(Grid grid, StringBuilder sb) {
         List<Cell> changed = new ArrayList<>();
         for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-            for (UnitType unitType : List.of(UnitType.ROW, UnitType.COLUMN)) {
-                List<Cell> cells = Arrays.stream(grid.getCells(unitType, unitIndex)).filter(Cell::isNotSolved).toList();
-                Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(cells, Helper.listSizeLessThanThree);
+            for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
+                Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(grid.getCells(unitType, unitIndex), list -> list.size() == 2 || list.size() == 3);
                 for (int i : map.keySet()) {
-                    boolean sameSquare = map.get(i).stream().map(Cell::getSquare).distinct().count() == 1;
+                    boolean sameSquare = map.get(i).stream().map(Cell::getBox).distinct().count() == 1;
                     if (unitType == UnitType.ROW && sameSquare) {
-                        for (Cell cell : grid.getCells(UnitType.SQUARE, map.get(i).getFirst().getSquare())) {
+                        for (Cell cell : grid.getCells(UnitType.BOX, map.get(i).getFirst().getBox())) {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
@@ -31,12 +30,12 @@ public class BoxLineReduction implements SolvingTechnique {
                                 }
                             }
                         }
-                    } else if (unitType == UnitType.COLUMN && sameSquare) {
-                        for (Cell cell : grid.getCells(UnitType.SQUARE, map.get(i).getFirst().getSquare())) {
+                    } else if (unitType == UnitType.COL && sameSquare) {
+                        for (Cell cell : grid.getCells(UnitType.BOX, map.get(i).getFirst().getBox())) {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    sb.append(String.format("Box-line reduction in %s: ", UnitType.COLUMN.toString(unitIndex)));
+                                    sb.append(String.format("Box-line reduction in %s: ", UnitType.COL.toString(unitIndex)));
                                     sb.append(String.format("removed %s from %s:%n", i, cell.getPosition()));
                                 }
                             }
@@ -44,7 +43,6 @@ public class BoxLineReduction implements SolvingTechnique {
                     }
                     if (!changed.isEmpty()) {
                         incrementCounter(counter);
-                        log(sb.toString());
                     }
                 }
             }

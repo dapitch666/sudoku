@@ -17,8 +17,7 @@ public class HiddenSingles implements SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) { // For each row, column, square
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                List<Cell> cells = Arrays.stream(grid.getCells(unitType, unitIndex)).filter(Cell::isNotSolved).toList();
-                Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(cells, list -> list.size() == 1);
+                Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(grid.getCells(unitType, unitIndex), list -> list.size() == 1);
                 for (int i : map.keySet()) {
                     Cell cell = map.get(i).getFirst();
                     List<Integer> removed = cell.removeAllBut(List.of(i));

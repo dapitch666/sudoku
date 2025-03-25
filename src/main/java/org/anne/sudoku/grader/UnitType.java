@@ -1,13 +1,13 @@
 package org.anne.sudoku.grader;
 
 public enum UnitType {
-    ROW, COLUMN, SQUARE;
+    ROW, COL, BOX;
 
     public String toString(int unitIndex) {
         return switch (this) {
             case ROW -> "Row " + "ABCDEFGHJ".charAt(unitIndex);
-            case COLUMN -> "Col " + (unitIndex + 1);
-            case SQUARE -> "Box " + (unitIndex + 1);
+            case COL -> "Col " + (unitIndex + 1);
+            case BOX -> "Box " + (unitIndex + 1);
         };
     }
 }

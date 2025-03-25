@@ -11,7 +11,7 @@ public class XWings implements SolvingTechnique {
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
-        for (UnitType unitType : List.of(UnitType.ROW, UnitType.COLUMN)) {
+        for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
             for (int i = 1; i <= 9; i++) {
                 Set<Cell> xWing = new HashSet<>();
                 for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
@@ -23,14 +23,14 @@ public class XWings implements SolvingTechnique {
                 }
                 List<Integer> unitsIndex;
                 if (unitType == UnitType.ROW) {
-                    unitsIndex = xWing.stream().map(Cell::getColumn).distinct().toList();
+                    unitsIndex = xWing.stream().map(Cell::getCol).distinct().toList();
                 } else {
                     unitsIndex = xWing.stream().map(Cell::getRow).distinct().toList();
                 }
                 if (xWing.size() == 4 && unitsIndex.size() == 2) {
                     List<Cell> changed = new ArrayList<>();
                     for (int unitIndex : unitsIndex) {
-                        for (Cell cell : grid.getCells(unitType == UnitType.ROW ? UnitType.COLUMN : UnitType.ROW, unitIndex)) {
+                        for (Cell cell : grid.getCells(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitIndex)) {
                             List<Integer> removed = new ArrayList<>();
                             if (!xWing.contains(cell) && cell.removeCandidate(i)) {
                                 removed.add(i);
