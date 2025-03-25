@@ -10,6 +10,7 @@ public class Cell {
     int value;
     List<Integer> candidates;
     String position;
+    boolean justSolved = false;
 
     public Cell(int row, int column) {
         String LETTERS = "ABCDEFGHJ";
@@ -25,8 +26,45 @@ public class Cell {
         this.row = row;
         this.column = column;
         this.square = (row / 3) * 3 + column / 3;
+        setValue(value);
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public int getSquare() {
+        return square;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public List<Integer> getCandidates() {
+        return candidates;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setValue(Integer value) {
         this.value = value;
         this.candidates = List.of();
+        this.justSolved = true;
+    }
+
+    public int getCandidateCount() {
+        return candidates.size();
+    }
+
+    public int getFirstCandidate() {
+        return candidates.getFirst();
     }
 
     public boolean removeCandidate(int candidate) {
@@ -45,13 +83,14 @@ public class Cell {
     }
 
     public List<Integer> removeAllBut(List<Integer> i) {
-        List<Integer> removed = new ArrayList<>();
-        for (int candidate : candidates) {
-            if (!i.contains(candidate)) {
-                removed.add(candidate);
-            }
+        List<Integer> removed = candidates.stream().filter(c -> !i.contains(c)).toList();
+        for (int candidate : removed) {
+            removeCandidate(candidate);
         }
-        candidates.retainAll(i);
         return removed;
+    }
+
+    public boolean isSolved() {
+        return value != 0;
     }
 }
