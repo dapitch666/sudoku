@@ -84,7 +84,7 @@ class ManualSolverTest {
 
         assertEquals(solved, solver.grid.currentState());
         assertEquals(3, solver.getCounter("Naked Pairs"));
-        assertEquals(4, solver.getCounter("Naked Triples"));
+        assertEquals(5, solver.getCounter("Naked Triples"));
     }
 
     @Test
@@ -103,8 +103,8 @@ class ManualSolverTest {
         System.setOut(System.out);
 
         assertEquals(solved, solver.grid.currentState());
-        assertEquals(3, solver.getCounter("Hidden Triples"));
-        assertEquals(1, solver.getCounter("Naked Triples"));
+        assertEquals(1, solver.getCounter("Hidden Triples"));
+        assertEquals(5, solver.getCounter("Naked Triples"));
     }
 
     @Test
@@ -123,7 +123,7 @@ class ManualSolverTest {
         System.setOut(System.out);
 
         assertEquals(solved, solver.grid.currentState());
-        assertEquals(1, solver.getCounter("XWings"));
+        assertEquals(1, solver.getCounter("X-Wings"));
     }
 
     @Test
@@ -143,6 +143,25 @@ class ManualSolverTest {
 
         assertEquals(solved, solver.grid.currentState());
         assertEquals(2, solver.getCounter("Chute Remote Pairs"));
+    }
+
+    @Test
+    void yWingsTest() {
+        // This puzzle uses Y-Wings as the maximum technique
+        String puzzle = "9...4.......6...31.2.....9....7...2...29356...7...2....6.....7351...9.......8...9";
+        String solved = "931247586754698231628153794195764328482935617376812945869521473513479862247386159";
+
+        ManualSolver solver = new ManualSolver(puzzle);
+        // Capture output
+        System.setOut(new PrintStream(new ByteArrayOutputStream()));
+
+        solver.solve();
+
+        // Reset the standard output
+        System.setOut(System.out);
+
+        assertEquals(solved, solver.grid.currentState());
+        assertEquals(2, solver.getCounter("Y-Wings"));
     }
 }
 

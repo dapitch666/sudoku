@@ -11,25 +11,32 @@ public class NakedPairs implements SolvingTechnique {
     private final int[] counter = new int[1];
 
     @Override
-    public List<Cell> apply(Grid grid, UnitType unitType, int unitIndex, StringBuilder sb) {
-        Cell[] unit = grid.getCells(unitType, unitIndex);
+    public List<Cell> apply(Grid grid, StringBuilder sb) {
         List<Cell> changed = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            if (unit[i].getCandidateCount() == 2) {
-                for (int j = i + 1; j < 9; j++) {
-                    if (unit[j].getCandidateCount() == 2 && unit[i].getCandidates().equals(unit[j].getCandidates())) {
+        for (UnitType unitType : UnitType.values()) {
+            for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
+                Cell[] unit = grid.getCells(unitType, unitIndex);
+
+                for (int i = 0; i < 9; i++) {
+                    if (unit[i].getCandidateCount() != 2) {
+                        continue;
+                    }
+                    for (int j = i + 1; j < 9; j++) {
+                        if (unit[j].getCandidateCount() != 2 || !unit[i].getCandidates().equals(unit[j].getCandidates())) {
+                            continue;
+                        }
                         List<Integer> pair = unit[i].getCandidates();
-                        for (int k = 0; k < 9; k++) {
-                            if (k != i && k != j) {
+                        for (Cell cell : unit) {
+                            if (cell != unit[i] && cell != unit[j]) {
                                 List<Integer> removed = new ArrayList<>();
                                 for (int candidate : pair) {
-                                    if (unit[k].removeCandidate(candidate)) {
+                                    if (cell.removeCandidate(candidate)) {
                                         removed.add(candidate);
                                     }
                                 }
                                 if (!removed.isEmpty()) {
-                                    changed.add(unit[k]);
-                                    sb.append(String.format("Naked pair %s in %s, on cells [%s, %s]. Removed %s from %s%n", pair, unitType.toString(unitIndex), unit[i].getPosition(), unit[j].getPosition(), removed, unit[k].getPosition()));
+                                    changed.add(cell);
+                                    sb.append(String.format("Naked pair %s in %s, on cells [%s, %s]. Removed %s from %s%n", pair, unitType.toString(unitIndex), unit[i].getPosition(), unit[j].getPosition(), removed, cell.getPosition()));
                                 }
                             }
                         }
@@ -39,9 +46,6 @@ public class NakedPairs implements SolvingTechnique {
                     }
                 }
             }
-        }
-        if (!changed.isEmpty()) {
-            log(sb.toString());
         }
         return changed;
     }

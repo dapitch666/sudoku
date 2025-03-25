@@ -93,4 +93,16 @@ public class Cell {
     public boolean isSolved() {
         return value != 0;
     }
+
+    public boolean isPeer(Cell other) {
+        return this != other && (row == other.row || column == other.column || square == other.square);
+    }
+
+    public List<UnitType> getCommonUnitType(Cell other) {
+        List<UnitType> unitTypes = new ArrayList<>();
+        if (this.row == other.row) unitTypes.add(UnitType.ROW);
+        if (this.column == other.column) unitTypes.add(UnitType.COLUMN);
+        if (this.square == other.square) unitTypes.add(UnitType.SQUARE);
+        return unitTypes;
+    }
 }

@@ -1,0 +1,51 @@
+package org.anne.sudoku.grader.techniques;
+
+import org.anne.sudoku.grader.Cell;
+import org.anne.sudoku.grader.Grid;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class YWings implements SolvingTechnique {
+    private final int[] counter = new int[1];
+
+    @Override
+    public List<Cell> apply(Grid grid, StringBuilder sb) {
+        for (Cell key : grid.getCellsWithTwoCandidates()) {
+            List<Integer> keyCandidates = key.getCandidates();
+            for (Cell cell1 : grid.getPeers(key)) {
+                if (cell1.getCandidateCount() != 2) {
+                    continue;
+                }
+                if (keyCandidates.stream().filter(cell1::isCandidate).count() == 1) {
+                    List<Cell> changed = new ArrayList<>();
+                    int B = keyCandidates.stream().filter(cell1::isCandidate).findFirst().orElseThrow();
+                    int A = keyCandidates.stream().filter(candidate -> candidate != B).findFirst().orElseThrow();
+                    int C = cell1.getCandidates().stream().filter(candidate -> candidate != B).findFirst().orElseThrow();
+                    for (Cell cell2 : grid.getPeers(key)) {
+                        if (cell2.getCandidateCount() == 2 && cell2.isCandidate(A) && cell2.isCandidate(C)) {
+                            List<Cell> peers = Arrays.stream(grid.getPeers(cell1)).filter(p -> p.isPeer(cell2) && p != key).toList();
+                            for (Cell peer : peers) {
+                                if (peer.removeCandidate(C)) {
+                                    sb.append(String.format("Y-Wing in %s, %s and %s, removed candidate %d from %s%n", key.getPosition(), cell1.getPosition(), cell2.getPosition(), C, peer.getPosition()));
+                                    changed.add(peer);
+                                }
+                            }
+                        }
+                    }
+                    if (!changed.isEmpty()) {
+                        incrementCounter(counter);
+                        return changed;
+                    }
+                }
+            }
+        }
+        return List.of();
+    }
+
+    @Override
+    public int getCounter() {
+        return counter[0];
+    }
+}

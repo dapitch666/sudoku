@@ -2,12 +2,11 @@ package org.anne.sudoku.grader.techniques;
 
 import org.anne.sudoku.grader.Cell;
 import org.anne.sudoku.grader.Grid;
-import org.anne.sudoku.grader.UnitType;
 
 import java.util.List;
 
 public interface SolvingTechnique {
-    List<Cell> apply(Grid grid, UnitType unitType, int unitIndex, StringBuilder sb);
+    List<Cell> apply(Grid grid, StringBuilder sb);
 
     default void log(String message) {
         // System.out.println(message);
@@ -18,7 +17,9 @@ public interface SolvingTechnique {
     }
 
     default String getName() {
-        return this.getClass().getSimpleName().replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2");
+        return this.getClass().getSimpleName()
+                .replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2")
+                .replaceAll("(\\p{Lu})(\\p{Lu})", "$1-$2");
     }
 
     int getCounter();

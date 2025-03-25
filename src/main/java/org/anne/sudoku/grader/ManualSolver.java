@@ -23,13 +23,14 @@ public class ManualSolver {
                 new PointingPairs(),
                 new BoxLineReduction(),
                 new XWings(),
-                new ChuteRemotePairs()
+                new ChuteRemotePairs(),
+                new YWings()
                 );
     }
 
     public static void main(String[] args) {
-        // ManualSolver manualSolver = new ManualSolver("...7.5..6....4..81....3..5..41.....8.6.....2.5.....43.....7....978.5....3..2.1...");
-        ManualSolver manualSolver = new ManualSolver("...9.5..........12.6.....5.39..5..6....3....4.4..6..85.3.....9.85..1.......2.7...");
+        // ManualSolver manualSolver = new ManualSolver("72..96..3...2.5....8...4.2........6.1.65.38.7.4........3.8...9....7.2...2..43..18");
+        ManualSolver manualSolver = new ManualSolver("3........97..1....6..583...2.....9..5..621..3..8.....5...435..2....9..56........1");
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));
         manualSolver.solve();
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));
@@ -49,27 +50,10 @@ public class ManualSolver {
             grid.checkForSolvedCells();
             grid.showPossible();
             System.out.println(grid);
-            // System.out.println("Step " + steps + ":");
 
             List<Cell> changedCells = new ArrayList<>();
             for (SolvingTechnique technique : techniques) {
-                if (technique.getName().equals("Naked Singles")) {
-                    changedCells.addAll(technique.apply(grid, null, -1, sb));
-                } else if (technique.getName().equals("XWings")) {
-                    changedCells.addAll(technique.apply(grid, UnitType.ROW, -1, sb));
-                    changedCells.addAll(technique.apply(grid, UnitType.COLUMN, -1, sb));
-                } else if (technique.getName().equals("Chute Remote Pairs")) {
-                    for (int i = 0; i < 3; i++) {
-                        changedCells.addAll(technique.apply(grid, UnitType.ROW, i, sb));
-                        changedCells.addAll(technique.apply(grid, UnitType.COLUMN, i, sb));
-                    }
-                } else {
-                    for (UnitType unitType : UnitType.values()) {
-                        for (int i = 0; i < 9; i++) {
-                            changedCells.addAll(technique.apply(grid, unitType, i, sb));
-                        }
-                    }
-                }
+                changedCells.addAll(technique.apply(grid, sb));
                 if (changedCells.isEmpty()) {
                     continue;
                 }

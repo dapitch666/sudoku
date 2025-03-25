@@ -42,9 +42,7 @@ public class Grid {
 
     Cell[] getRow(int row) {
         Cell[] rowCells = new Cell[9];
-        for (int i = 0; i < 9; i++) {
-            rowCells[i] = cells[row * 9 + i];
-        }
+        System.arraycopy(cells, row * 9, rowCells, 0, 9);
         return rowCells;
     }
 
@@ -89,22 +87,34 @@ public class Grid {
         return Arrays.stream(getCells(unitType, unitIndex)).filter(c -> c.isCandidate(candidate)).toArray(Cell[]::new);
     }
 
-    public boolean showPossible() {
-        StringBuilder sb = new StringBuilder();
-        boolean changed = false;
+    public Cell[] getCellsWithTwoCandidates() {
+        return Arrays.stream(cells).filter(c -> c.getCandidateCount() == 2).toArray(Cell[]::new);
+    }
+
+    public void checkForSolvedCells() {
         for (int i = 0; i < 81; i++) {
-            if (cells[i].isNotSolved()) {
-                Set<Integer> otherValues = Arrays.stream(getRow(cells[i].getRow())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet());
-                otherValues.addAll(Arrays.stream(getCol(cells[i].getColumn())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet()));
-                otherValues.addAll(Arrays.stream(getSquare(cells[i].getSquare())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet()));
-                for (int otherValue : otherValues) {
-                    if (cells[i].removeCandidate(otherValue)) {
-                        changed = true;
+            if (cells[i].justSolved) {
+                Cell cell = cells[i];
+                int value = cell.value;
+                for (Cell peer : getPeers(cell)) {
+                    if (peer.isNotSolved()) {
+                        peer.removeCandidate(value);
                     }
                 }
+                cell.justSolved = false;
             }
         }
-        return changed;
+    }
+
+    public void showPossible() {
+        for (Cell cell : getUnsolvedCells()) {
+            Set<Integer> values = Arrays.stream(getRow(cell.getRow())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet());
+            values.addAll(Arrays.stream(getCol(cell.getColumn())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet()));
+            values.addAll(Arrays.stream(getSquare(cell.getSquare())).filter(Cell::isSolved).map(Cell::getValue).collect(Collectors.toSet()));
+            for (int value : values) {
+                cell.removeCandidate(value);
+            }
+        }
     }
 
     @Override
@@ -202,20 +212,5 @@ public class Grid {
             sb.append(cell.candidates.contains(candidate) ? candidate : ".");
         }
         return sb.toString();
-    }
-
-    public void checkForSolvedCells() {
-        for (int i = 0; i < 81; i++) {
-            if (cells[i].justSolved) {
-                Cell cell = cells[i];
-                int value = cell.value;
-                for (Cell oCell : getPeers(cell)) {
-                    if (oCell.isNotSolved()) {
-                        oCell.removeCandidate(value);
-                    }
-                }
-                cell.justSolved = false;
-            }
-        }
     }
 }
