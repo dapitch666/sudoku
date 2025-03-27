@@ -146,6 +146,24 @@ class ManualSolverTest {
     }
 
     @Test
+    void simpleColoringTest() {
+        String puzzle = ".......6...27.5...5...13..97.45....3..3.4.1..9....74.56..92...4...3.18...8.......";
+        String solved = "371294568892765341546813279714582693253649187968137425635928714429371856187456932";
+
+        ManualSolver solver = new ManualSolver(puzzle);
+        // Capture output
+        System.setOut(new PrintStream(new ByteArrayOutputStream()));
+
+        solver.solve();
+
+        // Reset the standard output
+        System.setOut(System.out);
+
+        assertEquals(solved, solver.grid.currentState());
+        assertEquals(2, solver.getCounter("Simple Coloring"));
+    }
+
+    @Test
     void yWingsTest() {
         // This puzzle uses Y-Wings as the maximum technique
         String puzzle = "9...4.......6...31.2.....9....7...2...29356...7...2....6.....7351...9.......8...9";
@@ -162,6 +180,24 @@ class ManualSolverTest {
 
         assertEquals(solved, solver.grid.currentState());
         assertEquals(2, solver.getCounter("Y-Wings"));
+    }
+
+    @Test
+    void rectangleElimination() {
+        String puzzle = ".3.6.9.2....28....1.......9......65372..6..91365......2.......7....16....1.5.7.4.";
+        String solved = "537649128649281735182753469891472653724365891365198274256834917473916582918527346";
+
+        ManualSolver solver = new ManualSolver(puzzle);
+        // Capture output
+        System.setOut(new PrintStream(new ByteArrayOutputStream()));
+
+        solver.solve();
+
+        // Reset the standard output
+        System.setOut(System.out);
+
+        //assertEquals(solved, solver.grid.currentState());
+        assertEquals(7, solver.getCounter("Rectangle Elimination"));
     }
 }
 

@@ -105,4 +105,9 @@ public class Cell {
         if (this.box == other.box) unitTypes.add(UnitType.BOX);
         return unitTypes;
     }
+
+    @Override
+    public String toString() {
+        return this.position;
+    }
 }

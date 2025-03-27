@@ -1,7 +1,6 @@
 package org.anne.sudoku.grader;
 
-import java.util.Arrays;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Grid {
@@ -90,6 +89,152 @@ public class Grid {
     public Cell[] getCellsWithTwoCandidates() {
         return Arrays.stream(cells).filter(c -> c.getCandidateCount() == 2).toArray(Cell[]::new);
     }
+
+    public Cell[] getCellsWithCandidate(int digit) {
+        return Arrays.stream(cells).filter(c -> c.isCandidate(digit)).toArray(Cell[]::new);
+    }
+
+    public Map<Cell, List<Cell>> findStrongLinks(int digit) {
+        Map<Cell, List<Cell>> strongLinks = new HashMap<>();
+
+        for (UnitType unitType : UnitType.values()) {
+            for (int i = 0; i < 9; i++) {
+                List<Cell> unitCells = Arrays.stream(getCells(unitType, i)).toList();
+                List<Cell> candidates = new ArrayList<>();
+                for (Cell cell : unitCells) {
+                    if (cell.isCandidate(digit)) {
+                        candidates.add(cell);
+                    }
+                }
+                if (candidates.size() == 2) {
+                    strongLinks.computeIfAbsent(candidates.get(0), _ -> new ArrayList<>()).add(candidates.get(1));
+                    strongLinks.computeIfAbsent(candidates.get(1), _ -> new ArrayList<>()).add(candidates.get(0));
+                }
+            }
+        }
+
+        return strongLinks;
+    }
+
+    public Map<Cell, List<Cell>> findWeakLinks(int digit) {
+        Map<Cell, List<Cell>> weakLinks = new HashMap<>();
+
+        // Check rows, columns, and boxes for weak links
+        for (UnitType unitType : UnitType.values()) {
+            for (int i = 0; i < 9; i++) {
+                Cell[] candidates = getCellsInUnitWithCandidate(digit, unitType, i);
+                if (candidates.length > 2) {
+                    for (int j = 0; j < candidates.length; j++) {
+                        for (int k = j + 1; k < candidates.length; k++) {
+                            weakLinks.computeIfAbsent(candidates[j], _ -> new ArrayList<>()).add(candidates[k]);
+                            weakLinks.computeIfAbsent(candidates[k], _ -> new ArrayList<>()).add(candidates[j]);
+                        }
+                    }
+                }
+            }
+        }
+
+        return weakLinks;
+    }
+
+
+    private boolean isSubChain(List<Cell> potentialSubChain, List<Cell> longerChain) {
+        // Check if all cells in the potential subchain appear in sequence in the longer chain
+        if (potentialSubChain.size() >= longerChain.size()) {
+            return false;
+        }
+
+        for (int i = 0; i <= longerChain.size() - potentialSubChain.size(); i++) {
+            boolean matches = true;
+            for (int j = 0; j < potentialSubChain.size(); j++) {
+                if (!potentialSubChain.get(j).equals(longerChain.get(i + j))) {
+                    matches = false;
+                    break;
+                }
+            }
+            if (matches) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<List<Cell>> removeSubChains(List<List<Cell>> chains) {
+        List<List<Cell>> uniqueChains = new ArrayList<>(chains);
+
+        for (int i = uniqueChains.size() - 1; i >= 0; i--) {
+            List<Cell> currentChain = uniqueChains.get(i);
+            for (int j = 0; j < uniqueChains.size(); j++) {
+                if (i != j && isSubChain(currentChain, uniqueChains.get(j))) {
+                    uniqueChains.remove(i);
+                    break;
+                }
+            }
+        }
+        return uniqueChains;
+    }
+
+    public List<List<Cell>> findChains(int digit) {
+        Map<Cell, List<Cell>> strongLinks = findStrongLinks(digit);
+        List<List<Cell>> chains = new ArrayList<>();
+        Set<Cell> usedInChains = new HashSet<>();
+
+        for (Cell start : strongLinks.keySet()) {
+            if (!usedInChains.contains(start)) {
+                List<Cell> forwardChain = buildChainFromStart(start, strongLinks, true);
+                List<Cell> backwardChain = buildChainFromStart(start, strongLinks, false);
+
+                List<Cell> chain = forwardChain.size() >= backwardChain.size() ? forwardChain : backwardChain;
+
+                if (chain.size() > 1) {
+                    chains.add(chain);
+                    usedInChains.addAll(chain);
+                }
+            }
+        }
+
+        return removeSubChains(chains);
+    }
+
+    private List<Cell> buildChainFromStart(Cell start, Map<Cell, List<Cell>> strongLinks, boolean forward) {
+        List<Cell> chain = new ArrayList<>();
+        Set<Cell> visited = new HashSet<>();
+        Cell current = start;
+        chain.add(current);
+        visited.add(current);
+
+        while (true) {
+            List<Cell> linkedCells = strongLinks.get(current);
+            Cell next = null;
+
+            // When going backward, try cells in reverse order
+            if (!forward) {
+                Collections.reverse(linkedCells);
+            }
+
+            for (Cell linked : linkedCells) {
+                if (!visited.contains(linked)) {
+                    next = linked;
+                    break;
+                } else if (linked == start && chain.size() > 2) {
+                    // Found a loop back to start
+                    return chain;
+                }
+            }
+
+            if (next == null) {
+                break;
+            }
+
+            chain.add(next);
+            visited.add(next);
+            current = next;
+        }
+
+        return chain;
+    }
+
+    /* ************************************************** */
 
     public void checkForSolvedCells() {
         for (int i = 0; i < 81; i++) {
