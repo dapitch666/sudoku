@@ -26,7 +26,8 @@ public class ManualSolver {
                 new ChuteRemotePairs(),
                 new SimpleColoring(),
                 new YWings(),
-                new RectangleElimination()//,
+                new RectangleElimination(),
+                new SwordFish()//,
                 //new XCycles()
                 );
     }
