@@ -174,6 +174,7 @@ public class Grid {
         return uniqueChains;
     }
 
+    // TODO: Review this as we need a tree, not a chain.
     public List<List<Cell>> findChains(int digit) {
         Map<Cell, List<Cell>> strongLinks = findStrongLinks(digit);
         List<List<Cell>> chains = new ArrayList<>();

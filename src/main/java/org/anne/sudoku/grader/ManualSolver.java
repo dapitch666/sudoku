@@ -32,7 +32,7 @@ public class ManualSolver {
     }
 
     public static void main(String[] args) {
-        ManualSolver manualSolver = new ManualSolver(".9..1..3.8..3....9.7...6..5.8...3....52...37....4...8.9..8...4.6....9..8.1..5..9.");
+        ManualSolver manualSolver = new ManualSolver("4..8....3..6.1.4.9.....5....1..6..92...3.1...64..5..8....6.....9.7.8.1..8....9..4");
         // ManualSolver manualSolver = new ManualSolver(".3.6.9.2....28....1.......9......65372..6..91365......2.......7....16....1.5.7.4.");
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));
         manualSolver.solve();

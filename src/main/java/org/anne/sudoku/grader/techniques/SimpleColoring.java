@@ -1,7 +1,6 @@
 package org.anne.sudoku.grader.techniques;
 
-import org.anne.sudoku.grader.Cell;
-import org.anne.sudoku.grader.Grid;
+import org.anne.sudoku.grader.*;
 
 import java.util.*;
 
@@ -11,19 +10,12 @@ public class SimpleColoring implements SolvingTechnique {
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
         for (int digit = 1; digit <= 9; digit++) {
-            List<List<Cell>> chains = grid.findChains(digit);
-            for (List<Cell> chain : chains) {
+            Map<Cell, List<Cell>> strongLinks = grid.findStrongLinks(digit);
+            ForestBuilder<Cell> forestBuilder = new ForestBuilder<>(strongLinks);
+            for (Tree<Cell> tree : forestBuilder.getTrees()) {
                 List<ColoredCell> cells = new ArrayList<>();
-                int color = 1;
-                for (Cell cell : chain) {
-                    cells.add(new ColoredCell(cell, color));
-                    if (color == 1) {
-                        color = 2;
-                    } else {
-                        color = 1;
-                    }
-                }
-                if (digit == 7) System.out.println("Chain " + chain);
+                colorTree(tree.getRoot(), cells, 1);
+
                 var changed = applyRule1(digit, cells, sb);
                 if (!changed.isEmpty()) return changed;
                 changed = applyRule2(grid, digit, cells, sb);
@@ -31,6 +23,14 @@ public class SimpleColoring implements SolvingTechnique {
             }
         }
         return List.of();
+    }
+
+    private void colorTree(Tree.TreeNode<Cell> node, List<ColoredCell> cells, int color) {
+        cells.add(new ColoredCell(node.data(), color));
+        int nextColor = (color == 1) ? 2 : 1;
+        for (Tree.TreeNode<Cell> child : node.getChildren()) {
+            colorTree(child, cells, nextColor);
+        }
     }
 
     private List<Cell> applyRule1(int digit, List<ColoredCell> chain, StringBuilder sb) {
