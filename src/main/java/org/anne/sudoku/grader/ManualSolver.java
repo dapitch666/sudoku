@@ -27,13 +27,14 @@ public class ManualSolver {
                 new SimpleColoring(),
                 new YWings(),
                 new RectangleElimination(),
-                new SwordFish()//,
+                new SwordFish(),
+                new XyzWings()//,
                 //new XCycles()
                 );
     }
 
     public static void main(String[] args) {
-        ManualSolver manualSolver = new ManualSolver("4..8....3..6.1.4.9.....5....1..6..92...3.1...64..5..8....6.....9.7.8.1..8....9..4");
+        ManualSolver manualSolver = new ManualSolver(".9...17..5..2....8....3.2...7...496.2...6...5.697...3...8.9....7....3..9..38...4.");
         // ManualSolver manualSolver = new ManualSolver(".3.6.9.2....28....1.......9......65372..6..91365......2.......7....16....1.5.7.4.");
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));
         manualSolver.solve();
