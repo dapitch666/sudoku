@@ -94,6 +94,10 @@ public class Grid {
         return Arrays.stream(cells).filter(c -> c.isCandidate(digit)).toArray(Cell[]::new);
     }
 
+    public Cell[] getCellsWithThreeCandidates() {
+        return Arrays.stream(cells).filter(c -> c.getCandidateCount() == 3).toArray(Cell[]::new);
+    }
+
     public Map<Cell, List<Cell>> findStrongLinks(int digit) {
         Map<Cell, List<Cell>> strongLinks = new HashMap<>();
 

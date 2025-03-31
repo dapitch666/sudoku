@@ -28,7 +28,8 @@ public class ManualSolver {
                 new YWings(),
                 new RectangleElimination(),
                 new SwordFish(),
-                new XyzWings()//,
+                new XyzWings(),
+                new BiValueUniversalGrave()//,
                 //new XCycles()
                 );
     }
