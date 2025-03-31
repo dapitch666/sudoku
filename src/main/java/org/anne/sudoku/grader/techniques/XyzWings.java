@@ -37,7 +37,7 @@ public class XyzWings implements SolvingTechnique {
                         if (peer.isCandidate(x) && peer.isPeer(wing1) && peer.isPeer(wing2)) {
                             changed.add(peer);
                             peer.removeCandidate(x);
-                            sb.append(String.format("XYZ-Wing in %s (hinge), %s and %s (%d, %d, %d). Removed %d from %s%n", hinge.getPosition(), wing1.getPosition(), wing2.getPosition(), x, y, z, x, peer.getPosition()));
+                            log(sb, "XYZ-Wing in %s (hinge), %s and %s (%d, %d, %d). Removed %d from %s%n", hinge.getPosition(), wing1.getPosition(), wing2.getPosition(), x, y, z, x, peer.getPosition());
                         }
                     }
                     if (!changed.isEmpty()) {

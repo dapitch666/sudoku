@@ -45,7 +45,7 @@ public class SwordFish implements SolvingTechnique {
                                     for (Cell cell : grid.getCellsInUnitWithCandidate(digit, unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, col))
                                         if (!swordfish.contains(cell) && cell.removeCandidate(digit)) {
                                             changed.add(cell);
-                                            sb.append(String.format("Swordfish %d in %s. Removed %d from %s%n", digit, swordfish.stream().map(Cell::getPosition).toList(), digit, cell.getPosition()));
+                                            log(sb, "Swordfish %d in %s. Removed %d from %s%n", digit, swordfish.stream().map(Cell::getPosition).toList(), digit, cell.getPosition());
                                         }
                                 }
                                 if (!changed.isEmpty()) {

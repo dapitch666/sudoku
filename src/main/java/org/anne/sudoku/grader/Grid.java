@@ -86,16 +86,12 @@ public class Grid {
         return Arrays.stream(getCells(unitType, unitIndex)).filter(c -> c.isCandidate(candidate)).toArray(Cell[]::new);
     }
 
-    public Cell[] getCellsWithTwoCandidates() {
-        return Arrays.stream(cells).filter(c -> c.getCandidateCount() == 2).toArray(Cell[]::new);
+    public Cell[] getCellsWithNCandidates(int n) {
+        return Arrays.stream(cells).filter(c -> c.getCandidateCount() == n).toArray(Cell[]::new);
     }
 
     public Cell[] getCellsWithCandidate(int digit) {
         return Arrays.stream(cells).filter(c -> c.isCandidate(digit)).toArray(Cell[]::new);
-    }
-
-    public Cell[] getCellsWithThreeCandidates() {
-        return Arrays.stream(cells).filter(c -> c.getCandidateCount() == 3).toArray(Cell[]::new);
     }
 
     public Map<Cell, List<Cell>> findStrongLinks(int digit) {

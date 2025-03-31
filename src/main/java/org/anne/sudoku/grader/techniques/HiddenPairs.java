@@ -24,7 +24,7 @@ public class HiddenPairs implements SolvingTechnique {
                             List<Integer> removed = cell.removeAllBut(List.of(i, j));
                             if (!removed.isEmpty()) {
                                 changed.add(cell);
-                                sb.append(String.format("Hidden pair (%s, %s) in %s and %s. Removed %s from %s%n", i, j, map.get(i).get(0).getPosition(), map.get(i).get(1).getPosition(), removed, cell.getPosition()));
+                                log(sb, "Hidden pair (%s, %s) in %s and %s. Removed %s from %s%n", i, j, map.get(i).get(0).getPosition(), map.get(i).get(1).getPosition(), removed, cell.getPosition());
                             }
                         }
                     }

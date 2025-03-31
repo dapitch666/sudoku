@@ -19,4 +19,12 @@ public interface SolvingTechnique {
     }
 
     int getCounter();
+
+    default void log(StringBuilder sb, String pattern, Object... args) {
+        sb.append(String.format(pattern, args));
+    }
+
+    default void log(StringBuilder sb, int i, String pattern, Object... args) {
+        sb.insert(i, String.format(pattern, args));
+    }
 }

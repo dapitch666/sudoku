@@ -39,7 +39,7 @@ public class ChuteRemotePairs implements SolvingTechnique {
                                     for (Cell cell : peers) {
                                         if (cell.removeCandidate(i)) {
                                             changed.add(cell);
-                                            sb.append(String.format("Chute remote pair %s in %s and %s. Removed %s from %s%n", remotePair, cell1.getPosition(), cell2.getPosition(), i, cell.getPosition()));
+                                            log(sb, "Chute remote pair %s in %s and %s. Removed %s from %s%n", remotePair, cell1.getPosition(), cell2.getPosition(), i, cell.getPosition());
                                         }
                                     }
                                 }

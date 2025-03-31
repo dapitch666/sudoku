@@ -12,7 +12,7 @@ public class YWings implements SolvingTechnique {
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
-        for (Cell key : grid.getCellsWithTwoCandidates()) {
+        for (Cell key : grid.getCellsWithNCandidates(2)) {
             List<Integer> keyCandidates = key.getCandidates();
             for (Cell cell1 : grid.getPeers(key)) {
                 if (cell1.getCandidateCount() != 2) {
@@ -28,7 +28,7 @@ public class YWings implements SolvingTechnique {
                             List<Cell> peers = Arrays.stream(grid.getPeers(cell1)).filter(p -> p.isPeer(cell2) && p != key).toList();
                             for (Cell peer : peers) {
                                 if (peer.removeCandidate(C)) {
-                                    sb.append(String.format("Y-Wing in %s, %s and %s, removed candidate %d from %s%n", key.getPosition(), cell1.getPosition(), cell2.getPosition(), C, peer.getPosition()));
+                                    log(sb, "Y-Wing in %s, %s and %s, removed candidate %d from %s%n", key.getPosition(), cell1.getPosition(), cell2.getPosition(), C, peer.getPosition());
                                     changed.add(peer);
                                 }
                             }

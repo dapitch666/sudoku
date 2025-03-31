@@ -5,7 +5,6 @@ import org.anne.sudoku.grader.Grid;
 import org.anne.sudoku.grader.UnitType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -25,8 +24,8 @@ public class BoxLineReduction implements SolvingTechnique {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    sb.append(String.format("Box-line reduction in %s: ", UnitType.ROW.toString(unitIndex)));
-                                    sb.append(String.format("removed %s from %s:%n", i, cell.getPosition()));
+                                    log(sb, "Box-line reduction in %s: ", UnitType.ROW.toString(unitIndex));
+                                    log(sb, "removed %s from %s:%n", i, cell.getPosition());
                                 }
                             }
                         }
@@ -35,8 +34,8 @@ public class BoxLineReduction implements SolvingTechnique {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    sb.append(String.format("Box-line reduction in %s: ", UnitType.COL.toString(unitIndex)));
-                                    sb.append(String.format("removed %s from %s:%n", i, cell.getPosition()));
+                                    log(sb, "Box-line reduction in %s: ", UnitType.COL.toString(unitIndex));
+                                    log(sb, "removed %s from %s:%n", i, cell.getPosition());
                                 }
                             }
                         }

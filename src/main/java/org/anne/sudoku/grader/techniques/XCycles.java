@@ -26,7 +26,7 @@ public class XCycles implements SolvingTechnique {
                     // Eliminate candidates based on the nice cycle
                     changedCells.addAll(eliminateCandidates(grid, cycle, sb));
                     if (!changedCells.isEmpty()) {
-                        sb.insert(0, String.format("X-Cycles of %d found on chain %s:%n", digit, cycle.cells.stream().map(Cell::getPosition).toList()));
+                        log(sb, 0,"X-Cycles of %d found on chain %s:%n", digit, cycle.cells.stream().map(Cell::getPosition).toList());
                         return changedCells;
                     }
                 }
@@ -73,7 +73,7 @@ public class XCycles implements SolvingTechnique {
                 if (!cycleCells.contains(peer) && peer.isCandidate(cycle.digit)) {
                     if (peer.removeCandidate(cycle.digit)) {
                         changedCells.add(peer);
-                        sb.append(String.format("%d removed from %s%n", cycle.digit, peer.getPosition()));
+                        log(sb, "%d removed from %s%n", cycle.digit, peer.getPosition());
                     }
                 }
             }

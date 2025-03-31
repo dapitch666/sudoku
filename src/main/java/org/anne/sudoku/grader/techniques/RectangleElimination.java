@@ -30,7 +30,7 @@ public class RectangleElimination implements SolvingTechnique {
                             if (oppositeBoxCellsWithCandidate.length != 0 && Arrays.stream(oppositeBoxCellsWithCandidate)
                                     .allMatch(cell -> cell.isPeer(wing1) || cell.isPeer(wing2))) {
                                 wing2.removeCandidate(candidate);
-                                sb.append(String.format("%s found in Hinge %s, wing1 %s and wing2 %s, we can remove %s as candidate in %s%n", candidate, hinge.getPosition(), wing1.getPosition(), wing2.getPosition(), candidate, wing2.getPosition()));
+                                log(sb, "%s found in Hinge %s, wing1 %s and wing2 %s, we can remove %s as candidate in %s%n", candidate, hinge.getPosition(), wing1.getPosition(), wing2.getPosition(), candidate, wing2.getPosition());
                                 incrementCounter(counter);
                                 return List.of(wing2);
                             }

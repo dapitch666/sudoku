@@ -41,10 +41,10 @@ public class SimpleColoring implements SolvingTechnique {
                     for (Cell c : chain.stream().filter(coloredCell -> coloredCell.color == cell.color).map(c -> c.cell).toList()) {
                         c.removeCandidate(digit);
                         changed.add(c);
-                        sb.append(String.format("%d removed from %s due to Simple Coloring Rule 1%n", digit, c.getPosition()));
+                        log(sb, "%d removed from %s due to Simple Coloring Rule 1%n", digit, c.getPosition());
                     }
                     incrementCounter(counter);
-                    sb.insert(0, String.format("Chain of %d: %s%n", digit, chain));
+                    log(sb, 0, "Chain of %d: %s%n", digit, chain);
                     return changed;
                 }
             }

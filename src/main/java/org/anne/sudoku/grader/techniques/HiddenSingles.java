@@ -5,7 +5,6 @@ import org.anne.sudoku.grader.Grid;
 import org.anne.sudoku.grader.UnitType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ public class HiddenSingles implements SolvingTechnique {
                     if (!removed.isEmpty()) {
                         changed.add(cell);
                         incrementCounter(counter);
-                        sb.append(String.format("%d found once at %s in %s, %s candidates removed%n", i, cell.getPosition(), unitType.toString(unitIndex), removed.size()));
+                        log(sb, "%d found once at %s in %s, %s candidates removed%n", i, cell.getPosition(), unitType.toString(unitIndex), removed.size());
                     }
                 }
             }

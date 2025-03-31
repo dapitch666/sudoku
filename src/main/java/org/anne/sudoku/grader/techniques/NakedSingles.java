@@ -15,7 +15,7 @@ public class NakedSingles implements SolvingTechnique {
         for (Cell cell : grid.getUnsolvedCells()) {
             if (cell.getCandidateCount() == 1) {
                 cell.setValue(cell.getFirstCandidate());
-                sb.append(String.format("Last candidate, %d, in %s changed to solution%n", cell.getValue(), cell.getPosition()));
+                log(sb, "Last candidate, %d, in %s changed to solution%n", cell.getValue(), cell.getPosition());
                 changed.add(cell);
                 incrementCounter(counter);
             }

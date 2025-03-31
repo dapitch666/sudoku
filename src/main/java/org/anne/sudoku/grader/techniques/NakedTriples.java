@@ -36,7 +36,7 @@ public class NakedTriples implements SolvingTechnique {
                                     }
                                     if (!removed.isEmpty()) {
                                         changed.add(cell);
-                                        sb.append(String.format("Naked triple %s in %s, on cells [%s, %s, %s]. Removed %s from %s%n", triple, unitType.toString(unitIndex), cells.get(i).getPosition(), cells.get(j).getPosition(), cells.get(k).getPosition(), removed, cell.getPosition()));
+                                        log(sb, "Naked triple %s in %s, on cells [%s, %s, %s]. Removed %s from %s%n", triple, unitType.toString(unitIndex), cells.get(i).getPosition(), cells.get(j).getPosition(), cells.get(k).getPosition(), removed, cell.getPosition());
                                     }
                                 }
                             }

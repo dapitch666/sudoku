@@ -34,7 +34,7 @@ public class HiddenTriples implements SolvingTechnique {
                                     List<Integer> removed = cell.removeAllBut(List.of(i, j, k));
                                     if (!removed.isEmpty()) {
                                         changed.add(cell);
-                                        sb.append(String.format("Hidden triple (%s, %s, %s) in %s. Removed %s from %s%n", i, j, k, triple.stream().map(Cell::getPosition).collect(Collectors.joining(", ")), removed, cell.getPosition()));
+                                        log(sb, "Hidden triple (%s, %s, %s) in %s. Removed %s from %s%n", i, j, k, triple.stream().map(Cell::getPosition).collect(Collectors.joining(", ")), removed, cell.getPosition());
                                     }
                                 }
                                 if (!changed.isEmpty()) {

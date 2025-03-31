@@ -36,7 +36,7 @@ public class NakedPairs implements SolvingTechnique {
                                 }
                                 if (!removed.isEmpty()) {
                                     changed.add(cell);
-                                    sb.append(String.format("Naked pair %s in %s, on cells [%s, %s]. Removed %s from %s%n", pair, unitType.toString(unitIndex), unit[i].getPosition(), unit[j].getPosition(), removed, cell.getPosition()));
+                                    log(sb, "Naked pair %s in %s, on cells [%s, %s]. Removed %s from %s%n", pair, unitType.toString(unitIndex), unit[i].getPosition(), unit[j].getPosition(), removed, cell.getPosition());
                                 }
                             }
                         }

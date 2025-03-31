@@ -24,8 +24,8 @@ public class PointingPairs implements SolvingTechnique {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    sb.append(String.format("%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.ROW.toString(map.get(i).getFirst().getRow())));
-                                    sb.append(String.format("removed %s from %s:%n", i, cell.getPosition()));
+                                    log(sb, "%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.ROW.toString(map.get(i).getFirst().getRow()));
+                                    log(sb, "removed %s from %s:%n", i, cell.getPosition());
                                 }
                             }
                         }
@@ -34,8 +34,8 @@ public class PointingPairs implements SolvingTechnique {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    sb.append(String.format("%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.COL.toString(map.get(i).getFirst().getCol())));
-                                    sb.append(String.format("removed %s from %s:%n", i, cell.getPosition()));
+                                    log(sb, "%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.COL.toString(map.get(i).getFirst().getCol()));
+                                    log(sb, "removed %s from %s:%n", i, cell.getPosition());
                                 }
                             }
                         }
@@ -44,8 +44,8 @@ public class PointingPairs implements SolvingTechnique {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    sb.append(String.format("%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.BOX.toString(map.get(i).getFirst().getBox())));
-                                    sb.append(String.format("removed %s from %s:%n", i, cell.getPosition()));
+                                    log(sb, "%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.BOX.toString(map.get(i).getFirst().getBox()));
+                                    log(sb, "removed %s from %s:%n", i, cell.getPosition());
                                 }
                             }
                         }
