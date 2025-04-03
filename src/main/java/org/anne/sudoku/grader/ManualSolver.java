@@ -29,14 +29,15 @@ public class ManualSolver {
                 new RectangleElimination(),
                 new SwordFish(),
                 new XyzWings(),
-                new BiValueUniversalGrave()//,
-                //new XCycles()
+                new BiValueUniversalGrave(),
+                new XCycles()
                 );
     }
 
     public static void main(String[] args) {
-        ManualSolver manualSolver = new ManualSolver("..1...7.6736.....55......82....78......52.......139...392...5..6.....137.5....4..");
-        // ManualSolver manualSolver = new ManualSolver(".3.6.9.2....28....1.......9......65372..6..91365......2.......7....16....1.5.7.4.");
+        // ManualSolver manualSolver = new ManualSolver(".4...58..7...1.9....3..71..4..7......5.9.8.4......2..8..95..7......2...5..41...9.");
+        // ManualSolver manualSolver = new ManualSolver(".........89.632..4..2.9.8...7....6..9....5..8..1....3...3.1.2..6..873.19.........");
+        ManualSolver manualSolver = new ManualSolver(".........89.632..4..2.9.8...7....6..9....5..8..1....3...3.1.2..6..873.19.........");
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));
         manualSolver.solve();
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));

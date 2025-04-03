@@ -11,10 +11,10 @@ public class SimpleColoring implements SolvingTechnique {
     public List<Cell> apply(Grid grid, StringBuilder sb) {
         for (int digit = 1; digit <= 9; digit++) {
             Map<Cell, List<Cell>> strongLinks = grid.findStrongLinks(digit);
-            ForestBuilder<Cell> forestBuilder = new ForestBuilder<>(strongLinks);
-            for (Tree<Cell> tree : forestBuilder.getTrees()) {
+            NetBuilder<Cell> netBuilder = new NetBuilder<>(strongLinks);
+            for (Chain<Cell> chain : netBuilder.getChains()) {
                 List<ColoredCell> cells = new ArrayList<>();
-                colorTree(tree.getRoot(), cells, 1);
+                colorNet(chain.getRoot(), cells, 1);
 
                 var changed = applyRule1(digit, cells, sb);
                 if (!changed.isEmpty()) return changed;
@@ -25,11 +25,11 @@ public class SimpleColoring implements SolvingTechnique {
         return List.of();
     }
 
-    private void colorTree(Tree.TreeNode<Cell> node, List<ColoredCell> cells, int color) {
+    private void colorNet(Chain.Node<Cell> node, List<ColoredCell> cells, int color) {
         cells.add(new ColoredCell(node.data(), color));
         int nextColor = (color == 1) ? 2 : 1;
-        for (Tree.TreeNode<Cell> child : node.getChildren()) {
-            colorTree(child, cells, nextColor);
+        for (Chain.Node<Cell> child : node.getChildren()) {
+            colorNet(child, cells, nextColor);
         }
     }
 

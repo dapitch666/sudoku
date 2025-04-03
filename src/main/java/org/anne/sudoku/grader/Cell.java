@@ -90,6 +90,14 @@ public class Cell {
         return removed;
     }
 
+    public List<Integer> removeAllBut(int i) {
+        List<Integer> removed = candidates.stream().filter(c -> c != i).toList();
+        for (int candidate : removed) {
+            removeCandidate(candidate);
+        }
+        return removed;
+    }
+
     public boolean isSolved() {
         return value != 0;
     }

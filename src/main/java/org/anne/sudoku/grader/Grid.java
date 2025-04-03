@@ -94,7 +94,35 @@ public class Grid {
         return Arrays.stream(cells).filter(c -> c.isCandidate(digit)).toArray(Cell[]::new);
     }
 
-    public Map<Cell, List<Cell>> findStrongLinks(int digit) {
+    public boolean isStrongLink(Cell cell1, Cell cell2, int digit) {
+        if (!cell1.isPeer(cell2)) {
+            return false;
+        }
+        boolean isStrong = false;
+        for (UnitType unitType : cell1.getCommonUnitType(cell2)) {
+            int unitIndex = switch (unitType) {
+                case ROW -> cell1.getRow();
+                case COL -> cell1.getCol();
+                case BOX -> cell1.getBox();
+            };
+            if (getCellsInUnitWithCandidate(digit, unitType, unitIndex).length == 2) {
+                isStrong = true;
+            }
+        }
+        return isStrong;
+    }
+
+    public List<Cell> getCommonPeersWithCandidate(Cell cell1, Cell cell2, int digit) {
+        List<Cell> commonPeers = new ArrayList<>();
+        for (Cell peer : getPeers(cell1)) {
+            if (peer.isPeer(cell2) && peer.isCandidate(digit)) {
+                commonPeers.add(peer);
+            }
+        }
+        return commonPeers;
+    }
+
+/*    public Map<Cell, List<Cell>> findStrongLinks(int digit) {
         Map<Cell, List<Cell>> strongLinks = new HashMap<>();
 
         for (UnitType unitType : UnitType.values()) {
@@ -115,124 +143,40 @@ public class Grid {
 
         return strongLinks;
     }
+*/
+    public Map<Cell, List<Cell>> findStrongLinks(int digit) {
+        Map<Cell, List<Cell>> strongLinks = new HashMap<>();
+        for (Cell cell : getCellsWithCandidate(digit)) {
+            List<Cell> peers = Arrays.stream(getPeers(cell)).filter(c -> c.isCandidate(digit) && isStrongLink(cell, c, digit)).toList();
+            if (!peers.isEmpty()) {
+                strongLinks.put(cell, peers);
+            }
+        }
+        return strongLinks;
+    }
 
     public Map<Cell, List<Cell>> findWeakLinks(int digit) {
         Map<Cell, List<Cell>> weakLinks = new HashMap<>();
-
-        // Check rows, columns, and boxes for weak links
-        for (UnitType unitType : UnitType.values()) {
-            for (int i = 0; i < 9; i++) {
-                Cell[] candidates = getCellsInUnitWithCandidate(digit, unitType, i);
-                if (candidates.length > 2) {
-                    for (int j = 0; j < candidates.length; j++) {
-                        for (int k = j + 1; k < candidates.length; k++) {
-                            weakLinks.computeIfAbsent(candidates[j], _ -> new ArrayList<>()).add(candidates[k]);
-                            weakLinks.computeIfAbsent(candidates[k], _ -> new ArrayList<>()).add(candidates[j]);
-                        }
-                    }
-                }
+        for (Cell cell : getCellsWithCandidate(digit)) {
+            List<Cell> peers = Arrays.stream(getPeers(cell)).filter(c -> c.isCandidate(digit)).toList();
+            if (!peers.isEmpty()) {
+                weakLinks.put(cell, peers);
             }
         }
 
         return weakLinks;
     }
 
-
-    private boolean isSubChain(List<Cell> potentialSubChain, List<Cell> longerChain) {
-        // Check if all cells in the potential subchain appear in sequence in the longer chain
-        if (potentialSubChain.size() >= longerChain.size()) {
-            return false;
+    public Set<Cycle<Cell>> getCycles(int digit) {
+        Graph<Cell> graph = new Graph<>();
+        for (Cell cell : getCellsWithCandidate(digit)) {
+            graph.addNode(
+                    cell,
+                    Arrays.stream(getPeers(cell)).filter(c -> c.isCandidate(digit) && isStrongLink(cell, c, digit)).toList(),
+                    Arrays.stream(getPeers(cell)).filter(c -> c.isCandidate(digit)).toList()
+            );
         }
-
-        for (int i = 0; i <= longerChain.size() - potentialSubChain.size(); i++) {
-            boolean matches = true;
-            for (int j = 0; j < potentialSubChain.size(); j++) {
-                if (!potentialSubChain.get(j).equals(longerChain.get(i + j))) {
-                    matches = false;
-                    break;
-                }
-            }
-            if (matches) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private List<List<Cell>> removeSubChains(List<List<Cell>> chains) {
-        List<List<Cell>> uniqueChains = new ArrayList<>(chains);
-
-        for (int i = uniqueChains.size() - 1; i >= 0; i--) {
-            List<Cell> currentChain = uniqueChains.get(i);
-            for (int j = 0; j < uniqueChains.size(); j++) {
-                if (i != j && isSubChain(currentChain, uniqueChains.get(j))) {
-                    uniqueChains.remove(i);
-                    break;
-                }
-            }
-        }
-        return uniqueChains;
-    }
-
-    // TODO: Review this as we need a tree, not a chain.
-    public List<List<Cell>> findChains(int digit) {
-        Map<Cell, List<Cell>> strongLinks = findStrongLinks(digit);
-        List<List<Cell>> chains = new ArrayList<>();
-        Set<Cell> usedInChains = new HashSet<>();
-
-        for (Cell start : strongLinks.keySet()) {
-            if (!usedInChains.contains(start)) {
-                List<Cell> forwardChain = buildChainFromStart(start, strongLinks, true);
-                List<Cell> backwardChain = buildChainFromStart(start, strongLinks, false);
-
-                List<Cell> chain = forwardChain.size() >= backwardChain.size() ? forwardChain : backwardChain;
-
-                if (chain.size() > 1) {
-                    chains.add(chain);
-                    usedInChains.addAll(chain);
-                }
-            }
-        }
-
-        return removeSubChains(chains);
-    }
-
-    private List<Cell> buildChainFromStart(Cell start, Map<Cell, List<Cell>> strongLinks, boolean forward) {
-        List<Cell> chain = new ArrayList<>();
-        Set<Cell> visited = new HashSet<>();
-        Cell current = start;
-        chain.add(current);
-        visited.add(current);
-
-        while (true) {
-            List<Cell> linkedCells = strongLinks.get(current);
-            Cell next = null;
-
-            // When going backward, try cells in reverse order
-            if (!forward) {
-                Collections.reverse(linkedCells);
-            }
-
-            for (Cell linked : linkedCells) {
-                if (!visited.contains(linked)) {
-                    next = linked;
-                    break;
-                } else if (linked == start && chain.size() > 2) {
-                    // Found a loop back to start
-                    return chain;
-                }
-            }
-
-            if (next == null) {
-                break;
-            }
-
-            chain.add(next);
-            visited.add(next);
-            current = next;
-        }
-
-        return chain;
+        return graph.findAllCycles();
     }
 
     /* ************************************************** */
@@ -358,5 +302,29 @@ public class Grid {
             sb.append(cell.candidates.contains(candidate) ? candidate : ".");
         }
         return sb.toString();
+    }
+
+    public List<Cell> findStrongLinks(Cell current, int digit) {
+        List<Cell> strongLinks = new ArrayList<>();
+        // A strong link exists when two cells are the only ones
+        // that can contain a digit in a unit (row, column, or box)
+        for (Cell peer : getPeers(current)) {
+            if (peer.isCandidate(digit) && isStrongLink(current, peer, digit)) {
+                strongLinks.add(peer);
+            }
+        }
+        return strongLinks;
+    }
+
+    public List<Cell> findWeakLinks(Cell current, int digit) {
+        // A weak link exists between cells that see each other
+        // and share the same candidate
+        List<Cell> weakLinks = new ArrayList<>();
+        for (Cell peer : getPeers(current)) {
+            if (peer.isCandidate(digit)) {
+                weakLinks.add(peer);
+            }
+        }
+        return weakLinks;
     }
 }
