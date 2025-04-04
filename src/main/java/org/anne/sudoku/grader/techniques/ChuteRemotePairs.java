@@ -6,8 +6,10 @@ import org.anne.sudoku.grader.UnitType;
 
 import java.util.*;
 
-public class ChuteRemotePairs implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class ChuteRemotePairs extends SolvingTechnique {
+    public ChuteRemotePairs() {
+        super("Chute Remote Pairs");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -49,12 +51,7 @@ public class ChuteRemotePairs implements SolvingTechnique {
                 }
             }
         }
-        if (!changed.isEmpty()) incrementCounter(counter);
+        if (!changed.isEmpty()) incrementCounter();
         return changed;
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

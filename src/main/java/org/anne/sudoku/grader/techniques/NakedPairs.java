@@ -7,8 +7,10 @@ import org.anne.sudoku.grader.UnitType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NakedPairs implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class NakedPairs extends SolvingTechnique {
+    public NakedPairs() {
+        super("Naked Pairs");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -41,17 +43,12 @@ public class NakedPairs implements SolvingTechnique {
                             }
                         }
                         if (!changed.isEmpty()) {
-                            incrementCounter(counter);
+                            incrementCounter();
                         }
                     }
                 }
             }
         }
         return changed;
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

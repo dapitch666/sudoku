@@ -4,9 +4,11 @@ import org.anne.sudoku.grader.*;
 
 import java.util.*;
 
-public class XCycles implements SolvingTechnique {
-    private final int[] counter = new int[1];
-
+public class XCycles extends SolvingTechnique {
+    public XCycles() {
+        super("X-Cycles");
+    }
+    
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
         for (int digit = 1; digit <= 9; digit++) {
@@ -26,7 +28,7 @@ public class XCycles implements SolvingTechnique {
                     case DISCONTINUOUS_WEAK -> applyRule3(digit, cycle, sb);
                  };
                 if (!changed.isEmpty()) {
-                    incrementCounter(counter);
+                    incrementCounter();
                     log(sb, 0, "%s on %d (length %d) detected in %s:%n", cycleType, digit, cycle.size(), cycle.stream().map(Cell::toString).toList());
                     return changed;
                 }
@@ -96,10 +98,5 @@ public class XCycles implements SolvingTechnique {
                 case DISCONTINUOUS_WEAK -> "Discontinuous Alternating Nice Loop (Weak)";
             };
         }
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

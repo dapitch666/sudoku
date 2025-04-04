@@ -6,8 +6,10 @@ import org.anne.sudoku.grader.UnitType;
 
 import java.util.*;
 
-public class XWings implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class XWings extends SolvingTechnique {
+    public XWings() {
+        super("X-Wings");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -44,7 +46,7 @@ public class XWings implements SolvingTechnique {
                                 }
                             }
                             if (!changed.isEmpty()) {
-                                incrementCounter(counter);
+                                incrementCounter();
                                 return changed;
                             }
                         }
@@ -53,10 +55,5 @@ public class XWings implements SolvingTechnique {
             }
         }
         return List.of();
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

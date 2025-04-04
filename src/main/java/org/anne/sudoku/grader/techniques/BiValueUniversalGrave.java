@@ -6,8 +6,10 @@ import org.anne.sudoku.grader.UnitType;
 
 import java.util.List;
 
-public class BiValueUniversalGrave implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class BiValueUniversalGrave extends SolvingTechnique {
+    public BiValueUniversalGrave() {
+        super("BiValue Universal Grave");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -23,17 +25,11 @@ public class BiValueUniversalGrave implements SolvingTechnique {
                 || grid.getCellsInUnitWithCandidate(digit, UnitType.BOX, cell.getBox()).length > 2) {
                     cell.removeAllBut(List.of(digit));
                     log(sb, "BUG found in %s. %d must be the solution%n", cell, digit);
-                    incrementCounter(counter);
+                    incrementCounter();
                     return List.of(cell);
                 }
             }
         }
         return List.of();
     }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
-    }
-
 }

@@ -6,8 +6,10 @@ import org.anne.sudoku.grader.UnitType;
 
 import java.util.*;
 
-public class NakedTriples implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class NakedTriples extends SolvingTechnique {
+    public NakedTriples() {
+        super("Naked Triples");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -41,7 +43,7 @@ public class NakedTriples implements SolvingTechnique {
                                 }
                             }
                             if (!changed.isEmpty()) {
-                                incrementCounter(counter);
+                                incrementCounter();
                             }
                         }
                     }
@@ -49,10 +51,5 @@ public class NakedTriples implements SolvingTechnique {
             }
         }
         return changed;
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

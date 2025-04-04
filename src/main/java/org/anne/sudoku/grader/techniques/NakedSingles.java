@@ -6,8 +6,10 @@ import org.anne.sudoku.grader.Grid;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NakedSingles implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class NakedSingles extends SolvingTechnique {
+    public NakedSingles() {
+        super("Naked Singles");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -17,14 +19,9 @@ public class NakedSingles implements SolvingTechnique {
                 cell.setValue(cell.getFirstCandidate());
                 log(sb, "Last candidate, %d, in %s changed to solution%n", cell.getValue(), cell);
                 changed.add(cell);
-                incrementCounter(counter);
+                incrementCounter();
             }
         }
         return changed;
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

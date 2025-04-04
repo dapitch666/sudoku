@@ -6,8 +6,10 @@ import org.anne.sudoku.grader.Grid;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XyzWings implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class XyzWings extends SolvingTechnique {
+    public XyzWings() {
+        super("XYZ-Wings");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -41,17 +43,12 @@ public class XyzWings implements SolvingTechnique {
                         }
                     }
                     if (!changed.isEmpty()) {
-                        incrementCounter(counter);
+                        incrementCounter();
                         return changed;
                     }
                 }
             }
         }
         return List.of();
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

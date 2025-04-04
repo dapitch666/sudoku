@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SwordFish implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class SwordFish extends SolvingTechnique {
+    public SwordFish() {
+        super("Sword Fish");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -49,7 +51,7 @@ public class SwordFish implements SolvingTechnique {
                                         }
                                 }
                                 if (!changed.isEmpty()) {
-                                    incrementCounter(counter);
+                                    incrementCounter();
                                     return changed;
                                 }
                             }
@@ -59,10 +61,5 @@ public class SwordFish implements SolvingTechnique {
             }
         }
         return List.of();
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

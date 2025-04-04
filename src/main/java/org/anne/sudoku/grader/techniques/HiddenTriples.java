@@ -7,8 +7,10 @@ import org.anne.sudoku.grader.UnitType;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class HiddenTriples implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class HiddenTriples extends SolvingTechnique {
+    public HiddenTriples() {
+        super("Hidden Triples");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -38,7 +40,7 @@ public class HiddenTriples implements SolvingTechnique {
                                     }
                                 }
                                 if (!changed.isEmpty()) {
-                                    incrementCounter(counter);
+                                    incrementCounter();
                                     return changed;
                                 }
                             }
@@ -48,10 +50,5 @@ public class HiddenTriples implements SolvingTechnique {
             }
         }
         return List.of();
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

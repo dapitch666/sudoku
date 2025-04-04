@@ -8,8 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class XYChains implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class XYChains extends SolvingTechnique {
+    public XYChains() {
+        super("XY-Chains");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -31,7 +33,7 @@ public class XYChains implements SolvingTechnique {
                             c.removeCandidate(digit);
                             log(sb, "%d removed from %s%n", digit, c);
                         }
-                        incrementCounter(counter);
+                        incrementCounter();
                         return peers;
                     }
                 }
@@ -60,10 +62,5 @@ public class XYChains implements SolvingTechnique {
                 currentChain.removeLast();
             }
         }
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class YWings implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class YWings extends SolvingTechnique {
+    public YWings() {
+        super("Y-Wings");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -35,17 +37,12 @@ public class YWings implements SolvingTechnique {
                         }
                     }
                     if (!changed.isEmpty()) {
-                        incrementCounter(counter);
+                        incrementCounter();
                         return changed;
                     }
                 }
             }
         }
         return List.of();
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

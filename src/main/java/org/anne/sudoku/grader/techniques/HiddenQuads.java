@@ -7,8 +7,10 @@ import org.anne.sudoku.grader.UnitType;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class HiddenQuads implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class HiddenQuads extends SolvingTechnique {
+    public HiddenQuads() {
+        super("Hidden Quads");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -44,7 +46,7 @@ public class HiddenQuads implements SolvingTechnique {
                                         log(sb, "Hidden quad (%s, %s, %s, %s) in %s. Removed %s from %s%n", i, j, k, l, quad.stream().map(Cell::toString).collect(Collectors.joining(", ")), removed, cell);
                                     }
                                 }
-                                if (!changed.isEmpty()) incrementCounter(counter);
+                                if (!changed.isEmpty()) incrementCounter();
                             }
                         }
                     }
@@ -52,10 +54,5 @@ public class HiddenQuads implements SolvingTechnique {
             }
         }
         return changed;
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

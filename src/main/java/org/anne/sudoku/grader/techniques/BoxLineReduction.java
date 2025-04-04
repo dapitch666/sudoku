@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class BoxLineReduction implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class BoxLineReduction extends SolvingTechnique {
+    public BoxLineReduction() {
+        super("Box-Line Reduction");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -41,16 +43,11 @@ public class BoxLineReduction implements SolvingTechnique {
                         }
                     }
                     if (!changed.isEmpty()) {
-                        incrementCounter(counter);
+                        incrementCounter();
                     }
                 }
             }
         }
         return changed;
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

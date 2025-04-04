@@ -8,8 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class RectangleElimination implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class RectangleElimination extends SolvingTechnique {
+    public RectangleElimination() {
+        super("Rectangle Elimination");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -31,7 +33,7 @@ public class RectangleElimination implements SolvingTechnique {
                                     .allMatch(cell -> cell.isPeer(wing1) || cell.isPeer(wing2))) {
                                 wing2.removeCandidate(candidate);
                                 log(sb, "%s found in Hinge %s, wing1 %s and wing2 %s, we can remove %s as candidate in %s%n", candidate, hinge, wing1, wing2, candidate, wing2);
-                                incrementCounter(counter);
+                                incrementCounter();
                                 return List.of(wing2);
                             }
                         }
@@ -40,10 +42,5 @@ public class RectangleElimination implements SolvingTechnique {
             }
         }
         return List.of();
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

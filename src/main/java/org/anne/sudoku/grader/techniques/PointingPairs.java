@@ -6,8 +6,10 @@ import org.anne.sudoku.grader.UnitType;
 
 import java.util.*;
 
-public class PointingPairs implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class PointingPairs extends SolvingTechnique {
+    public PointingPairs() {
+        super("Pointing Pairs");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -54,13 +56,8 @@ public class PointingPairs implements SolvingTechnique {
             }
         }
         if (!changed.isEmpty()) {
-            incrementCounter(counter);
+            incrementCounter();
         }
         return changed;
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

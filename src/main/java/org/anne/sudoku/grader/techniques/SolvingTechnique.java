@@ -5,30 +5,38 @@ import org.anne.sudoku.grader.Grid;
 
 import java.util.List;
 
-public interface SolvingTechnique {
-    List<Cell> apply(Grid grid, StringBuilder sb);
+public abstract class SolvingTechnique {
+    String name;
+    int counter;
 
-    default void printCounters() {
-        System.out.println(getName() + ": " + getCounter());
+    public SolvingTechnique(String name) {
+        this.name = name;
+        this.counter = 0;
     }
 
-    default void incrementCounter(int[] counter) {
-        counter[0]++;
+    public abstract List<Cell> apply(Grid grid, StringBuilder sb);
+
+    public String getName() {
+        return this.name;
     }
 
-    default String getName() {
-        return this.getClass().getSimpleName()
-                .replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2")
-                .replaceAll("(\\p{Lu})(\\p{Lu})", "$1-$2");
+    public int getCounter() {
+        return counter;
     }
 
-    int getCounter();
+    public void printCounters() {
+        System.out.println(this.name + ": " + this.counter);
+    }
 
-    default void log(StringBuilder sb, String pattern, Object... args) {
+    void incrementCounter() {
+        counter++;
+    }
+
+    void log(StringBuilder sb, String pattern, Object... args) {
         sb.append(String.format(pattern, args));
     }
 
-    default void log(StringBuilder sb, int i, String pattern, Object... args) {
+    void log(StringBuilder sb, int i, String pattern, Object... args) {
         sb.insert(i, String.format(pattern, args));
     }
 }

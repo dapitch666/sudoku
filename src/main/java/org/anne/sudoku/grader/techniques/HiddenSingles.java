@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HiddenSingles implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class HiddenSingles extends SolvingTechnique {
+    public HiddenSingles() {
+        super("Hidden Singles");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -22,17 +24,12 @@ public class HiddenSingles implements SolvingTechnique {
                     List<Integer> removed = cell.removeAllBut(List.of(i));
                     if (!removed.isEmpty()) {
                         changed.add(cell);
-                        incrementCounter(counter);
+                        incrementCounter();
                         log(sb, "%d found once at %s in %s, %s candidates removed%n", i, cell, unitType.toString(unitIndex), removed.size());
                     }
                 }
             }
         }
         return changed;
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

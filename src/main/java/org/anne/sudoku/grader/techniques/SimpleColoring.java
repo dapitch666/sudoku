@@ -4,8 +4,10 @@ import org.anne.sudoku.grader.*;
 
 import java.util.*;
 
-public class SimpleColoring implements SolvingTechnique {
-    private final int[] counter = new int[1];
+public class SimpleColoring extends SolvingTechnique {
+    public SimpleColoring() {
+        super("Simple Coloring");
+    }
 
     @Override
     public List<Cell> apply(Grid grid, StringBuilder sb) {
@@ -43,7 +45,7 @@ public class SimpleColoring implements SolvingTechnique {
                         changed.add(c);
                         log(sb, "%d removed from %s due to Simple Coloring Rule 1%n", digit, c);
                     }
-                    incrementCounter(counter);
+                    incrementCounter();
                     log(sb, 0, "Chain of %d: %s%n", digit, chain);
                     return changed;
                 }
@@ -65,7 +67,7 @@ public class SimpleColoring implements SolvingTechnique {
             }
         }
         if (!changed.isEmpty()) {
-            incrementCounter(counter);
+            incrementCounter();
             sb.insert(0, String.format("Chain of %d: %s%n", digit, chain));
         }
         return changed;
@@ -76,10 +78,5 @@ public class SimpleColoring implements SolvingTechnique {
         public String toString() {
             return cell.toString();
         }
-    }
-
-    @Override
-    public int getCounter() {
-        return counter[0];
     }
 }

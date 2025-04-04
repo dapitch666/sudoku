@@ -126,28 +126,28 @@ class ManualSolverTest {
     void xyzWingsTest1() {
         String puzzle = ".72...68....7.....5...16.......281..2..371..6..456.......13...4.....7....15...89.";
         String solved = "472953681961784325583216947657428139298371456134569278829135764346897512715642893";
-        runTest(puzzle, solved, new String[]{"Xyz Wings"}, new int[]{1}, false);
+        runTest(puzzle, solved, new String[]{"XYZ-Wings"}, new int[]{1}, false);
     }
 
     @Test
     void xyzWingsTest2() {
         String puzzle = "...1...........98.7.5.6231.1.9..74.3.........8.72..1.5.9174.8.2.53...........1...";
         String solved = "964183527312574986785962314129857463536419278847236195691745832253698741478321659";
-        runTest(puzzle, solved, new String[]{"Xyz Wings"}, new int[]{1}, false);
+        runTest(puzzle, solved, new String[]{"XYZ-Wings"}, new int[]{1}, false);
     }
 
     @Test
     void biValueUniversalGraveTest1() {
         String puzzle = "..1...7.6736.....55......82....78......52.......139...392...5..6.....137.5....4..";
         String solved = "821953746736842915549761382415678293963524871278139654392417568684295137157386429";
-        runTest(puzzle, solved, new String[]{"Bi Value Universal Grave"}, new int[]{1}, false);
+        runTest(puzzle, solved, new String[]{"BiValue Universal Grave"}, new int[]{1}, false);
     }
 
     @Test
     void biValueUniversalGraveTest2() {
         String puzzle = "2..4..5.1..1.38.9..3....7.8.7...2..3.6..9...5.4......9..4....6.62.3..8..81..47...";
         String solved = "289476531751238496436915728975182643362794185148563279594821367627359814813647952";
-        runTest(puzzle, solved, new String[]{"Bi Value Universal Grave"}, new int[]{1}, false);
+        runTest(puzzle, solved, new String[]{"BiValue Universal Grave"}, new int[]{1}, false);
     }
 
     @Disabled // Need Hidden Unique Rectangle and WXYZ Wing
@@ -162,14 +162,14 @@ class ManualSolverTest {
     void xCyclesTest2() {
         String puzzle = ".......2...5.8.4..4..1..8...9...2....37...56....97......4..86.5..6.4.7...8.......";
         String solved = "819457326725683491463129857698532174237814569541976238374298615956341782182765943";
-        runTest(puzzle, solved, new String[]{"X-Cycles", "X-YChains"}, new int[]{3, 1}, false);
+        runTest(puzzle, solved, new String[]{"X-Cycles", "XY-Chains"}, new int[]{3, 1}, false);
     }
 
     @Test
     void xCyclesTest3() {
         String puzzle = ".4...58..7...1.9....3..71..4..7......5.9.8.4......2..8..95..7......2...5..41...9.";
         String solved = "142695873765813924893247156428751639351968247976432518239584761617329485584176392";
-        runTest(puzzle, solved, new String[]{"X-Cycles", "X-YChains"}, new int[]{1, 1}, false);
+        runTest(puzzle, solved, new String[]{"X-Cycles", "XY-Chains"}, new int[]{1, 1}, false);
     }
 
     @Test
@@ -190,35 +190,35 @@ class ManualSolverTest {
     void xyChainsTest1() {
         String puzzle = ".8.1.3.7............14.8.2.57...1.39...6.9...92.8...51.3.9.52............1.7.2.6.";
         String solved = "684123975392576148751498326578241639143659782926837451837965214265314897419782563";
-        runTest(puzzle, solved, new String[]{"X-YChains"}, false);
+        runTest(puzzle, solved, new String[]{"XY-Chains"}, false);
     }
 
     @Test
     void xyChainsTest2() {
         String puzzle = "..2...376.1..3.5.........9.9..85...1...3.4...2...97..3.8.........3.4..6.147...2..";
         String solved = "892415376416739582375682194934856721761324958258197643689273415523941867147568239";
-        runTest(puzzle, solved, new String[]{"X-YChains"}, false);
+        runTest(puzzle, solved, new String[]{"XY-Chains"}, false);
     }
 
     @Test
     void xyChainsTest3() {
         String puzzle = ".3..7.45..728...9....91..6....5.....3.......7.....6....8..21....5...924..29.6..3.";
         String solved = "931672458672854193845913762298537614364198527517246389486321975153789246729465831";
-        runTest(puzzle, solved, new String[]{"X-YChains"}, false);
+        runTest(puzzle, solved, new String[]{"XY-Chains"}, false);
     }
 
     @Test
     void xyChainsTest4() {
         String puzzle = ".938..1...8.5.143..7..........2.5.8...5.6.2...6.1.9..........5..583.6.2...9..231.";
         String solved = "593847162286591437174623895417235689935468271862179543321984756758316924649752318";
-        runTest(puzzle, solved, new String[]{"X-YChains"}, false);
+        runTest(puzzle, solved, new String[]{"XY-Chains"}, false);
     }
 
     @Test
     void xyChainsTest5() {
         String puzzle = "..3..1...8.........51..9.6..8....29....7...8.2...4.5.36..9.......2.84...41..5.6..";
         String solved = "923861457846375921751429368187536294534792186269148573675913842392684715418257639";
-        runTest(puzzle, solved, new String[]{"X-YChains"}, false);
+        runTest(puzzle, solved, new String[]{"XY-Chains"}, false);
     }
 
 
