@@ -50,7 +50,8 @@ public class ManualSolver {
         StringBuilder sb = new StringBuilder();
         do {
             if (grid.isSolved()) {
-                printCounters();
+                System.out.println();
+                techniques.forEach(SolvingTechnique::printCounters);
                 break;
             }
             changed = false;
@@ -77,13 +78,6 @@ public class ManualSolver {
                 break;
             }
         } while (changed);
-    }
-
-    private void printCounters() {
-        System.out.println();
-        for (SolvingTechnique technique : techniques) {
-            System.out.println(technique.getName() + ": " + technique.getCounter());
-        }
     }
 
     public int getCounter(String techniqueName) {

@@ -95,8 +95,8 @@ public class Grid {
     }
 
 
-    public Cell[] getBiValueCellsWithCandidate(int digit) {
-        return Arrays.stream(cells).filter(c -> c.isCandidate(digit) && c.getCandidateCount() == 2).toArray(Cell[]::new);
+    public Cell[] getBiValueCells() {
+        return Arrays.stream(cells).filter(Cell::isBiValue).toArray(Cell[]::new);
     }
 
     public boolean isStrongLink(Cell cell1, Cell cell2, int digit) {
