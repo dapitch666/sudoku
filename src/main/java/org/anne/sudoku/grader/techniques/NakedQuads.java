@@ -38,7 +38,7 @@ public class NakedQuads implements SolvingTechnique {
                                         }
                                         if (!removed.isEmpty()) {
                                             changed.add(cell);
-                                            log(sb, "Naked quad in %s, %s, %s and %s. Removed %s from %s%n", cells.get(i).getPosition(), cells.get(j).getPosition(), cells.get(k).getPosition(), cells.get(l).getPosition(), removed, cell.getPosition());
+                                            log(sb, "Naked quad in %s, %s, %s and %s. Removed %s from %s%n", cells.get(i), cells.get(j), cells.get(k), cells.get(l), removed, cell);
                                         }
                                     }
                                 }

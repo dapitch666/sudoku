@@ -41,7 +41,7 @@ public class SimpleColoring implements SolvingTechnique {
                     for (Cell c : chain.stream().filter(coloredCell -> coloredCell.color == cell.color).map(c -> c.cell).toList()) {
                         c.removeCandidate(digit);
                         changed.add(c);
-                        log(sb, "%d removed from %s due to Simple Coloring Rule 1%n", digit, c.getPosition());
+                        log(sb, "%d removed from %s due to Simple Coloring Rule 1%n", digit, c);
                     }
                     incrementCounter(counter);
                     log(sb, 0, "Chain of %d: %s%n", digit, chain);
@@ -61,7 +61,7 @@ public class SimpleColoring implements SolvingTechnique {
             if (color1.stream().anyMatch(c -> c.isPeer(cell)) && color2.stream().anyMatch(c -> c.isPeer(cell))) {
                 cell.removeCandidate(digit);
                 changed.add(cell);
-                sb.append(String.format("%d removed from %s due to Simple Coloring Rule 2%n", digit, cell.getPosition()));
+                sb.append(String.format("%d removed from %s due to Simple Coloring Rule 2%n", digit, cell));
             }
         }
         if (!changed.isEmpty()) {
@@ -71,10 +71,10 @@ public class SimpleColoring implements SolvingTechnique {
         return changed;
     }
 
-    record ColoredCell(Cell cell, int color) {
+    record ColoredCell(Cell cell, int color) { // TODO: make this a class extending Cell
         @Override
         public String toString() {
-            return cell().getPosition();
+            return cell.toString();
         }
     }
 

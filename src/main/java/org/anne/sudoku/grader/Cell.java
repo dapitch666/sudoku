@@ -9,17 +9,14 @@ public class Cell {
     int box;
     int value;
     List<Integer> candidates;
-    String position;
     boolean justSolved = false;
 
     public Cell(int row, int col) {
-        String LETTERS = "ABCDEFGHJ";
         this.row = row;
         this.col = col;
         this.box = (row / 3) * 3 + col / 3;
         this.value = 0;
         this.candidates = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
-        this.position = String.format("%s%s", LETTERS.charAt(row), col + 1);
     }
 
     public Cell(int row, int col, int value) {
@@ -47,10 +44,6 @@ public class Cell {
 
     public List<Integer> getCandidates() {
         return candidates;
-    }
-
-    public String getPosition() {
-        return position;
     }
 
     public void setValue(Integer value) {
@@ -116,6 +109,11 @@ public class Cell {
 
     @Override
     public String toString() {
-        return this.position;
+        String LETTERS = "ABCDEFGHJ";
+        return String.format("%s%s", LETTERS.charAt(row), col + 1);
+    }
+
+    public boolean isBiValue() {
+        return candidates.size() == 2;
     }
 }

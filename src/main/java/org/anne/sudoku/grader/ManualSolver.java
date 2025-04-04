@@ -30,14 +30,15 @@ public class ManualSolver {
                 new SwordFish(),
                 new XyzWings(),
                 new BiValueUniversalGrave(),
-                new XCycles()
+                new XCycles(),
+                new XYChains()
                 );
     }
 
     public static void main(String[] args) {
         // ManualSolver manualSolver = new ManualSolver(".4...58..7...1.9....3..71..4..7......5.9.8.4......2..8..95..7......2...5..41...9.");
         // ManualSolver manualSolver = new ManualSolver(".........89.632..4..2.9.8...7....6..9....5..8..1....3...3.1.2..6..873.19.........");
-        ManualSolver manualSolver = new ManualSolver(".........89.632..4..2.9.8...7....6..9....5..8..1....3...3.1.2..6..873.19.........");
+        ManualSolver manualSolver = new ManualSolver(".3..7.45..728...9....91..6....5.....3.......7.....6....8..21....5...924..29.6..3.");
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));
         manualSolver.solve();
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));
@@ -67,7 +68,7 @@ public class ManualSolver {
                 for (Cell cell : changedCells) {
                     if (cell.getCandidateCount() == 1) {
                         cell.setValue(cell.getFirstCandidate());
-                        sb.append(String.format("Last candidate, %d, in %s changed to solution%n", cell.getValue(), cell.getPosition()));
+                        sb.append(String.format("Last candidate, %d, in %s changed to solution%n", cell.getValue(), cell));
                     }
                 }
                 System.out.println(sb);

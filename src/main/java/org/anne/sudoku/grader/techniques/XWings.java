@@ -39,7 +39,7 @@ public class XWings implements SolvingTechnique {
                                     }
                                     if (!removed.isEmpty()) {
                                         changed.add(cell);
-                                        log(sb, "X-Wing %d in %s. Removed %d from %s%n", i, xWing.stream().map(Cell::getPosition).toList(), i, cell.getPosition());
+                                        log(sb, "X-Wing %d in %s. Removed %d from %s%n", i, xWing.stream().map(Cell::toString).toList(), i, cell);
                                     }
                                 }
                             }

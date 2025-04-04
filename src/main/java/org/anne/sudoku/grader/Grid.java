@@ -94,6 +94,11 @@ public class Grid {
         return Arrays.stream(cells).filter(c -> c.isCandidate(digit)).toArray(Cell[]::new);
     }
 
+
+    public Cell[] getBiValueCellsWithCandidate(int digit) {
+        return Arrays.stream(cells).filter(c -> c.isCandidate(digit) && c.getCandidateCount() == 2).toArray(Cell[]::new);
+    }
+
     public boolean isStrongLink(Cell cell1, Cell cell2, int digit) {
         if (!cell1.isPeer(cell2)) {
             return false;
@@ -122,28 +127,6 @@ public class Grid {
         return commonPeers;
     }
 
-/*    public Map<Cell, List<Cell>> findStrongLinks(int digit) {
-        Map<Cell, List<Cell>> strongLinks = new HashMap<>();
-
-        for (UnitType unitType : UnitType.values()) {
-            for (int i = 0; i < 9; i++) {
-                List<Cell> unitCells = Arrays.stream(getCells(unitType, i)).toList();
-                List<Cell> candidates = new ArrayList<>();
-                for (Cell cell : unitCells) {
-                    if (cell.isCandidate(digit)) {
-                        candidates.add(cell);
-                    }
-                }
-                if (candidates.size() == 2) {
-                    strongLinks.computeIfAbsent(candidates.get(0), _ -> new ArrayList<>()).add(candidates.get(1));
-                    strongLinks.computeIfAbsent(candidates.get(1), _ -> new ArrayList<>()).add(candidates.get(0));
-                }
-            }
-        }
-
-        return strongLinks;
-    }
-*/
     public Map<Cell, List<Cell>> findStrongLinks(int digit) {
         Map<Cell, List<Cell>> strongLinks = new HashMap<>();
         for (Cell cell : getCellsWithCandidate(digit)) {
@@ -167,17 +150,7 @@ public class Grid {
         return weakLinks;
     }
 
-    public Set<Cycle<Cell>> getCycles(int digit) {
-        Graph<Cell> graph = new Graph<>();
-        for (Cell cell : getCellsWithCandidate(digit)) {
-            graph.addNode(
-                    cell,
-                    Arrays.stream(getPeers(cell)).filter(c -> c.isCandidate(digit) && isStrongLink(cell, c, digit)).toList(),
-                    Arrays.stream(getPeers(cell)).filter(c -> c.isCandidate(digit)).toList()
-            );
-        }
-        return graph.findAllCycles();
-    }
+
 
     /* ************************************************** */
 
@@ -302,29 +275,5 @@ public class Grid {
             sb.append(cell.candidates.contains(candidate) ? candidate : ".");
         }
         return sb.toString();
-    }
-
-    public List<Cell> findStrongLinks(Cell current, int digit) {
-        List<Cell> strongLinks = new ArrayList<>();
-        // A strong link exists when two cells are the only ones
-        // that can contain a digit in a unit (row, column, or box)
-        for (Cell peer : getPeers(current)) {
-            if (peer.isCandidate(digit) && isStrongLink(current, peer, digit)) {
-                strongLinks.add(peer);
-            }
-        }
-        return strongLinks;
-    }
-
-    public List<Cell> findWeakLinks(Cell current, int digit) {
-        // A weak link exists between cells that see each other
-        // and share the same candidate
-        List<Cell> weakLinks = new ArrayList<>();
-        for (Cell peer : getPeers(current)) {
-            if (peer.isCandidate(digit)) {
-                weakLinks.add(peer);
-            }
-        }
-        return weakLinks;
     }
 }

@@ -25,7 +25,7 @@ public class BoxLineReduction implements SolvingTechnique {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
                                     log(sb, "Box-line reduction in %s: ", UnitType.ROW.toString(unitIndex));
-                                    log(sb, "removed %s from %s:%n", i, cell.getPosition());
+                                    log(sb, "removed %s from %s:%n", i, cell);
                                 }
                             }
                         }
@@ -35,7 +35,7 @@ public class BoxLineReduction implements SolvingTechnique {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
                                     log(sb, "Box-line reduction in %s: ", UnitType.COL.toString(unitIndex));
-                                    log(sb, "removed %s from %s:%n", i, cell.getPosition());
+                                    log(sb, "removed %s from %s:%n", i, cell);
                                 }
                             }
                         }

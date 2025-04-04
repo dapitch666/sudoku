@@ -41,7 +41,7 @@ public class HiddenQuads implements SolvingTechnique {
                                     List<Integer> removed = cell.removeAllBut(List.of(i, j, k, l));
                                     if (!removed.isEmpty()) {
                                         changed.add(cell);
-                                        log(sb, "Hidden quad (%s, %s, %s, %s) in %s. Removed %s from %s%n", i, j, k, l, quad.stream().map(Cell::getPosition).collect(Collectors.joining(", ")), removed, cell.getPosition());
+                                        log(sb, "Hidden quad (%s, %s, %s, %s) in %s. Removed %s from %s%n", i, j, k, l, quad.stream().map(Cell::toString).collect(Collectors.joining(", ")), removed, cell);
                                     }
                                 }
                                 if (!changed.isEmpty()) incrementCounter(counter);

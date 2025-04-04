@@ -22,7 +22,7 @@ public class BiValueUniversalGrave implements SolvingTechnique {
                 || grid.getCellsInUnitWithCandidate(digit, UnitType.COL, cell.getCol()).length > 2
                 || grid.getCellsInUnitWithCandidate(digit, UnitType.BOX, cell.getBox()).length > 2) {
                     cell.removeAllBut(List.of(digit));
-                    log(sb, "BUG found in %s. %d must be the solution%n", cell.getPosition(), digit);
+                    log(sb, "BUG found in %s. %d must be the solution%n", cell, digit);
                     incrementCounter(counter);
                     return List.of(cell);
                 }

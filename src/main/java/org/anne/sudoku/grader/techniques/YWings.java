@@ -28,7 +28,7 @@ public class YWings implements SolvingTechnique {
                             List<Cell> peers = Arrays.stream(grid.getPeers(cell1)).filter(p -> p.isPeer(cell2) && p != key).toList();
                             for (Cell peer : peers) {
                                 if (peer.removeCandidate(C)) {
-                                    log(sb, "Y-Wing in %s, %s and %s, removed candidate %d from %s%n", key.getPosition(), cell1.getPosition(), cell2.getPosition(), C, peer.getPosition());
+                                    log(sb, "Y-Wing in %s, %s and %s, removed candidate %d from %s%n", key, cell1, cell2, C, peer);
                                     changed.add(peer);
                                 }
                             }

@@ -27,7 +27,7 @@ public class XCycles implements SolvingTechnique {
                  };
                 if (!changed.isEmpty()) {
                     incrementCounter(counter);
-                    log(sb, 0, "%s on %d (length %d) detected in %s:%n", cycleType, digit, cycle.size(), cycle.stream().map(Cell::getPosition).toList());
+                    log(sb, 0, "%s on %d (length %d) detected in %s:%n", cycleType, digit, cycle.size(), cycle.stream().map(Cell::toString).toList());
                     return changed;
                 }
             }
@@ -42,7 +42,7 @@ public class XCycles implements SolvingTechnique {
         // the cell with the discontinuity is the first one.
         Cell cell = cycle.getFirst();
         cell.removeCandidate(digit);
-        log(sb, "Removed %d from %s%n", digit, cell.getPosition());
+        log(sb, "Removed %d from %s%n", digit, cell);
         return List.of(cell);
     }
 
@@ -54,7 +54,7 @@ public class XCycles implements SolvingTechnique {
         Cell cell = cycle.getLast();
         var removed = cell.removeAllBut(digit);
         if (!removed.isEmpty()) {
-            log(sb, "Removed %s from %s%n", removed, cell.getPosition());
+            log(sb, "Removed %s from %s%n", removed, cell);
             return List.of(cell);
         }
         return List.of();
@@ -66,7 +66,7 @@ public class XCycles implements SolvingTechnique {
             for (Cell cell : grid.getCommonPeersWithCandidate(cycle.get(i), cycle.get(i + 1), digit)) {
                 if (!cycle.contains(cell) && cell.removeCandidate(digit)) {
                     changed.add(cell);
-                    log(sb, "Removed %d from %s%n", digit, cell.getPosition());
+                    log(sb, "Removed %d from %s%n", digit, cell);
                 }
             }
         }

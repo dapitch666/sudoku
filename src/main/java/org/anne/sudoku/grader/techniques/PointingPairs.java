@@ -25,7 +25,7 @@ public class PointingPairs implements SolvingTechnique {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
                                     log(sb, "%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.ROW.toString(map.get(i).getFirst().getRow()));
-                                    log(sb, "removed %s from %s:%n", i, cell.getPosition());
+                                    log(sb, "removed %s from %s:%n", i, cell);
                                 }
                             }
                         }
@@ -35,7 +35,7 @@ public class PointingPairs implements SolvingTechnique {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
                                     log(sb, "%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.COL.toString(map.get(i).getFirst().getCol()));
-                                    log(sb, "removed %s from %s:%n", i, cell.getPosition());
+                                    log(sb, "removed %s from %s:%n", i, cell);
                                 }
                             }
                         }
@@ -45,7 +45,7 @@ public class PointingPairs implements SolvingTechnique {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
                                     log(sb, "%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.BOX.toString(map.get(i).getFirst().getBox()));
-                                    log(sb, "removed %s from %s:%n", i, cell.getPosition());
+                                    log(sb, "removed %s from %s:%n", i, cell);
                                 }
                             }
                         }

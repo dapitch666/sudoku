@@ -23,7 +23,7 @@ public class HiddenSingles implements SolvingTechnique {
                     if (!removed.isEmpty()) {
                         changed.add(cell);
                         incrementCounter(counter);
-                        log(sb, "%d found once at %s in %s, %s candidates removed%n", i, cell.getPosition(), unitType.toString(unitIndex), removed.size());
+                        log(sb, "%d found once at %s in %s, %s candidates removed%n", i, cell, unitType.toString(unitIndex), removed.size());
                     }
                 }
             }
