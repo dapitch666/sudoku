@@ -82,6 +82,10 @@ public class Grid {
         return peers.stream().filter(c -> c != cell).toArray(Cell[]::new);
     }
 
+    public Cell[] getPeersWithCandidate(Cell cell, int candidate) {
+        return Arrays.stream(getPeers(cell)).filter(c -> c.isCandidate(candidate)).toArray(Cell[]::new);
+    }
+
     public Cell[] getCellsInUnitWithCandidate(int candidate, UnitType unitType, int unitIndex) {
         return Arrays.stream(getCells(unitType, unitIndex)).filter(c -> c.isCandidate(candidate)).toArray(Cell[]::new);
     }
@@ -93,7 +97,6 @@ public class Grid {
     public Cell[] getCellsWithCandidate(int digit) {
         return Arrays.stream(cells).filter(c -> c.isCandidate(digit)).toArray(Cell[]::new);
     }
-
 
     public Cell[] getBiValueCells() {
         return Arrays.stream(cells).filter(Cell::isBiValue).toArray(Cell[]::new);
