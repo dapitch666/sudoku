@@ -32,14 +32,16 @@ public class ManualSolver {
                 new BiValueUniversalGrave(),
                 new XCycles(),
                 new XYChains(),
-                new ThreeDMedusa()
+                new ThreeDMedusa(),
+                new JellyFish(),
+                new UniqueRectangles()
                 );
     }
 
     public static void main(String[] args) {
         // ManualSolver manualSolver = new ManualSolver(".4...58..7...1.9....3..71..4..7......5.9.8.4......2..8..95..7......2...5..41...9.");
         // ManualSolver manualSolver = new ManualSolver(".........89.632..4..2.9.8...7....6..9....5..8..1....3...3.1.2..6..873.19.........");
-        ManualSolver manualSolver = new ManualSolver(".938.45....56.....2.6.7.....2..6..4....2.8....7..4..9.....1.7.3.....26....25.718.");
+        ManualSolver manualSolver = new ManualSolver("...8.5....9..4..6..3..9...1..8....4.5..6.4..3.7....2..1...8...9.6..1..3....2.6...");
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));
         manualSolver.solve();
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));

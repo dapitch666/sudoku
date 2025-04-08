@@ -67,6 +67,16 @@ public class Cell {
         return false;
     }
 
+    public List<Integer> removeCandidates(List<Integer> candidatesToRemove) {
+        List<Integer> removed = new ArrayList<>();
+        for (int candidate : candidatesToRemove) {
+            if (removeCandidate(candidate)) {
+                removed.add(candidate);
+            }
+        }
+        return removed;
+    }
+
     public boolean isCandidate(int i) {
         return candidates.contains(i);
     }
@@ -115,5 +125,13 @@ public class Cell {
 
     public boolean isBiValue() {
         return candidates.size() == 2;
+    }
+
+    public int getUnitIndex(UnitType unitType) {
+        return switch (unitType) {
+            case ROW -> row;
+            case COL -> col;
+            case BOX -> box;
+        };
     }
 }
