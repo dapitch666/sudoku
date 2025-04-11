@@ -134,4 +134,12 @@ public class Cell {
             case BOX -> box;
         };
     }
+
+    public int getHorizontalChute() {
+        return getBox() / 3;
+    }
+
+    public int getVerticalChute() {
+        return getBox() % 3;
+    }
 }

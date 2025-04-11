@@ -15,10 +15,18 @@ public class UniqueRectanglesTest {
     }
 
     @Test
+    void UniqueRectanglesTestType1and2() {
+        String puzzle = "...8.6...2...1..74..97...1...6...2.13.....6...2........3...5.....2....8.81...2953";
+        String solved = "173846529268519374549723816796458231381297645425361798937185462652934187814672953";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{2}, true);
+    }
+
+
+    @Test
     void UniqueRectanglesTestType2() {
         String puzzle = ".2........6....7948.9.6.2..7....3...9..1.2..3...5....8..4.2.5.7682....3........1.";
         String solved = "425971386163258794879364251741683925958142673236597148314829567682715439597436812";
-        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, false);
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, true);
     }
 
     @Test
@@ -28,12 +36,26 @@ public class UniqueRectanglesTest {
         runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, false);
     }
 
-    @Disabled // Type 2c not implemented yet + Need Aligned Pair Exclusion and Alternating Infer. Chains
+    @Disabled // Need Aligned Pair Exclusion and Alternating Infer. Chains
     @Test
     void UniqueRectanglesTestType2c() {
-        String puzzle = "1...2..5....73.2..3..4....8..56.8.....2...4.....1..7..8....6.....1..7....3..1...2";
-        String solved = "146829357598731264327465198415678923782953416963142785874296531251387649639514872";
+        String puzzle = "..9....5..3.8.7.......9.8...9.6..13.7..9.1..4.15..4.9...2.8.......1.3.7..6....4..";
+        String solved = "879462351536817942421395867294678135783951624615234798342786519958143276167529483";
         runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, true);
+    }
+
+    @Test
+    void UniqueRectanglesTestType1and2_1() {
+        String puzzle = "..........7418..6..2...4.3..8.......6....9...2..356......2.31.......164..65...9..";
+        String solved = "951632487374185269826974531589427316643819752217356894498263175732591648165748923";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{2}, true);
+    }
+
+    @Test
+    void UniqueRectanglesTestType1and2_2() {
+        String puzzle = "...8.6...2...1..74..97...1...6...2.13.....6...2........3...5.....2....8.81...2953";
+        String solved = "173846529268519374549723816796458231381297645425361798937185462652934187814672953";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{2}, true);
     }
 
     @Test
@@ -42,4 +64,48 @@ public class UniqueRectanglesTest {
         String solved = "475381629369527148821469375654293781287145936913876452132654897596738214748912563";
         runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, true);
     }
+
+    @Test
+    void UniqueRectanglesTestType2and3() {
+        String puzzle = "65.7.8....2..6.......3...428....2..11..49.....9..3.....8...9.5....5...8.......3..";
+        String solved = "654728139321964578978315642837652491165497823492831765783149256216573984549286317";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{2}, true);
+    }
+
+    @Test
+    void UniqueRectanglesTestType3b2() {
+        String puzzle = "91.24........8.6.......67..5....49.2.3.....7.7.48....6..53.......3.2........79.43";
+        String solved = "916247835257983614348156729561734982839562471724891356495318267673425198182679543";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, true);
+    }
+
+    @Test
+    void UniqueRectanglesTestType1and3() {
+        String puzzle = ".8.72..13.........1..3..........6.31.3.5.4.6..2.91.7..2..1..9.8..5..8..4.........";
+        String solved = "489725613763841592152369847597286431831574269624913785246137958375698124918452376";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{2}, true);
+    }
+
+    @Test
+    void UniqueRectanglesTestType1and4() {
+        String puzzle = "1......4..6..1.....7.9...56.....9.....9..5.3.51..7..9.......2..8.6...3.72.4......";
+        String solved = "128657943965413872473982156387149625649825731512376498791538264856294317234761589";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{2}, true);
+    }
+
+    @Test
+    void UniqueRectanglesTestType3and4() {
+        String puzzle = "3..2..64...5.4........5.9....2....9..5......6.9.....514..863....6...78.....4..3.2";
+        String solved = "319278645685349127247156983732615498154982736896734251421863579963527814578491362";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{3}, true);
+    }
+
+    @Test
+    void UniqueRectanglesTestType3_2() {
+        String puzzle = "....24...2....531.8...7..2..6..............95..4.9...2..1..9......6.......75.1.64";
+        String solved = "173924856249865317856173429968257143732418695514396782621749538485632971397581264";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, true);
+    }
+
+
 }

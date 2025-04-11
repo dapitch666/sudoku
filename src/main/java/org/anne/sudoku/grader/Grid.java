@@ -114,48 +114,14 @@ public class Grid {
         return cells[row * 9 + col];
     }
 
+    public boolean isConjugatePair(Cell cell1, Cell cell2, int digit) {
+        return cell1.isCandidate(digit) && cell2.isCandidate(digit) && getCommonPeersWithCandidate(cell1, cell2, digit).isEmpty();
+    }
+
     public Cell findFourthCorner(Cell cell1, Cell cell2, Cell cell3) {
         int row4 = (cell1.getRow() == cell2.getRow()) ? cell3.getRow() : (cell1.getRow() == cell3.getRow()) ? cell2.getRow() : cell1.getRow();
         int col4 = (cell1.getCol() == cell2.getCol()) ? cell3.getCol() : (cell1.getCol() == cell3.getCol()) ? cell2.getCol() : cell1.getCol();
         return getCellAt(row4, col4);
-    }
-
-    /*
-     * This method finds all rectangles in the grid that can be used to eliminate candidates.
-     * It returns a list of Cell arrays, where each array contains 4 cells that form a rectangle.
-     * The rectangles are formed by 2 bi-value cells and 2 other cells that have at least the bi-values candidates.
-     */
-    public List<Cell[]> getRectangles() {
-        List<Cell[]> rectangles = new ArrayList<>();
-        Cell[] biValueCells = getBiValueCells();
-
-        for (int i = 0; i < biValueCells.length; i++) {
-            Cell cell1 = biValueCells[i];
-            for (int j = i + 1; j < biValueCells.length; j++) {
-                Cell cell2 = biValueCells[j];
-
-                // Check if cell1 and cell2 share the same candidates
-                if (!cell1.getCandidates().equals(cell2.getCandidates())) continue;
-
-                for (Cell cell3 : getCellsWithCandidates(cell1.getCandidates())) {
-                    if (cell3 == cell1 || cell3 == cell2) continue;
-                    // Check if all three cells are in 2 different boxes, 2 different rows and 2 different columns
-                    List<Cell> cells = List.of(cell1, cell2, cell3);
-                    if (cells.stream().map(Cell::getRow).distinct().count() != 2 || cells.stream().map(Cell::getCol).distinct().count() != 2 || cells.stream().map(Cell::getBox).distinct().count() != 2) {
-                        continue;
-                    }
-                    // Find the fourth cell
-                    Cell cell4 = findFourthCorner(cell1, cell2, cell3);
-                    // Check if all cell1 candidates are also cell4 candidates
-                    if (!cell4.isCandidate(cell1.getFirstCandidate()) || !cell4.isCandidate(cell2.getCandidates().getLast()))
-                        continue;
-                    // Check that at least one of the cells is not a biValue cell
-                    if (cell3.isBiValue() && cell4.isBiValue()) continue;
-                    rectangles.add(new Cell[]{cell1, cell2, cell3, cell4});
-                }
-            }
-        }
-        return rectangles;
     }
 
     public boolean isStrongLink(Cell cell1, Cell cell2, int digit) {
