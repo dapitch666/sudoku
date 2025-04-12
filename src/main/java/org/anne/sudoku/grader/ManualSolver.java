@@ -1,5 +1,6 @@
 package org.anne.sudoku.grader;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.techniques.*;
 import org.anne.sudoku.utils.PrintUtils;
 
@@ -8,21 +9,22 @@ import java.util.*;
 public class ManualSolver {
     Grid grid;
     List<SolvingTechnique> techniques;
+    Grade highestDifficulty = Grade.UNKNOWN;
 
     public ManualSolver(String puzzle) {
         this.grid = new Grid(puzzle);
         this.techniques = List.of(
-                new NakedSingles(),
+                new NakedSingles(), // VERY_EASY
                 new HiddenSingles(),
                 new NakedPairs(),
-                new NakedTriples(),
+                new NakedTriples(), // EASY
                 new HiddenPairs(),
-                new HiddenTriples(),
+                new HiddenTriples(), // MODERATE
                 new NakedQuads(),
                 new HiddenQuads(),
                 new PointingPairs(),
                 new BoxLineReduction(),
-                new XWings(),
+                new XWings(), // HARD
                 new ChuteRemotePairs(),
                 new SimpleColoring(),
                 new YWings(),
@@ -30,7 +32,7 @@ public class ManualSolver {
                 new SwordFish(),
                 new XYZWings(),
                 new BiValueUniversalGrave(),
-                new XCycles(),
+                new XCycles(), // VERY_HARD
                 new XYChains(),
                 new ThreeDMedusa(),
                 new JellyFish(),
@@ -45,9 +47,10 @@ public class ManualSolver {
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));
         manualSolver.solve();
         System.out.println(PrintUtils.printOne(manualSolver.grid.currentState()));
+        System.out.println("Sudoku Grade: " + manualSolver.highestDifficulty);
     }
 
-    void solve() {
+    public void solve() {
         int steps = 0;
         boolean changed;
         StringBuilder sb = new StringBuilder();
@@ -67,6 +70,9 @@ public class ManualSolver {
                 changedCells.addAll(technique.apply(grid));
                 if (changedCells.isEmpty()) {
                     continue;
+                }
+                if (technique.getDifficulty().getLevel() > highestDifficulty.getLevel()) {
+                    highestDifficulty = technique.getDifficulty();
                 }
                 System.out.printf("Step %d: %s%n%s", steps, technique.getName(), technique.getLog());
                 for (Cell cell : changedCells) {
@@ -90,5 +96,13 @@ public class ManualSolver {
             }
         }
         return 0;
+    }
+
+    public Grade getGrade() {
+        return highestDifficulty;
+    }
+
+    public Grid getGrid() {
+        return grid;
     }
 }

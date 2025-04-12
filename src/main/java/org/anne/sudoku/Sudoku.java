@@ -3,6 +3,7 @@ package org.anne.sudoku;
 import org.anne.sudoku.crawler.SudokuWiki;
 import org.anne.sudoku.generator.PuzzleGenerator;
 import org.anne.sudoku.generator.SolutionGenerator;
+import org.anne.sudoku.grader.ManualSolver;
 import org.anne.sudoku.solver.MultipleSolutionsFinder;
 import org.anne.sudoku.utils.Utils;
 
@@ -39,7 +40,15 @@ public class Sudoku {
 
     public Grade getGrade() {
         if (grade == null) {
-            grade = new SudokuWiki().getGrade(getPuzzle());
+            // grade = new SudokuWiki().getGrade(getPuzzle());
+            ManualSolver manualSolver = new ManualSolver(getPuzzle());
+            manualSolver.solve();
+            if (manualSolver.getGrid().equals(grid)) {
+                grade = manualSolver.getGrade();
+            } else {
+                grade = Grade.UNKNOWN;
+            }
+            grade = manualSolver.getGrade();
         }
         return grade;
     }

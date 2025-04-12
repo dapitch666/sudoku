@@ -1,25 +1,32 @@
 package org.anne.sudoku.grader.techniques;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.Cell;
 import org.anne.sudoku.grader.Grid;
 
 import java.util.List;
 
 public abstract class SolvingTechnique {
-    String name;
-    int counter;
-    StringBuilder sb;
+    private final String name;
+    private final StringBuilder sb;
+    private final Grade difficulty;
+    private int counter;
 
-    public SolvingTechnique(String name) {
+    public SolvingTechnique(String name, Grade difficulty) {
         this.name = name;
         this.counter = 0;
         this.sb = new StringBuilder();
+        this.difficulty = difficulty;
     }
 
     public abstract List<Cell> apply(Grid grid);
 
     public String getName() {
         return this.name;
+    }
+
+    public Grade getDifficulty() {
+        return difficulty;
     }
 
     public int getCounter() {

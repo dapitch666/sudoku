@@ -1,5 +1,6 @@
 package org.anne.sudoku.grader.techniques;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.Cell;
 import org.anne.sudoku.grader.Grid;
 import org.anne.sudoku.grader.UnitType;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 public class HiddenSingles extends SolvingTechnique {
     public HiddenSingles() {
-        super("Hidden Singles");
+        super("Hidden Singles", Grade.VERY_EASY);
     }
 
     @Override

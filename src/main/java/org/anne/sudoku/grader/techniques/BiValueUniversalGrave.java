@@ -1,5 +1,6 @@
 package org.anne.sudoku.grader.techniques;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.Cell;
 import org.anne.sudoku.grader.Grid;
 import org.anne.sudoku.grader.UnitType;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class BiValueUniversalGrave extends SolvingTechnique {
     public BiValueUniversalGrave() {
-        super("BiValue Universal Grave");
+        super("BiValue Universal Grave", Grade.HARD);
     }
 
     @Override

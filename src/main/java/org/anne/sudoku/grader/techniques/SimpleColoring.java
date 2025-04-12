@@ -1,12 +1,13 @@
 package org.anne.sudoku.grader.techniques;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.*;
 
 import java.util.*;
 
 public class SimpleColoring extends SolvingTechnique {
     public SimpleColoring() {
-        super("Simple Coloring");
+        super("Simple Coloring", Grade.HARD);
     }
 
     private Grid grid;

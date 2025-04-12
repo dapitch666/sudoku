@@ -1,5 +1,6 @@
 package org.anne.sudoku.grader.techniques;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.Cell;
 import org.anne.sudoku.grader.Grid;
 import org.anne.sudoku.grader.UnitType;
@@ -9,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class HiddenTriples extends SolvingTechnique {
     public HiddenTriples() {
-        super("Hidden Triples");
+        super("Hidden Triples", Grade.MODERATE);
     }
 
     @Override

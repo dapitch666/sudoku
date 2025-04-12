@@ -1,5 +1,6 @@
 package org.anne.sudoku.grader.techniques;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.Cell;
 import org.anne.sudoku.grader.Grid;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class XYZWings extends SolvingTechnique {
     public XYZWings() {
-        super("XYZ-Wings");
+        super("XYZ-Wings", Grade.HARD);
     }
 
     @Override

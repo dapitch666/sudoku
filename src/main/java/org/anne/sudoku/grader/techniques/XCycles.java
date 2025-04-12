@@ -1,12 +1,13 @@
 package org.anne.sudoku.grader.techniques;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.*;
 
 import java.util.*;
 
 public class XCycles extends SolvingTechnique {
     public XCycles() {
-        super("X-Cycles");
+        super("X-Cycles", Grade.VERY_HARD);
     }
 
     private Grid grid;

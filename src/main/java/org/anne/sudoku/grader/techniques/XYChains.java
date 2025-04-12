@@ -1,5 +1,6 @@
 package org.anne.sudoku.grader.techniques;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.Cell;
 import org.anne.sudoku.grader.Grid;
 
@@ -10,7 +11,7 @@ import java.util.Set;
 
 public class XYChains extends SolvingTechnique {
     public XYChains() {
-        super("XY-Chains");
+        super("XY-Chains", Grade.VERY_HARD);
     }
 
     @Override

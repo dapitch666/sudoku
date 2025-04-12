@@ -1,5 +1,6 @@
 package org.anne.sudoku.grader.techniques;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.Cell;
 import org.anne.sudoku.grader.Grid;
 
@@ -8,7 +9,7 @@ import java.util.*;
 
 public class ThreeDMedusa extends SolvingTechnique {
     public ThreeDMedusa() {
-        super("3D Medusa");
+        super("3D Medusa", Grade.VERY_HARD);
     }
 
     // Color definitions for coloring

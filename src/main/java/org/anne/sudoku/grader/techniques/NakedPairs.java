@@ -1,5 +1,6 @@
 package org.anne.sudoku.grader.techniques;
 
+import org.anne.sudoku.Grade;
 import org.anne.sudoku.grader.Cell;
 import org.anne.sudoku.grader.Grid;
 import org.anne.sudoku.grader.UnitType;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class NakedPairs extends SolvingTechnique {
     public NakedPairs() {
-        super("Naked Pairs");
+        super("Naked Pairs", Grade.VERY_EASY);
     }
 
     @Override
