@@ -14,7 +14,7 @@ public class HiddenSingles extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) { // For each row, column, square
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
@@ -25,7 +25,7 @@ public class HiddenSingles extends SolvingTechnique {
                     if (!removed.isEmpty()) {
                         changed.add(cell);
                         incrementCounter();
-                        log(sb, "%d found once at %s in %s, %s candidates removed%n", i, cell, unitType.toString(unitIndex), removed.size());
+                        log("%d found once at %s in %s, %s candidates removed%n", i, cell, unitType.toString(unitIndex), removed.size());
                     }
                 }
             }

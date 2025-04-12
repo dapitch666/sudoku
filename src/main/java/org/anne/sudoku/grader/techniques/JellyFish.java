@@ -14,7 +14,7 @@ public class JellyFish extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
             for (int digit = 1; digit <= 9; digit++) {
                 List<Cell[]> list = new ArrayList<>();
@@ -50,7 +50,7 @@ public class JellyFish extends SolvingTechnique {
                                         for (Cell cell : grid.getCellsInUnitWithCandidate(digit, unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, col))
                                             if (!jellyFish.contains(cell) && cell.removeCandidate(digit)) {
                                                 changed.add(cell);
-                                                log(sb, "JellyFish %d in %s. Removed %d from %s%n", digit, jellyFish.stream().map(Cell::toString).toList(), digit, cell);
+                                                log("JellyFish %d in %s. Removed %d from %s%n", digit, jellyFish.stream().map(Cell::toString).toList(), digit, cell);
                                             }
                                     }
                                     if (!changed.isEmpty()) {

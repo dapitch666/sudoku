@@ -12,7 +12,7 @@ public class ChuteRemotePairs extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (int index = 0; index < 3; index++) {
             for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
@@ -41,7 +41,7 @@ public class ChuteRemotePairs extends SolvingTechnique {
                                     for (Cell cell : peers) {
                                         if (cell.removeCandidate(i)) {
                                             changed.add(cell);
-                                            log(sb, "Chute remote pair %s in %s and %s. Removed %s from %s%n", remotePair, cell1, cell2, i, cell);
+                                            log("Chute remote pair %s in %s and %s. Removed %s from %s%n", remotePair, cell1, cell2, i, cell);
                                         }
                                     }
                                 }

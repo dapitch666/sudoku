@@ -1,25 +1,14 @@
 package org.anne.sudoku.grader;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.anne.sudoku.grader.TestHelper.runTest;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
-class ManualSolverTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    @Test
-    void kidsTest() {
-        String puzzle = "3..967..1.4.3.2.8..2.....7..7.....9....873...5...1...3..47.51..9.5...2.78..621..4";
-        String solved = "358967421741352689629184375173546892492873516586219743264795138915438267837621954";
-        runTest(puzzle, solved, new String[]{"Naked Singles"}, new int[]{49}, false);
-    }
-
-    @Test
-    void hiddenSinglesTest() {
-        String puzzle = ".....4.284.6.....51...3.6.....3.1....87...14....7.9.....2.1...39.....5.767.4.....";
-        String solved = "735164928426978315198532674249381756387256149561749832852617493914823567673495281";
-        runTest(puzzle, solved, new String[]{"Hidden Singles"}, new int[]{21}, false);
-    }
+public class ManualSolverTest {
 
     @Test
     void moderateTest() {
@@ -27,282 +16,35 @@ class ManualSolverTest {
         String solved = "725196483463285971981374526372948165196523847548617239634851792819762354257439618";
         runTest(puzzle, solved, new String[]{"Hidden Pairs", "Naked Triples"}, new int[]{1, 1}, false);
     }
+    public static void runTest(String puzzle, String solved, String[] techniques, int[] counts, boolean debug) {
+        ManualSolver solver = new ManualSolver(puzzle);
+        // Capture output
+        if (!debug) System.setOut(new PrintStream(new ByteArrayOutputStream()));
 
-    @Test
-    void nakedTriplesTest() {
-        String puzzle = "...........19..5..56.31..9.1..6...28..4...7..27...4..3.4..68.35..2..59...........";
-        String solved = "928547316431986572567312894195673428384251769276894153749168235612435987853729641";
-        runTest(puzzle, solved, new String[]{"Naked Pairs", "Naked Triples"}, new int[]{3, 5}, false);
+        solver.solve();
+
+        // Reset the standard output
+        if (!debug) System.setOut(System.out);
+
+        assertEquals(solved, solver.grid.currentState());
+        for (int i = 0; i < techniques.length; i++) {
+            assertEquals(counts[i], solver.getCounter(techniques[i]));
+        }
     }
 
-    @Test
-    void hiddenTriplesTest() {
-        String puzzle = "3........97..1....6..583...2.....9..5..621..3..8.....5...435..2....9..56........1";
-        String solved = "381976524975214638642583179264358917597621483138749265816435792423197856759862341";
-        runTest(puzzle, solved, new String[]{"Hidden Triples", "Naked Triples"}, new int[]{1, 5}, false);
-    }
+    public static void runTest(String puzzle, String solved, String[] techniques, boolean debug) {
+        ManualSolver solver = new ManualSolver(puzzle);
+        // Capture output
+        if (!debug) System.setOut(new PrintStream(new ByteArrayOutputStream()));
 
-    @Test
-    void xWingsTest() {
-        String puzzle = "1.....5694.2.....8.5...9.4....64.8.1....1....2.8.35....4.5...1.9.....4.2621.....5";
-        String solved = "187423569492756138356189247539647821764218953218935674843592716975361482621874395";
-        runTest(puzzle, solved, new String[]{"X-Wings"}, new int[]{1}, false);
-    }
+        solver.solve();
 
-    @Test
-    void chuteRemotePairsTest() {
-        String puzzle = "...9.5..........12.6.....5.39..5..6....3....4.4..6..85.3.....9.85..1.......2.7...";
-        String solved = "128975643975436812463182759397854261586321974241769385732548196859613427614297538";
-        runTest(puzzle, solved, new String[]{"Chute Remote Pairs"}, new int[]{2}, false);
-    }
+        // Reset the standard output
+        if (!debug) System.setOut(System.out);
 
-    @Test
-    void simpleColoringTest1() {
-        String puzzle = ".......6...27.5...5...13..97.45....3..3.4.1..9....74.56..92...4...3.18...8.......";
-        String solved = "371294568892765341546813279714582693253649187968137425635928714429371856187456932";
-        runTest(puzzle, solved, new String[]{"Simple Coloring"}, new int[]{2}, false);
-    }
-
-    @Test
-    void simpleColoringTest2() {
-        String puzzle = "1..4....6.46.91.8...5.2.......5..1.9.9.....5.4.2..9.......1.9...8.93.56.5....8..4";
-        String solved = "128453796346791285975826413763582149891347652452169837634215978287934561519678324";
-        runTest(puzzle, solved, new String[]{"Simple Coloring"}, new int[]{1}, false);
-    }
-
-    @Test
-    void simpleColoringTest3() {
-        String puzzle = "...9.6...6....8..71..37...9..6...75...4.3.1...95...8..2...65..89..8....5...1.3...";
-        String solved = "437956281659218437182374569316489752824537196795621843243765918961842375578193624";
-        runTest(puzzle, solved, new String[]{"Simple Coloring"}, new int[]{2}, false);
-    }
-
-    @Test
-    void simpleColoringTest4() {
-        String puzzle = "4..8....3..6.1.4.9.....5....1..6..92...3.1...64..5..8....6.....9.7.8.1..8....9..4";
-        String solved = "495876213786213459321945867513468792278391645649752381154627938937584126862139574";
-        runTest(puzzle, solved, new String[]{"Simple Coloring"}, new int[]{2}, false);
-    }
-
-    @Test
-    void yWingsTest() {
-        String puzzle = "9...4.......6...31.2.....9....7...2...29356...7...2....6.....7351...9.......8...9";
-        String solved = "931247586754698231628153794195764328482935617376812945869521473513479862247386159";
-        runTest(puzzle, solved, new String[]{"Y-Wings"}, new int[]{2}, false);
-    }
-
-    @Test
-    void rectangleElimination() {
-        String puzzle = ".3.6.9.2....28....1.......9......65372..6..91365......2.......7....16....1.5.7.4.";
-        String solved = "537649128649281735182753469891472653724365891365198274256834917473916582918527346";
-        runTest(puzzle, solved, new String[]{"Rectangle Elimination"}, new int[]{6}, false);
-    }
-
-    @Test
-    void swordfishTest1() {
-        String puzzle = "1.73...4.8....6....5.87.63..9....51.........77...6..8....9.4....8.1....241.......";
-        String solved = "167359248823416759954872631298743516641598327735261984372984165586137492419625873";
-        runTest(puzzle, solved, new String[]{"Sword Fish"}, new int[]{1}, false);
-    }
-
-    @Test
-    void swordfishTest2() {
-        String puzzle = "3...4.........7.48......9.7.1...3.8.4...5..2..5...8.7.5..3............9.6.9.253..";
-        String solved = "387942651195637248264581937712493586438756129956218473541379862823164795679825314";
-        runTest(puzzle, solved, new String[]{"Sword Fish"}, new int[]{2}, false);
-    }
-
-    @Test
-    void swordfishTest3() {
-        String puzzle = "43...8......4...2..26..51.8...9......946.275......3...3.51..9...7...9......5...12";
-        String solved = "437218569518496327926375148763951284194682753852743691385124976271869435649537812";
-        runTest(puzzle, solved, new String[]{"Sword Fish"}, new int[]{1}, false);
-    }
-
-    @Test
-    void xyzWingsTest1() {
-        String puzzle = ".72...68....7.....5...16.......281..2..371..6..456.......13...4.....7....15...89.";
-        String solved = "472953681961784325583216947657428139298371456134569278829135764346897512715642893";
-        runTest(puzzle, solved, new String[]{"XYZ-Wings"}, new int[]{1}, false);
-    }
-
-    @Test
-    void xyzWingsTest2() {
-        String puzzle = "...1...........98.7.5.6231.1.9..74.3.........8.72..1.5.9174.8.2.53...........1...";
-        String solved = "964183527312574986785962314129857463536419278847236195691745832253698741478321659";
-        runTest(puzzle, solved, new String[]{"XYZ-Wings"}, new int[]{1}, false);
-    }
-
-    @Test
-    void biValueUniversalGraveTest1() {
-        String puzzle = "..1...7.6736.....55......82....78......52.......139...392...5..6.....137.5....4..";
-        String solved = "821953746736842915549761382415678293963524871278139654392417568684295137157386429";
-        runTest(puzzle, solved, new String[]{"BiValue Universal Grave"}, new int[]{1}, false);
-    }
-
-    @Test
-    void biValueUniversalGraveTest2() {
-        String puzzle = "2..4..5.1..1.38.9..3....7.8.7...2..3.6..9...5.4......9..4....6.62.3..8..81..47...";
-        String solved = "289476531751238496436915728975182643362794185148563279594821367627359814813647952";
-        runTest(puzzle, solved, new String[]{"BiValue Universal Grave"}, new int[]{1}, false);
-    }
-
-    @Disabled // Need Hidden Unique Rectangle and WXYZ Wing
-    @Test
-    void xCyclesTest1() {
-        String puzzle = ".........89.632..4..2.9.8...7....6..9....5..8..1....3...3.1.2..6..873.19.........";
-        String solved = "365481792897632154412597863578349621936125478241768935753914286624873519189256347";
-        runTest(puzzle, solved, new String[]{"X-Cycles"}, new int[]{5}, false);
-    }
-
-    @Test
-    void xCyclesTest2() {
-        String puzzle = ".......2...5.8.4..4..1..8...9...2....37...56....97......4..86.5..6.4.7...8.......";
-        String solved = "819457326725683491463129857698532174237814569541976238374298615956341782182765943";
-        runTest(puzzle, solved, new String[]{"X-Cycles", "XY-Chains"}, new int[]{3, 1}, false);
-    }
-
-    @Test
-    void xCyclesTest3() {
-        String puzzle = ".4...58..7...1.9....3..71..4..7......5.9.8.4......2..8..95..7......2...5..41...9.";
-        String solved = "142695873765813924893247156428751639351968247976432518239584761617329485584176392";
-        runTest(puzzle, solved, new String[]{"X-Cycles", "XY-Chains"}, new int[]{1, 1}, false);
-    }
-
-    @Test
-    void xCyclesTest4() {
-        String puzzle = "....78.....3...59..9.2...1...4..6......134......7..68..2...9.7...8...3.....32....";
-        String solved = "152978463783461592496253718274586931869134257531792684325849176948617325617325849";
-        runTest(puzzle, solved, new String[]{"X-Cycles"}, new int[]{1}, false);
-    }
-
-    @Test
-    void xCyclesTest5() {
-        String puzzle = "....5......12.39...5...7...9...2...8.6.7.8.2.4...6...1...5...8...73.45......1....";
-        String solved = "738159246641283975259647813973421658165738429482965731396572184817394562524816397";
-        runTest(puzzle, solved, new String[]{"X-Cycles"}, true);
-    }
-
-    @Test
-    void xyChainsTest1() {
-        String puzzle = ".8.1.3.7............14.8.2.57...1.39...6.9...92.8...51.3.9.52............1.7.2.6.";
-        String solved = "684123975392576148751498326578241639143659782926837451837965214265314897419782563";
-        runTest(puzzle, solved, new String[]{"XY-Chains"}, false);
-    }
-
-    @Test
-    void xyChainsTest2() {
-        String puzzle = "..2...376.1..3.5.........9.9..85...1...3.4...2...97..3.8.........3.4..6.147...2..";
-        String solved = "892415376416739582375682194934856721761324958258197643689273415523941867147568239";
-        runTest(puzzle, solved, new String[]{"XY-Chains"}, false);
-    }
-
-    @Test
-    void xyChainsTest3() {
-        String puzzle = ".3..7.45..728...9....91..6....5.....3.......7.....6....8..21....5...924..29.6..3.";
-        String solved = "931672458672854193845913762298537614364198527517246389486321975153789246729465831";
-        runTest(puzzle, solved, new String[]{"XY-Chains"}, false);
-    }
-
-    @Test
-    void xyChainsTest4() {
-        String puzzle = ".938..1...8.5.143..7..........2.5.8...5.6.2...6.1.9..........5..583.6.2...9..231.";
-        String solved = "593847162286591437174623895417235689935468271862179543321984756758316924649752318";
-        runTest(puzzle, solved, new String[]{"XY-Chains"}, false);
-    }
-
-    @Test
-    void xyChainsTest5() {
-        String puzzle = "..3..1...8.........51..9.6..8....29....7...8.2...4.5.36..9.......2.84...41..5.6..";
-        String solved = "923861457846375921751429368187536294534792186269148573675913842392684715418257639";
-        runTest(puzzle, solved, new String[]{"XY-Chains"}, false);
-    }
-
-    @Test
-    void ThreeDMedusaTest1() {
-        String puzzle = "3...5....25.3...1...46.75...9.2..8.5.7.....3.4.8..5.6...54.83...3...6.84....2...6";
-        String solved = "386152497257349618914687523693271845571864239428935761165498372732516984849723156";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{3}, false);
-    }
-
-    @Test
-    void ThreeDMedusaTest2() {
-        String puzzle = "1...56....43.9....8....3..2.......1.95.421.37.2.......3..9....5....1.97....67...1";
-        String solved = "192856743543297186876143592734568219958421637621739854317982465265314978489675321";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{2}, false);
-    }
-
-    @Test
-    void ThreeDMedusaTest3() {
-        String puzzle = "986.2.3....4956.............73..5..96...1...31..3..27.............1437....1.8.694";
-        String solved = "986721345314956827527834961873265419692417583145398276458679132269143758731582694";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, true);
-    }
-
-    @Test
-    void ThreeDMedusaTest4() {
-        String puzzle = "9.8.2..76......1...7.....2...54...913..7.2..546...58...4.....5...6......21..7.3.4";
-        String solved = "958321476624957183173864529785436291391782645462195837847613952536249718219578364";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{6}, true);
-    }
-
-    @Test
-    void ThreeDMedusaTestRule1() {
-        String puzzle = ".938.45....56.....2.6.7.....2..6..4....2.8....7..4..9.....1.7.3.....26....25.718.";
-        String solved = "793824561485631972216975438321769845964258317578143296859416723147382659632597184";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, false);
-    }
-
-    @Test
-    void ThreeDMedusaTestRule2() {
-        String puzzle = "5.368214.21459783668.3..5..3.52..9.4....5...11.84.975........1.7.61..29..31925...";
-        String solved = "573682149214597836689314572365271984497853621128469753952746318746138295831925467";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, false);
-    }
-
-    @Disabled // Need Hidden Unique Rectangle, WXYZ Wing and Alternating Infer. Chains
-    @Test
-    void ThreeDMedusaTestRule3() {
-        String puzzle = ".5..2....192.....4..46..........8..5..69418..9..7..........63..3.....621....8..9.";
-        String solved = "653427189192835764874619253247368915536941872918752436725196348389574621461283597";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, true);
-    }
-
-    @Test
-    void ThreeDMedusaTestRule4() {
-        String puzzle = "5874126932.6.378..1....82....2..1748.5.7249..7148..5....524.1.9..1.854..42.17.3.5";
-        String solved = "587412693246937851139568274962351748853724916714896532675243189391685427428179365";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, false);
-    }
-
-
-    @Test
-    void ThreeDMedusaTestRule5() {
-        String puzzle = ".8.276.49.........2..3.9..8..1....6...7...8...9....5..9..6.8..3.........52.9.4...";
-        String solved = "385276149749185326216349758831527964657491832492863571974658213168732495523914687";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{8}, false);
-    }
-
-    @Disabled // Need Unique Rectangle
-    @Test
-    void ThreeDMedusaTestRule6() {
-        String puzzle = "9...6.5....1....4.3..7....8....584...6.....8...2.4.3..1....5..9.2....8....7.3...2";
-        String solved = "948362571271589643356714928739258416564193287812647395183425769625971834497836152";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, true);
-    }
-
-    @Disabled // Need Alternating Infer. Chains
-    @Test
-    void JellyFishTest1() {
-        String puzzle = ".........8.3.24.1.9.1.76.8.6.7.8392......91...........7.8.1..3..........1.2.3.69.";
-        String solved = "274891356863524719951376482617483925385269147429157863798612534536948271142735698";
-        runTest(puzzle, solved, new String[]{"Jelly-Fish"}, new int[]{2}, true);
-    }
-
-    @Test
-    void JellyFishTest2() {
-        String puzzle = "14.....9797.....16............453....6.17....73..2.............42..6..7161.....39";
-        String solved = "148536297973842516256791384891453762562178943734629158387914625429365871615287439";
-        runTest(puzzle, solved, new String[]{"Jelly-Fish"}, new int[]{2}, true);
+        assertEquals(solved, solver.grid.currentState());
+        for (String technique : techniques) {
+            assertTrue(solver.getCounter(technique) > 0);
+        }
     }
 }

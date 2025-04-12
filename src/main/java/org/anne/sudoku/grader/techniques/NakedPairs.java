@@ -13,7 +13,7 @@ public class NakedPairs extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
@@ -38,7 +38,7 @@ public class NakedPairs extends SolvingTechnique {
                                 }
                                 if (!removed.isEmpty()) {
                                     changed.add(cell);
-                                    log(sb, "Naked pair %s in %s, on cells [%s, %s]. Removed %s from %s%n", pair, unitType.toString(unitIndex), unit[i], unit[j], removed, cell);
+                                    log("Naked pair %s in %s, on cells [%s, %s]. Removed %s from %s%n", pair, unitType.toString(unitIndex), unit[i], unit[j], removed, cell);
                                 }
                             }
                         }

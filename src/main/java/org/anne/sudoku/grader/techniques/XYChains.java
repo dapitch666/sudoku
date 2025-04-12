@@ -14,7 +14,7 @@ public class XYChains extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         for (Cell cell : grid.getBiValueCells()) {
             for (int digit : cell.getCandidates()) {
                 Set<List<Cell>> chains = new HashSet<>();
@@ -28,10 +28,10 @@ public class XYChains extends SolvingTechnique {
                         Cell cell2 = chain.getLast();
                         List<Cell> peers = grid.getCommonPeersWithCandidate(cell1, cell2, digit);
                         if (peers.isEmpty()) continue;
-                        log(sb, 0, "XY Chain found for %d: %s%n", digit, chain);
+                        log(0, "XY Chain found for %d: %s%n", digit, chain);
                         for (Cell c : peers) {
                             c.removeCandidate(digit);
-                            log(sb, "%d removed from %s%n", digit, c);
+                            log("%d removed from %s%n", digit, c);
                         }
                         incrementCounter();
                         return peers;

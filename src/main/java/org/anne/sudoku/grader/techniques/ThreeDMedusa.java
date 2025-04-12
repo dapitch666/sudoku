@@ -18,13 +18,11 @@ public class ThreeDMedusa extends SolvingTechnique {
 
     private Set<ColoredCandidate> coloredCandidates;
     private Grid grid;
-    private StringBuilder sb;
-
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         this.grid = grid;
-        this.sb = sb;
+        List<Rule> rules = List.of(this::rule1, this::rule2, this::rule3, this::rule4, this::rule5, this::rule6);
 
         // Find all candidates that can be connected through bi-value cells or bi-location
         for (Cell startCell : grid.getUnsolvedCells()) {
@@ -33,23 +31,13 @@ public class ThreeDMedusa extends SolvingTechnique {
                 coloredCandidates = new HashSet<>();
 
                 if (buildColoringNetwork(startCell, candidate)) {
-                    List<Cell> changed = applyRule1();
-                    if (!changed.isEmpty()) return changed;
-
-                    changed = applyRule2();
-                    if (!changed.isEmpty()) return changed;
-
-                    changed = applyRule3();
-                    if (!changed.isEmpty()) return changed;
-
-                    changed = applyRule4();
-                    if (!changed.isEmpty()) return changed;
-
-                    changed = applyRule5();
-                    if (!changed.isEmpty()) return changed;
-
-                    changed = applyRule6();
-                    if (!changed.isEmpty()) return changed;
+                    for (Rule rule : rules) {
+                        List<Cell> changed = rule.apply();
+                        if (!changed.isEmpty()) {
+                            incrementCounter();
+                            return changed;
+                        }
+                    }
                 }
             }
         }
@@ -119,7 +107,7 @@ public class ThreeDMedusa extends SolvingTechnique {
      * Rule 1: If two candidates in a cell have the same color,
      * all occurrences of that color can be removed
      */
-    private List<Cell> applyRule1() {
+    private List<Cell> rule1() {
         for (Cell cell : coloredCandidates.stream().map(cc -> cc.cell).distinct().toList()) {
 
             Map<Integer, Integer> colorCount = new HashMap<>();
@@ -132,7 +120,7 @@ public class ThreeDMedusa extends SolvingTechnique {
 
             for (Map.Entry<Integer, Integer> entry : colorCount.entrySet()) {
                 if (entry.getValue() > 1) {
-                    log(sb, "Rule 1: %s has %d candidates of the same color. All candidates with this color can be removed:%n", cell, entry.getValue());
+                    log("Rule 1: %s has %d candidates of the same color. All candidates with this color can be removed:%n", cell, entry.getValue());
                     return eliminateColor(entry.getKey());
                 }
             }
@@ -144,14 +132,14 @@ public class ThreeDMedusa extends SolvingTechnique {
      * Rule 2: If two occurrences of the same candidate with the same color
      * appear in the same unit, that color can be eliminated
      */
-    private List<Cell> applyRule2() {
+    private List<Cell> rule2() {
         for (ColoredCandidate coloredCandidate : coloredCandidates) {
             List<ColoredCandidate> sameColorCandidates = coloredCandidates.stream()
                         .filter(cc -> cc.color == coloredCandidate.color && cc.candidate == coloredCandidate.candidate)
                         .filter(cc -> coloredCandidate.cell.isPeer(cc.cell))
                         .toList();
             if (!sameColorCandidates.isEmpty()) {
-                log(sb, "Rule 2: Candidate %d in %s and %s have the same color. All candidates with this color can be removed:%n", coloredCandidate.candidate, sameColorCandidates.getFirst().cell, coloredCandidate.cell);
+                log("Rule 2: Candidate %d in %s and %s have the same color. All candidates with this color can be removed:%n", coloredCandidate.candidate, sameColorCandidates.getFirst().cell, coloredCandidate.cell);
                 return eliminateColor(coloredCandidate.color);
             }
         }
@@ -162,7 +150,7 @@ public class ThreeDMedusa extends SolvingTechnique {
      * Rule 3: If an uncolored candidate can see two candidates of opposite colors
      * in its own cell, it can be eliminated
      */
-    private List<Cell> applyRule3() {
+    private List<Cell> rule3() {
         for (Cell cell : coloredCandidates.stream()
                 .map(ColoredCandidate::cell)
                 .distinct()
@@ -176,8 +164,7 @@ public class ThreeDMedusa extends SolvingTechnique {
             if (candidates.size() == 2) { // same color candidate has already been dealt with on Rule 1
                 List<Integer> removed = cell.removeAllBut(candidates);
                 if (!removed.isEmpty()) {
-                    log(sb, "Rule 3: 2 colors appear in cell %s. Removing the uncolored candidates %s%n", cell, removed);
-                    incrementCounter();
+                    log("Rule 3: 2 colors appear in cell %s. Removing the uncolored candidates %s%n", cell, removed);
                     return List.of(cell);
                 }
             }
@@ -189,7 +176,7 @@ public class ThreeDMedusa extends SolvingTechnique {
      * Rule 4: If an uncolored candidate can see two candidates of opposite colors
      * in the same unit, it can be eliminated
      */
-    private List<Cell> applyRule4() {
+    private List<Cell> rule4() {
         List<ColoredCandidate> candidatesToRemove = new ArrayList<>();
         for (ColoredCandidate coloredCandidate : coloredCandidates) {
             Cell cell = coloredCandidate.cell;
@@ -205,7 +192,7 @@ public class ThreeDMedusa extends SolvingTechnique {
                         continue; // Ignore candidates that are already marked for removal
                     }
                     if (getColor(peer, candidate) == NO_COLOR) {
-                        log(sb, "Rule 4: Uncolored candidate %d in %s can see two different candidates %d elsewhere (%s and %s)%n", candidate, peer, candidate, cell, other.cell);
+                        log("Rule 4: Uncolored candidate %d in %s can see two different candidates %d elsewhere (%s and %s)%n", candidate, peer, candidate, cell, other.cell);
                         candidatesToRemove.add(new ColoredCandidate(peer, candidate, NO_COLOR));
                         break;
                     }
@@ -213,7 +200,6 @@ public class ThreeDMedusa extends SolvingTechnique {
             }
         }
         if (!candidatesToRemove.isEmpty()) {
-            incrementCounter();
             candidatesToRemove.forEach(cc -> cc.cell.removeCandidate(cc.candidate));
             return candidatesToRemove.stream().map(ColoredCandidate::cell).distinct().toList();
         }
@@ -224,7 +210,7 @@ public class ThreeDMedusa extends SolvingTechnique {
      * Rule 5: If an uncolored candidate can see a colored candidate in a unit
      * and an opposite colored candidate in its own cell, it can be eliminated
      */
-    private List<Cell> applyRule5() {
+    private List<Cell> rule5() {
         List<ColoredCandidate> candidatesToRemove = new ArrayList<>();
         for (ColoredCandidate coloredCandidate : coloredCandidates) {
             Cell cell = coloredCandidate.cell;
@@ -239,7 +225,7 @@ public class ThreeDMedusa extends SolvingTechnique {
                 }
                 for (Cell c : grid.getPeersWithCandidate(cell, candidate)) {
                     if (getColor(c, candidate) == oppositeColor) {
-                        log(sb, "Rule 5: Uncolored candidate %d in %s can see a colored %d elsewhere (%s) and an oppositely colored %d in its own cell. It can be removed%n", candidate, cell, candidate, c, coloredCandidate.candidate);
+                        log("Rule 5: Uncolored candidate %d in %s can see a colored %d elsewhere (%s) and an oppositely colored %d in its own cell. It can be removed%n", candidate, cell, candidate, c, coloredCandidate.candidate);
                         candidatesToRemove.add(new ColoredCandidate(cell, candidate, NO_COLOR));
                         break;
                     }
@@ -247,7 +233,6 @@ public class ThreeDMedusa extends SolvingTechnique {
             }
         }
         if (!candidatesToRemove.isEmpty()) {
-            incrementCounter();
             candidatesToRemove.forEach(cc -> cc.cell.removeCandidate(cc.candidate));
             return candidatesToRemove.stream().map(ColoredCandidate::cell).distinct().toList();
         }
@@ -258,7 +243,7 @@ public class ThreeDMedusa extends SolvingTechnique {
      * Rule 6: If all candidates in a cell with no colored candidates can see the same color,
      * the cell would be emptied if that color was correct, so the opposite color must be correct
      */
-    private List<Cell> applyRule6() {
+    private List<Cell> rule6() {
         for (Cell cell : grid.getUnsolvedCells()) {
             if (hasColoredCandidates(cell)) continue;
             Map<Integer, Set<Integer>> colorCount = new HashMap<>();
@@ -274,7 +259,7 @@ public class ThreeDMedusa extends SolvingTechnique {
             if (colorCount.size() == 1) {
                 int color = colorCount.keySet().iterator().next();
                 if (colorCount.get(color).size() == cell.getCandidateCount()) {
-                    log(sb, "Rule 6: All candidates %s in %s are uncolored and can see the same color. That would empty the cell so all candidates of that colour can be removed.%n", cell.getCandidates(), cell);
+                    log("Rule 6: All candidates %s in %s are uncolored and can see the same color. That would empty the cell so all candidates of that colour can be removed.%n", cell.getCandidates(), cell);
                     return eliminateColor(color);
                 }
             }
@@ -295,11 +280,8 @@ public class ThreeDMedusa extends SolvingTechnique {
         // Eliminate all candidates of the specified color
         for (ColoredCandidate cc : coloredCandidates.stream().filter(cc -> cc.color == colorToEliminate).toList()) {
             cc.cell.removeCandidate(cc.candidate);
-            log(sb, "Removed %d from %s%n", cc.candidate, cc.cell);
+            log("Removed %d from %s%n", cc.candidate, cc.cell);
             modifiedCells.add(cc.cell);
-        }
-        if (!modifiedCells.isEmpty()) {
-            incrementCounter();
         }
         return modifiedCells;
     }
@@ -340,5 +322,10 @@ public class ThreeDMedusa extends SolvingTechnique {
             };
             return cell + " (" + candidate + ", " + color + ")";
         }
+    }
+
+    @FunctionalInterface
+    private interface Rule {
+        List<Cell> apply();
     }
 }

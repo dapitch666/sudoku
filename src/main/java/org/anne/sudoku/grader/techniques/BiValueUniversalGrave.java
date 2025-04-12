@@ -12,7 +12,7 @@ public class BiValueUniversalGrave extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         int unsolvedCells = grid.getUnsolvedCells().length;
         Cell[] cells = grid.getCellsWithNCandidates(3);
         if (cells.length != 1) return List.of();
@@ -24,7 +24,7 @@ public class BiValueUniversalGrave extends SolvingTechnique {
                 || grid.getCellsInUnitWithCandidate(digit, UnitType.COL, cell.getCol()).length > 2
                 || grid.getCellsInUnitWithCandidate(digit, UnitType.BOX, cell.getBox()).length > 2) {
                     cell.removeAllBut(List.of(digit));
-                    log(sb, "BUG found in %s. %d must be the solution%n", cell, digit);
+                    log("BUG found in %s. %d must be the solution%n", cell, digit);
                     incrementCounter();
                     return List.of(cell);
                 }

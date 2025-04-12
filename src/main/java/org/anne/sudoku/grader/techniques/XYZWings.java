@@ -6,13 +6,13 @@ import org.anne.sudoku.grader.Grid;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XyzWings extends SolvingTechnique {
-    public XyzWings() {
+public class XYZWings extends SolvingTechnique {
+    public XYZWings() {
         super("XYZ-Wings");
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         for (int digit = 1; digit <= 9; digit++) {
             for (Cell hinge : grid.getCellsWithCandidate(digit)) {
                 if (hinge.getCandidates().size() == 3) {
@@ -39,7 +39,7 @@ public class XyzWings extends SolvingTechnique {
                         if (peer.isCandidate(x) && peer.isPeer(wing1) && peer.isPeer(wing2)) {
                             changed.add(peer);
                             peer.removeCandidate(x);
-                            log(sb, "XYZ-Wing in %s (hinge), %s and %s (%d, %d, %d). Removed %d from %s%n", hinge, wing1, wing2, x, y, z, x, peer);
+                            log("XYZ-Wing in %s (hinge), %s and %s (%d, %d, %d). Removed %d from %s%n", hinge, wing1, wing2, x, y, z, x, peer);
                         }
                     }
                     if (!changed.isEmpty()) {

@@ -14,7 +14,7 @@ public class BoxLineReduction extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
             for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
@@ -26,8 +26,8 @@ public class BoxLineReduction extends SolvingTechnique {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    log(sb, "Box-line reduction in %s: ", UnitType.ROW.toString(unitIndex));
-                                    log(sb, "removed %s from %s:%n", i, cell);
+                                    log("Box-line reduction in %s: ", UnitType.ROW.toString(unitIndex));
+                                    log("removed %s from %s:%n", i, cell);
                                 }
                             }
                         }
@@ -36,8 +36,8 @@ public class BoxLineReduction extends SolvingTechnique {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    log(sb, "Box-line reduction in %s: ", UnitType.COL.toString(unitIndex));
-                                    log(sb, "removed %s from %s:%n", i, cell);
+                                    log("Box-line reduction in %s: ", UnitType.COL.toString(unitIndex));
+                                    log("removed %s from %s:%n", i, cell);
                                 }
                             }
                         }

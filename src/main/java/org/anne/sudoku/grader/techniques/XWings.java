@@ -12,7 +12,7 @@ public class XWings extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
             for (int i = 1; i <= 9; i++) {
                 List<Cell[]> list = new ArrayList<>();
@@ -41,7 +41,7 @@ public class XWings extends SolvingTechnique {
                                     }
                                     if (!removed.isEmpty()) {
                                         changed.add(cell);
-                                        log(sb, "X-Wing %d in %s. Removed %d from %s%n", i, xWing.stream().map(Cell::toString).toList(), i, cell);
+                                        log("X-Wing %d in %s. Removed %d from %s%n", i, xWing.stream().map(Cell::toString).toList(), i, cell);
                                     }
                                 }
                             }

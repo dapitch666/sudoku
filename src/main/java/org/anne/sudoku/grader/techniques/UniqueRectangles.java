@@ -13,61 +13,41 @@ public class UniqueRectangles extends SolvingTechnique {
     }
 
     private Grid grid;
-    private StringBuilder sb;
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         this.grid = grid;
-        this.sb = sb;
         List<Rectangle> rectangles = getRectangles();
-        List<Cell> changed;
+        List<Rule> rules = List.of(this::rule1, this::rule2, this::rule3, this::rule4, this::rule5);
 
-        for (Rectangle rectangle : rectangles) {
-            changed = applyRule1(rectangle);
-            if (!changed.isEmpty()) return changed;
-        }
-
-        for (Rectangle rectangle : rectangles) {
-            changed = applyRule2(rectangle);
-            if (!changed.isEmpty()) return changed;
-        }
-
-        for (Rectangle rectangle : rectangles) {
-            changed = applyRule3(rectangle);
-            if (!changed.isEmpty()) return changed;
-        }
-
-        for (Rectangle rectangle : rectangles) {
-            changed = applyRule4(rectangle);
-            if (!changed.isEmpty()) return changed;
-        }
-
-        for (Rectangle rectangle : rectangles) {
-            changed = applyRule5(rectangle);
-            if (!changed.isEmpty()) return changed;
+        for (Rule rule : rules) {
+            for (Rectangle rectangle : rectangles) {
+                List<Cell> changed = rule.apply(rectangle);
+                if (!changed.isEmpty()) return changed;
+            }
         }
         // No changes made
         return List.of();
     }
 
-    private List<Cell> applyRule1(Rectangle rectangle) {
+    private List<Cell> rule1(Rectangle rectangle) {
         if (!rectangle.cellC().isBiValue() && !rectangle.cellD().isBiValue()) return List.of();
         Cell cell = rectangle.cellC().isBiValue() ? rectangle.cellD() : rectangle.cellC();
         var removed = cell.removeCandidates(rectangle.commonCandidates());
         if (!removed.isEmpty()) {
-            log(sb, "Unique Rectangle Type 1 found: %s. Removed candidates %s from %s%n", rectangle, removed, cell);
+            log("Unique Rectangle Type 1 found: %s. Removed candidates %s from %s%n", rectangle, removed, cell);
             incrementCounter();
             return List.of(cell);
         }
         return List.of();
     }
 
-    private List<Cell> applyRule2(Rectangle rectangle) {
+    private List<Cell> rule2(Rectangle rectangle) {
         if (!rectangle.bothRoofAreTriValue() || !rectangle.roofHasSameCandidates()) return List.of();
         int digit = rectangle.cellC().getCandidates().stream().filter(d -> !rectangle.commonCandidates().contains(d)).findFirst().orElseThrow();
         var changed = grid.getCommonPeersWithCandidate(rectangle.cellC(), rectangle.cellD(), digit);
         if (!changed.isEmpty()) {
-            log(sb, "Unique Rectangle Type 2 found: %s. Removed candidates %d from %s%n", rectangle, digit, changed);
+            log("Unique Rectangle Type 2 found: %s. Removed candidates %d from %s%n", rectangle, digit, changed);
             changed.forEach(cell -> cell.removeCandidate(digit));
             incrementCounter();
             return changed;
@@ -75,7 +55,7 @@ public class UniqueRectangles extends SolvingTechnique {
         return List.of();
     }
 
-    private List<Cell> applyRule3(Rectangle rectangle) {
+    private List<Cell> rule3(Rectangle rectangle) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : rectangle.cellC().getCommonUnitType(rectangle.cellD())) {
             List<Cell> cells = Arrays.stream(grid.getCells(unitType, rectangle.cellC().getUnitIndex(unitType)))
@@ -92,20 +72,20 @@ public class UniqueRectangles extends SolvingTechnique {
                 }
                 List<Integer> removed = cell.removeCandidates(extraCandidates);
                 if (!removed.isEmpty()) {
-                    log(sb, "Removed candidates %s from %s%n", removed, cell);
+                    log("Removed candidates %s from %s%n", removed, cell);
                     changed.add(cell);
                 }
             }
         }
         if (!changed.isEmpty()) {
             incrementCounter();
-            log(sb, 0, "Unique Rectangle Type 3 found: %s.%n", rectangle);
+            log(0, "Unique Rectangle Type 3 found: %s.%n", rectangle);
             return changed;
         }
         return List.of();
     }
 
-    private List<Cell> applyRule4(Rectangle rectangle) {
+    private List<Cell> rule4(Rectangle rectangle) {
         int digit = -1;
         if (grid.isConjugatePair(rectangle.cellC(), rectangle.cellD(), rectangle.commonCandidates().getFirst())) {
             digit = rectangle.commonCandidates().getLast();
@@ -113,14 +93,25 @@ public class UniqueRectangles extends SolvingTechnique {
             digit = rectangle.commonCandidates().getFirst();
         }
         if (digit == -1)     return List.of();
-        log(sb, "Unique Rectangle Type 4 found: %s.%nRemoving %d from roof cells [%s, %s]%n", rectangle, digit, rectangle.cellC(), rectangle.cellD());
+        log("Unique Rectangle Type 4 found: %s.%nRemoving %d from roof cells [%s, %s]%n", rectangle, digit, rectangle.cellC(), rectangle.cellD());
         rectangle.cellC().removeCandidate(digit);
         rectangle.cellD().removeCandidate(digit);
         incrementCounter();
         return List.of(rectangle.cellC(), rectangle.cellD());
     }
 
-    private List<Cell> applyRule5(Rectangle rectangle) {
+    private List<Cell> rule5(Rectangle rectangle) {
+        if (rectangle.cellA.isPeer(rectangle.cellB)) return List.of();
+        for (int digit : rectangle.commonCandidates()) {
+            if (grid.isConjugatePair(rectangle.cellA, rectangle.cellC, digit) && grid.isConjugatePair(rectangle.cellA, rectangle.cellD, digit)) {
+                int digitToRemove = rectangle.commonCandidates().stream().filter(d -> d != digit).findFirst().orElseThrow();
+                log("Unique Rectangle Type 5 found: %s.%nRemoving %d from roof cells [%s, %s]%n", rectangle, digitToRemove, rectangle.cellA, rectangle.cellB);
+                rectangle.cellA.removeCandidate(digitToRemove);
+                rectangle.cellB.removeCandidate(digitToRemove);
+                incrementCounter();
+                return List.of(rectangle.cellA, rectangle.cellB);
+            }
+        }
         return List.of();
     }
 
@@ -228,5 +219,10 @@ public class UniqueRectangles extends SolvingTechnique {
         public String toString() {
             return String.format("[%s, %s, %s, %s]", cellA, cellB, cellC, cellD);
         }
+    }
+
+    @FunctionalInterface
+    private interface Rule {
+        List<Cell> apply(Rectangle rectangle);
     }
 }

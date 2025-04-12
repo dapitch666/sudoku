@@ -12,7 +12,7 @@ public class PointingPairs extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
@@ -26,8 +26,8 @@ public class PointingPairs extends SolvingTechnique {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    log(sb, "%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.ROW.toString(map.get(i).getFirst().getRow()));
-                                    log(sb, "removed %s from %s:%n", i, cell);
+                                    log("%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.ROW.toString(map.get(i).getFirst().getRow()));
+                                    log("removed %s from %s:%n", i, cell);
                                 }
                             }
                         }
@@ -36,8 +36,8 @@ public class PointingPairs extends SolvingTechnique {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    log(sb, "%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.COL.toString(map.get(i).getFirst().getCol()));
-                                    log(sb, "removed %s from %s:%n", i, cell);
+                                    log("%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.COL.toString(map.get(i).getFirst().getCol()));
+                                    log("removed %s from %s:%n", i, cell);
                                 }
                             }
                         }
@@ -46,8 +46,8 @@ public class PointingPairs extends SolvingTechnique {
                             if (cell.isNotSolved() && !map.get(i).contains(cell)) {
                                 if (cell.removeCandidate(i)) {
                                     changed.add(cell);
-                                    log(sb, "%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.BOX.toString(map.get(i).getFirst().getBox()));
-                                    log(sb, "removed %s from %s:%n", i, cell);
+                                    log("%s between %s and %s: ", map.get(i).size() == 2 ? "PAIR " : "TRIPLE ", unitType.toString(unitIndex), UnitType.BOX.toString(map.get(i).getFirst().getBox()));
+                                    log("removed %s from %s:%n", i, cell);
                                 }
                             }
                         }

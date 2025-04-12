@@ -12,12 +12,12 @@ public class NakedSingles extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (Cell cell : grid.getUnsolvedCells()) {
             if (cell.getCandidateCount() == 1) {
                 cell.setValue(cell.getFirstCandidate());
-                log(sb, "Last candidate, %d, in %s changed to solution%n", cell.getValue(), cell);
+                log("Last candidate, %d, in %s changed to solution%n", cell.getValue(), cell);
                 changed.add(cell);
                 incrementCounter();
             }

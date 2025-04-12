@@ -28,7 +28,7 @@ public class ManualSolver {
                 new YWings(),
                 new RectangleElimination(),
                 new SwordFish(),
-                new XyzWings(),
+                new XYZWings(),
                 new BiValueUniversalGrave(),
                 new XCycles(),
                 new XYChains(),
@@ -64,11 +64,11 @@ public class ManualSolver {
 //            System.out.println(grid);
             List<Cell> changedCells = new ArrayList<>();
             for (SolvingTechnique technique : techniques) {
-                changedCells.addAll(technique.apply(grid, sb));
+                changedCells.addAll(technique.apply(grid));
                 if (changedCells.isEmpty()) {
                     continue;
                 }
-                System.out.printf("Step %d: %s%n", steps, technique.getName());
+                System.out.printf("Step %d: %s%n%s", steps, technique.getName(), technique.getLog());
                 for (Cell cell : changedCells) {
                     if (cell.getCandidateCount() == 1) {
                         cell.setValue(cell.getFirstCandidate());

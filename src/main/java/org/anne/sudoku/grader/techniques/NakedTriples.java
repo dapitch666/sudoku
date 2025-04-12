@@ -12,7 +12,7 @@ public class NakedTriples extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
@@ -38,7 +38,7 @@ public class NakedTriples extends SolvingTechnique {
                                     }
                                     if (!removed.isEmpty()) {
                                         changed.add(cell);
-                                        log(sb, "Naked triple %s in %s, on cells [%s, %s, %s]. Removed %s from %s%n", triple, unitType.toString(unitIndex), cells.get(i), cells.get(j), cells.get(k), removed, cell);
+                                        log("Naked triple %s in %s, on cells [%s, %s, %s]. Removed %s from %s%n", triple, unitType.toString(unitIndex), cells.get(i), cells.get(j), cells.get(k), removed, cell);
                                     }
                                 }
                             }

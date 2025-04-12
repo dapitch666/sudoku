@@ -14,7 +14,7 @@ public class RectangleElimination extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
             for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
                 Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(grid.getCells(unitType, unitIndex), list -> list.size() == 2);
@@ -32,7 +32,7 @@ public class RectangleElimination extends SolvingTechnique {
                             if (oppositeBoxCellsWithCandidate.length != 0 && Arrays.stream(oppositeBoxCellsWithCandidate)
                                     .allMatch(cell -> cell.isPeer(wing1) || cell.isPeer(wing2))) {
                                 wing2.removeCandidate(candidate);
-                                log(sb, "%s found in Hinge %s, wing1 %s and wing2 %s, we can remove %s as candidate in %s%n", candidate, hinge, wing1, wing2, candidate, wing2);
+                                log("%s found in Hinge %s, wing1 %s and wing2 %s, we can remove %s as candidate in %s%n", candidate, hinge, wing1, wing2, candidate, wing2);
                                 incrementCounter();
                                 return List.of(wing2);
                             }

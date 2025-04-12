@@ -13,7 +13,7 @@ public class HiddenQuads extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
@@ -43,7 +43,7 @@ public class HiddenQuads extends SolvingTechnique {
                                     List<Integer> removed = cell.removeAllBut(List.of(i, j, k, l));
                                     if (!removed.isEmpty()) {
                                         changed.add(cell);
-                                        log(sb, "Hidden quad (%s, %s, %s, %s) in %s. Removed %s from %s%n", i, j, k, l, quad.stream().map(Cell::toString).collect(Collectors.joining(", ")), removed, cell);
+                                        log("Hidden quad (%s, %s, %s, %s) in %s. Removed %s from %s%n", i, j, k, l, quad.stream().map(Cell::toString).collect(Collectors.joining(", ")), removed, cell);
                                     }
                                 }
                                 if (!changed.isEmpty()) incrementCounter();

@@ -9,8 +9,12 @@ public class SimpleColoring extends SolvingTechnique {
         super("Simple Coloring");
     }
 
+    private Grid grid;
+
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
+        this.grid = grid;
+        List<Rule> rules = List.of(this::rule1, this::rule2);
         for (int digit = 1; digit <= 9; digit++) {
             Map<Cell, List<Cell>> strongLinks = grid.findStrongLinks(digit);
             NetBuilder<Cell> netBuilder = new NetBuilder<>(strongLinks);
@@ -18,10 +22,14 @@ public class SimpleColoring extends SolvingTechnique {
                 List<ColoredCell> cells = new ArrayList<>();
                 colorNet(chain.getRoot(), cells, 1);
 
-                var changed = applyRule1(digit, cells, sb);
-                if (!changed.isEmpty()) return changed;
-                changed = applyRule2(grid, digit, cells, sb);
-                if (!changed.isEmpty()) return changed;
+                for (Rule rule : rules) {
+                    List<Cell> changed = rule.apply(digit, cells);
+                    if (!changed.isEmpty()) {
+                        incrementCounter();
+                        log(0, "Chain of %d: %s%n", digit, chain);
+                        return changed;
+                    }
+                }
             }
         }
         return List.of();
@@ -35,7 +43,7 @@ public class SimpleColoring extends SolvingTechnique {
         }
     }
 
-    private List<Cell> applyRule1(int digit, List<ColoredCell> chain, StringBuilder sb) {
+    private List<Cell> rule1(int digit, List<ColoredCell> chain) {
         List<Cell> changed = new ArrayList<>();
         for (ColoredCell cell : chain) {
             for (ColoredCell other : chain) {
@@ -43,10 +51,8 @@ public class SimpleColoring extends SolvingTechnique {
                     for (Cell c : chain.stream().filter(coloredCell -> coloredCell.color == cell.color).map(c -> c.cell).toList()) {
                         c.removeCandidate(digit);
                         changed.add(c);
-                        log(sb, "%d removed from %s due to Simple Coloring Rule 1%n", digit, c);
+                        log("%d removed from %s due to Simple Coloring Rule 1%n", digit, c);
                     }
-                    incrementCounter();
-                    log(sb, 0, "Chain of %d: %s%n", digit, chain);
                     return changed;
                 }
             }
@@ -54,7 +60,7 @@ public class SimpleColoring extends SolvingTechnique {
         return List.of();
     }
 
-    private List<Cell> applyRule2(Grid grid, int digit, List<ColoredCell> chain, StringBuilder sb) {
+    private List<Cell> rule2(int digit, List<ColoredCell> chain) {
         List<Cell> changed = new ArrayList<>();
         List<Cell> color1 = chain.stream().filter(c -> c.color == 1).map(ColoredCell::cell).toList();
         List<Cell> color2 = chain.stream().filter(c -> c.color == 2).map(ColoredCell::cell).toList();
@@ -63,12 +69,8 @@ public class SimpleColoring extends SolvingTechnique {
             if (color1.stream().anyMatch(c -> c.isPeer(cell)) && color2.stream().anyMatch(c -> c.isPeer(cell))) {
                 cell.removeCandidate(digit);
                 changed.add(cell);
-                sb.append(String.format("%d removed from %s due to Simple Coloring Rule 2%n", digit, cell));
+                log("%d removed from %s due to Simple Coloring Rule 2%n", digit, cell);
             }
-        }
-        if (!changed.isEmpty()) {
-            incrementCounter();
-            sb.insert(0, String.format("Chain of %d: %s%n", digit, chain));
         }
         return changed;
     }
@@ -78,5 +80,10 @@ public class SimpleColoring extends SolvingTechnique {
         public String toString() {
             return cell.toString();
         }
+    }
+
+    @FunctionalInterface
+    private interface Rule {
+        List<Cell> apply(int digit, List<ColoredCell> chain);
     }
 }

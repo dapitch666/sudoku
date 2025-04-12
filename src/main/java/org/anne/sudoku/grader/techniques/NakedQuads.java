@@ -12,7 +12,7 @@ public class NakedQuads extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
@@ -40,7 +40,7 @@ public class NakedQuads extends SolvingTechnique {
                                         }
                                         if (!removed.isEmpty()) {
                                             changed.add(cell);
-                                            log(sb, "Naked quad in %s, %s, %s and %s. Removed %s from %s%n", cells.get(i), cells.get(j), cells.get(k), cells.get(l), removed, cell);
+                                            log("Naked quad in %s, %s, %s and %s. Removed %s from %s%n", cells.get(i), cells.get(j), cells.get(k), cells.get(l), removed, cell);
                                         }
                                     }
                                 }

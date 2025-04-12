@@ -8,9 +8,12 @@ public class XCycles extends SolvingTechnique {
     public XCycles() {
         super("X-Cycles");
     }
+
+    private Grid grid;
     
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
+        this.grid = grid;
         for (int digit = 1; digit <= 9; digit++) {
             // Find all cycles for the current digit
             // A cycle is a sequence of cells that alternate between strong and weak links
@@ -22,14 +25,15 @@ public class XCycles extends SolvingTechnique {
                 // Classify the cycle
                 CycleType cycleType = classifyCycle(cycle, strongLinks);
                 // Apply the appropriate rule based on the cycle type
-                 var changed = switch (cycleType) {
-                    case CONTINUOUS -> applyRule1(grid, digit, cycle, sb);
-                    case DISCONTINUOUS_STRONG -> applyRule2(digit, cycle, sb);
-                    case DISCONTINUOUS_WEAK -> applyRule3(digit, cycle, sb);
-                 };
+                Rule rule = switch (cycleType) {
+                    case CONTINUOUS -> this::rule1;
+                    case DISCONTINUOUS_STRONG -> this::rule2;
+                    case DISCONTINUOUS_WEAK -> this::rule3;
+                };
+                var changed = rule.apply(digit, cycle);
                 if (!changed.isEmpty()) {
                     incrementCounter();
-                    log(sb, 0, "%s on %d (length %d) detected in %s:%n", cycleType, digit, cycle.size(), cycle.stream().map(Cell::toString).toList());
+                    log(0, "%s on %d (length %d) detected in %s:%n", cycleType, digit, cycle.size(), cycle.stream().map(Cell::toString).toList());
                     return changed;
                 }
             }
@@ -37,18 +41,18 @@ public class XCycles extends SolvingTechnique {
         return List.of();
     }
 
-    private List<Cell> applyRule3(int digit, Cycle<Cell> cycle, StringBuilder sb) {
+    private List<Cell> rule3(int digit, Cycle<Cell> cycle) {
         // If the adjacent links are links with weak inference (broken line),
         // the candidate can be eliminated from the cell at the discontinuity.
         // As the first link in the cycle is considered a weak link,
         // the cell with the discontinuity is the first one.
         Cell cell = cycle.getFirst();
         cell.removeCandidate(digit);
-        log(sb, "Removed %d from %s%n", digit, cell);
+        log("Removed %d from %s%n", digit, cell);
         return List.of(cell);
     }
 
-    private List<Cell> applyRule2(int digit, Cycle<Cell> cycle, StringBuilder sb) {
+    private List<Cell> rule2(int digit, Cycle<Cell> cycle) {
         // If the adjacent links are links with strong inference,
         // a candidate can be fixed in the cell at the discontinuity.
         // As the first link in the cycle is considered a weak link,
@@ -56,19 +60,19 @@ public class XCycles extends SolvingTechnique {
         Cell cell = cycle.getLast();
         var removed = cell.removeAllBut(digit);
         if (!removed.isEmpty()) {
-            log(sb, "Removed %s from %s%n", removed, cell);
+            log("Removed %s from %s%n", removed, cell);
             return List.of(cell);
         }
         return List.of();
     }
 
-    private List<Cell> applyRule1(Grid grid, int digit, Cycle<Cell> cycle, StringBuilder sb) {
+    private List<Cell> rule1(int digit, Cycle<Cell> cycle) {
         List<Cell> changed = new ArrayList<>();
         for (int i = 0; i < cycle.size() - 1; i += 2) {
             for (Cell cell : grid.getCommonPeersWithCandidate(cycle.get(i), cycle.get(i + 1), digit)) {
                 if (!cycle.contains(cell) && cell.removeCandidate(digit)) {
                     changed.add(cell);
-                    log(sb, "Removed %d from %s%n", digit, cell);
+                    log("Removed %d from %s%n", digit, cell);
                 }
             }
         }
@@ -98,5 +102,10 @@ public class XCycles extends SolvingTechnique {
                 case DISCONTINUOUS_WEAK -> "Discontinuous Alternating Nice Loop (Weak)";
             };
         }
+    }
+
+    @FunctionalInterface
+    private interface Rule {
+        List<Cell> apply(int digit, Cycle<Cell> cycle);
     }
 }

@@ -13,7 +13,7 @@ public class HiddenTriples extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
@@ -36,7 +36,7 @@ public class HiddenTriples extends SolvingTechnique {
                                     List<Integer> removed = cell.removeAllBut(List.of(i, j, k));
                                     if (!removed.isEmpty()) {
                                         changed.add(cell);
-                                        log(sb, "Hidden triple (%s, %s, %s) in %s. Removed %s from %s%n", i, j, k, triple.stream().map(Cell::toString).collect(Collectors.joining(", ")), removed, cell);
+                                        log("Hidden triple (%s, %s, %s) in %s. Removed %s from %s%n", i, j, k, triple.stream().map(Cell::toString).collect(Collectors.joining(", ")), removed, cell);
                                     }
                                 }
                                 if (!changed.isEmpty()) {

@@ -12,7 +12,7 @@ public class HiddenPairs extends SolvingTechnique {
     }
 
     @Override
-    public List<Cell> apply(Grid grid, StringBuilder sb) {
+    public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
@@ -26,7 +26,7 @@ public class HiddenPairs extends SolvingTechnique {
                             List<Integer> removed = cell.removeAllBut(List.of(i, j));
                             if (!removed.isEmpty()) {
                                 changed.add(cell);
-                                log(sb, "Hidden pair (%s, %s) in %s and %s. Removed %s from %s%n", i, j, map.get(i).get(0), map.get(i).get(1), removed, cell);
+                                log("Hidden pair (%s, %s) in %s and %s. Removed %s from %s%n", i, j, map.get(i).get(0), map.get(i).get(1), removed, cell);
                             }
                         }
                     }
