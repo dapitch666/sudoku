@@ -27,7 +27,7 @@ public class SimpleColoring extends SolvingTechnique {
                     List<Cell> changed = rule.apply(digit, cells);
                     if (!changed.isEmpty()) {
                         incrementCounter();
-                        log(0, "Chain of %d: %s%n", digit, chain);
+                        log(0, "Chain of %d%n", digit);
                         return changed;
                     }
                 }

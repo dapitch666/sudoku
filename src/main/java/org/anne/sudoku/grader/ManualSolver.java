@@ -36,7 +36,8 @@ public class ManualSolver {
                 new XYChains(),
                 new ThreeDMedusa(),
                 new JellyFish(),
-                new UniqueRectangles()
+                new UniqueRectangles(),
+                new fireworks()
                 );
     }
 
