@@ -1,8 +1,8 @@
 package org.anne.sudoku.grader.techniques;
 
 import org.anne.sudoku.Grade;
-import org.anne.sudoku.grader.Cell;
-import org.anne.sudoku.grader.Grid;
+import org.anne.sudoku.model.Cell;
+import org.anne.sudoku.model.Grid;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,9 +17,6 @@ public class fireworks extends SolvingTechnique {
     @Override
     public List<Cell> apply(Grid grid) {
         for (Cell cell : grid.getUnsolvedCells()) {
-            if (cell.toString().equals("H7")) {
-                System.out.println("H7");
-            }
             Map<Integer, List<Cell>> fireworks = new HashMap<>();
             List<Cell> peers = Arrays.stream(grid.getPeers(cell))
                     .filter(c -> c.isNotSolved() && c.getBox() != cell.getBox())

@@ -1,8 +1,8 @@
 package org.anne.sudoku.grader.techniques;
 
 import org.anne.sudoku.Grade;
-import org.anne.sudoku.grader.Cell;
-import org.anne.sudoku.grader.Grid;
+import org.anne.sudoku.model.Cell;
+import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.grader.UnitType;
 
 import java.util.Arrays;

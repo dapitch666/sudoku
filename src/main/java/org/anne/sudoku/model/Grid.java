@@ -1,28 +1,34 @@
-package org.anne.sudoku.grader;
+package org.anne.sudoku.model;
+
+import org.anne.sudoku.grader.UnitType;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+/*
+ * Sudoku Grid class representing a Sudoku puzzle.
+ * It contains methods to manipulate and check the state of the grid.
+ */
+
 public class Grid {
-    String puzzle;
-    Cell[] cells;
+    private final Cell[] cells = new Cell[81];
+
+    public Grid() {
+        for (int i = 0; i < 81; i++) {
+            cells[i] = new Cell(i / 9, i % 9);
+        }
+    }
 
     public Grid(String puzzle) {
-        this.puzzle = puzzle;
-        cells = new Cell[81];
+        this();
         for (int i = 0; i < 81; i++) {
-            int row = i / 9;
-            int column = i % 9;
-            cells[i] = new Cell(row, column);
             if (puzzle.charAt(i) != '.' && puzzle.charAt(i) != '0') {
-                cells[i] = new Cell(row, column, puzzle.charAt(i) - '0');
-            } else {
-                cells[i] = new Cell(row, column);
+                cells[i].setValue(puzzle.charAt(i) - '0');
             }
         }
     }
 
-    boolean isSolved() {
+    public boolean isSolved() {
         for (int i = 0; i < 81; i++) {
             if (cells[i].value == 0) {
                 return false;
@@ -31,7 +37,7 @@ public class Grid {
         return true;
     }
 
-    String currentState() {
+    public String currentState() {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < 81; i++) {
             stringBuilder.append(cells[i].value);
@@ -75,6 +81,10 @@ public class Grid {
         return Arrays.stream(cells).filter(Cell::isNotSolved).toArray(Cell[]::new);
     }
 
+    public Cell[] getSolvedCells() {
+        return Arrays.stream(cells).filter(Cell::isSolved).toArray(Cell[]::new);
+    }
+
     public Cell[] getPeers(Cell cell) {
         Set<Cell> peers = Arrays.stream(getRow(cell.getRow())).collect(Collectors.toSet());
         peers.addAll(Arrays.stream(getCol(cell.getCol())).collect(Collectors.toSet()));
@@ -103,7 +113,7 @@ public class Grid {
     }
 
     public Cell[] getCellsWithCandidates(List<Integer> digits) {
-        return Arrays.stream(cells).filter(c -> new HashSet<>(c.candidates).containsAll(digits)).toArray(Cell[]::new);
+        return Arrays.stream(cells).filter(c -> new HashSet<>(c.getCandidates()).containsAll(digits)).toArray(Cell[]::new);
     }
 
     public Cell[] getBiValueCells() {
@@ -191,18 +201,19 @@ public class Grid {
     /* ************************************************** */
 
     public void checkForSolvedCells() {
-        for (int i = 0; i < 81; i++) {
-            if (cells[i].justSolved) {
-                Cell cell = cells[i];
-                int value = cell.value;
-                for (Cell peer : getPeers(cell)) {
-                    if (peer.isNotSolved()) {
-                        peer.removeCandidate(value);
-                    }
+        for (Cell cell : getJustSolvedCells()) {
+            int value = cell.value;
+            for (Cell peer : getPeers(cell)) {
+                if (peer.isNotSolved()) {
+                    peer.removeCandidate(value);
                 }
-                cell.justSolved = false;
             }
+            cell.unsetJustSolved();
         }
+    }
+
+    private Cell[] getJustSolvedCells() {
+        return Arrays.stream(cells).filter(Cell::isJustSolved).toArray(Cell[]::new);
     }
 
     public void showPossible() {
@@ -219,45 +230,45 @@ public class Grid {
     @Override
     public String toString() {
         return String.format("""
-                     1   2   3     4   5   6     7   8   9
-                  +-------------+-------------+-------------+
-                  | %s %s %s | %s %s %s | %s %s %s |
-                A | %s %s %s | %s %s %s | %s %s %s |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                  |             |             |             |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                B | %s %s %s | %s %s %s | %s %s %s |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                  |             |             |             |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                C | %s %s %s | %s %s %s | %s %s %s |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                  +-------------+-------------+-------------+
-                  | %s %s %s | %s %s %s | %s %s %s |
-                D | %s %s %s | %s %s %s | %s %s %s |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                  |             |             |             |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                E | %s %s %s | %s %s %s | %s %s %s |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                  |             |             |             |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                F | %s %s %s | %s %s %s | %s %s %s |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                  +-------------+-------------+-------------+
-                  | %s %s %s | %s %s %s | %s %s %s |
-                G | %s %s %s | %s %s %s | %s %s %s |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                  |             |             |             |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                H | %s %s %s | %s %s %s | %s %s %s |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                  |             |             |             |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                J | %s %s %s | %s %s %s | %s %s %s |
-                  | %s %s %s | %s %s %s | %s %s %s |
-                  +-------------+-------------+-------------+
-                """, getCell(0, 0), getCell(1, 0), getCell(2, 0), getCell(3, 0), getCell(4, 0), getCell(5, 0), getCell(6, 0), getCell(7, 0), getCell(8, 0),
+                             1   2   3     4   5   6     7   8   9
+                          +-------------+-------------+-------------+
+                          | %s %s %s | %s %s %s | %s %s %s |
+                        A | %s %s %s | %s %s %s | %s %s %s |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                          |             |             |             |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                        B | %s %s %s | %s %s %s | %s %s %s |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                          |             |             |             |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                        C | %s %s %s | %s %s %s | %s %s %s |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                          +-------------+-------------+-------------+
+                          | %s %s %s | %s %s %s | %s %s %s |
+                        D | %s %s %s | %s %s %s | %s %s %s |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                          |             |             |             |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                        E | %s %s %s | %s %s %s | %s %s %s |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                          |             |             |             |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                        F | %s %s %s | %s %s %s | %s %s %s |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                          +-------------+-------------+-------------+
+                          | %s %s %s | %s %s %s | %s %s %s |
+                        G | %s %s %s | %s %s %s | %s %s %s |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                          |             |             |             |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                        H | %s %s %s | %s %s %s | %s %s %s |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                          |             |             |             |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                        J | %s %s %s | %s %s %s | %s %s %s |
+                          | %s %s %s | %s %s %s | %s %s %s |
+                          +-------------+-------------+-------------+
+                        """, getCell(0, 0), getCell(1, 0), getCell(2, 0), getCell(3, 0), getCell(4, 0), getCell(5, 0), getCell(6, 0), getCell(7, 0), getCell(8, 0),
                 getCell(0, 1), getCell(1, 1), getCell(2, 1), getCell(3, 1), getCell(4, 1), getCell(5, 1), getCell(6, 1), getCell(7, 1), getCell(8, 1),
                 getCell(0, 2), getCell(1, 2), getCell(2, 2), getCell(3, 2), getCell(4, 2), getCell(5, 2), getCell(6, 2), getCell(7, 2), getCell(8, 2),
                 getCell(9, 0), getCell(10, 0), getCell(11, 0), getCell(12, 0), getCell(13, 0), getCell(14, 0), getCell(15, 0), getCell(16, 0), getCell(17, 0),
@@ -286,7 +297,7 @@ public class Grid {
                 getCell(72, 2), getCell(73, 2), getCell(74, 2), getCell(75, 2), getCell(76, 2), getCell(77, 2), getCell(78, 2), getCell(79, 2), getCell(80, 2));
     }
 
-    private String getCell (int i, int line) {
+    private String getCell(int i, int line) {
         Cell cell = cells[i];
         if (cell.isNotSolved()) {
             return switch (line) {
@@ -307,7 +318,7 @@ public class Grid {
     private String formatCandidates(Cell cell, int... candidates) {
         StringBuilder sb = new StringBuilder();
         for (int candidate : candidates) {
-            sb.append(cell.candidates.contains(candidate) ? candidate : ".");
+            sb.append(cell.getCandidates().contains(candidate) ? candidate : ".");
         }
         return sb.toString();
     }

@@ -21,8 +21,6 @@ import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.*;
 import org.anne.sudoku.Sudoku;
-import org.anne.sudoku.solver.MultipleSolutionsFinder;
-import org.anne.sudoku.solver.Solver;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,22 +1,27 @@
-package org.anne.sudoku.grader;
+package org.anne.sudoku.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.anne.sudoku.grader.UnitType;
+
+import java.util.*;
 
 public class Cell {
-    int row;
-    int col;
-    int box;
+    private final int row;
+    private final int col;
+    private final int box;
     int value;
-    List<Integer> candidates;
-    boolean justSolved = false;
+    private final BitSet candidates = new BitSet(9);
+    private boolean justSolved = false;
+    private boolean isGiven;
 
     public Cell(int row, int col) {
         this.row = row;
         this.col = col;
         this.box = (row / 3) * 3 + col / 3;
         this.value = 0;
-        this.candidates = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        this.isGiven = false;
+        for (int i = 1; i <= 9; i++) {
+            candidates.set(i);
+        }
     }
 
     public Cell(int row, int col, int value) {
@@ -24,6 +29,19 @@ public class Cell {
         this.col = col;
         this.box = (row / 3) * 3 + col / 3;
         setValue(value);
+        this.isGiven = true;
+    }
+
+    public void setGiven() {
+        this.isGiven = true;
+    }
+
+    public void resetGiven() {
+        this.isGiven = false;
+    }
+
+    public boolean isGiven() {
+        return this.isGiven;
     }
 
     public int getRow() {
@@ -43,60 +61,82 @@ public class Cell {
     }
 
     public List<Integer> getCandidates() {
-        return candidates;
+        List<Integer> candidateList = new ArrayList<>();
+        for (int i = 1; i <= 9; i++) {
+            if (candidates.get(i)) {
+                candidateList.add(i);
+            }
+        }
+        return candidateList;
     }
 
     public void setValue(Integer value) {
         this.value = value;
-        this.candidates = List.of();
+        this.candidates.clear();
         this.justSolved = true;
     }
 
+    public boolean hasCandidate(int digit) {
+        return candidates.get(digit);
+    }
+
     public int getCandidateCount() {
-        return candidates.size();
+        return candidates.cardinality();
     }
 
     public int getFirstCandidate() {
-        return candidates.getFirst();
+        return candidates.nextSetBit(0);
     }
 
-    public boolean removeCandidate(int candidate) {
-        if (isCandidate(candidate)) {
-            return candidates.remove((Integer) candidate);
+    public boolean removeCandidate(int digit) {
+        if (candidates.get(digit)) {
+            candidates.set(digit, false);
+            return true;
         }
         return false;
     }
 
-    public List<Integer> removeCandidates(List<Integer> candidatesToRemove) {
+    public List<Integer> removeCandidates(List<Integer> digits) {
         List<Integer> removed = new ArrayList<>();
-        for (int candidate : candidatesToRemove) {
-            if (removeCandidate(candidate)) {
-                removed.add(candidate);
+        for (int digit : digits) {
+            if (removeCandidate(digit)) {
+                removed.add(digit);
             }
         }
         return removed;
     }
 
-    public boolean isCandidate(int i) {
-        return candidates.contains(i);
+    public void removeCandidates(BitSet valuesToRemove) {
+        this.candidates.andNot(valuesToRemove);
+    }
+
+    public void clearCandidates() {
+        this.candidates.clear();
+    }
+
+    public boolean isCandidate(int digit) {
+        return candidates.get(digit);
     }
 
     public boolean isNotSolved() {
         return value == 0;
     }
 
-    public List<Integer> removeAllBut(List<Integer> i) {
-        List<Integer> removed = candidates.stream().filter(c -> !i.contains(c)).toList();
+    public List<Integer> removeAllBut(List<Integer> digits) {
+        List<Integer> removed = candidates.stream().filter(i -> !digits.contains(i)).boxed().toList();
         for (int candidate : removed) {
             removeCandidate(candidate);
         }
         return removed;
     }
 
-    public List<Integer> removeAllBut(int i) {
-        List<Integer> removed = candidates.stream().filter(c -> c != i).toList();
-        for (int candidate : removed) {
-            removeCandidate(candidate);
+    public List<Integer> removeAllBut(int digit) {
+        List<Integer> removed = new ArrayList<>();
+        for (int i = 1; i <= 9; i++) {
+            if (i != digit) {
+                removed.add(i);
+                removeCandidate(i);
+            }
         }
         return removed;
     }
@@ -124,7 +164,7 @@ public class Cell {
     }
 
     public boolean isBiValue() {
-        return candidates.size() == 2;
+        return candidates.cardinality() == 2;
     }
 
     public int getUnitIndex(UnitType unitType) {
@@ -141,5 +181,13 @@ public class Cell {
 
     public int getVerticalChute() {
         return getBox() % 3;
+    }
+
+    public void unsetJustSolved() {
+        this.justSolved = false;
+    }
+
+    public boolean isJustSolved() {
+        return justSolved;
     }
 }
