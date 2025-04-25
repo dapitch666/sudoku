@@ -14,20 +14,23 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.action.PdfAction;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.event.PdfDocumentEvent;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.Style;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.*;
-import org.anne.sudoku.Sudoku;
+import org.anne.sudoku.solver.Generator;
+import org.anne.sudoku.model.Grid;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class PdfGenerator {
     private static final String DEST = "results/Sudoku.pdf";
@@ -56,12 +59,21 @@ public class PdfGenerator {
         Document document = new Document(pdf, PageSize.A4);
 
         addCover(document);
+
+        PdfCanvas canvas = new PdfCanvas(pdf.getFirstPage());
+
+        canvas.beginText()
+                .setFontAndSize(PdfFontFactory.createFont(StandardFonts.HELVETICA), 6)
+                .showText(String.format("Created on %s", java.time.LocalDate.now()))
+                .endText()
+                .stroke();
+
         document.setTopMargin(50f);
 
-        List<Sudoku> sudokuList = generateSudokuList();
+        List<Grid> sudokuList = generateSudokuList();
         List<Table> solutions = new ArrayList<>();
 
-        for (Sudoku sudoku : sudokuList) {
+        for (Grid sudoku : sudokuList) {
             int index = sudokuList.indexOf(sudoku);
             document.add(new AreaBreak());
             addLinkImage(document, index);
@@ -79,22 +91,24 @@ public class PdfGenerator {
         try {
             Image img = new Image(ImageDataFactory.create("src/main/resources/Cover.png"));
             document.setMargins(0, 0, 0, 0);
+            Paragraph paragraph = new Paragraph();
+            paragraph.setFixedPosition(0, 0, PageSize.A4.getWidth())
+                    .setHeight(PageSize.A4.getHeight())
+                    .setWidth(PageSize.A4.getWidth())
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE);
             document.add(img);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static List<Sudoku> generateSudokuList() {
-        List<Sudoku> sudokuList = new ArrayList<>();
-        while (sudokuList.size() < NUMBER_OF_PUZZLES) {
-            Sudoku sudoku = new Sudoku();
-            if (sudoku.isValid()) {
-                sudokuList.add(sudoku);
-            }
-        }
-        sudokuList.sort(Comparator.comparing(Sudoku::getGrade));
-        return sudokuList;
+    private static List<Grid> generateSudokuList() {
+        Generator generator = new Generator();
+        return IntStream.range(1, NUMBER_OF_PUZZLES + 1)
+                .mapToObj(_ -> generator.generate())
+                // .sorted(Comparator.comparingInt(grid -> grid.getGrade()))
+                .toList();
     }
 
     private static void addLinkImage(Document document, int index) {
@@ -116,7 +130,7 @@ public class PdfGenerator {
         document.add(title);
     }
 
-    private static void addGridDescription(Document document, PdfFont textFont, Sudoku sudoku) {
+    private static void addGridDescription(Document document, PdfFont textFont, Grid sudoku) {
         Paragraph gridDescription = new Paragraph(sudoku.getGrade() + " Puzzle")
                 .setFont(textFont)
                 .setFontSize(24)
@@ -125,7 +139,7 @@ public class PdfGenerator {
         document.add(gridDescription);
     }
 
-    private static void addSolutions(Document document, PdfFont textFont, List<Sudoku> sudokuList, List<Table> solutions) {
+    private static void addSolutions(Document document, PdfFont textFont, List<Grid> sudokuList, List<Table> solutions) {
         for (int i = 0; i < sudokuList.size(); i += 4) {
             List<Table> solutionTables = new ArrayList<>();
             for (int j = 0; j < 4 && i + j < sudokuList.size(); j++) {
@@ -159,7 +173,7 @@ public class PdfGenerator {
         }
     }
 
-    private static Table gridTable(Sudoku sudoku, boolean solution) throws IOException {
+    private static Table gridTable(Grid sudoku, boolean solution) throws IOException {
         float multiplier = solution ? 0.4f : 1;
         float cellSize = CELL_SIZE * multiplier;
         float borderSize = 0.8f * multiplier;
@@ -184,7 +198,7 @@ public class PdfGenerator {
                 .setTextAlignment(TextAlignment.CENTER)
                 .setHorizontalAlignment(HorizontalAlignment.CENTER);
 
-        String puzzle = solution ? sudoku.grid : sudoku.getPuzzle();
+        String puzzle = solution ? sudoku.getSolution() : sudoku.getPuzzle();
 
         for (int i = 0; i < puzzle.length(); i++) {
             char c = puzzle.charAt(i);
@@ -199,7 +213,7 @@ public class PdfGenerator {
                     .setMarginTop(0f)
                     .setMarginBottom(0f);
             if (!isEmpty) {
-                cell.addStyle(sudoku.isEditable(i) ? editableStyle : nonEditableStyle);
+                cell.addStyle(sudoku.isClue(i) ? nonEditableStyle : editableStyle);
             }
             cell.add(paragraph);
             grid.addCell(cell);

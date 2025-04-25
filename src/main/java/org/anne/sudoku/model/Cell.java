@@ -1,64 +1,54 @@
 package org.anne.sudoku.model;
 
-import org.anne.sudoku.grader.UnitType;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Objects;
 
 public class Cell {
-    private final int row;
-    private final int col;
-    private final int box;
-    int value;
+    private final int index;
+    private int value = 0;
     private final BitSet candidates = new BitSet(9);
-    private boolean justSolved = false;
-    private boolean isGiven;
+    private boolean justSolved;
 
-    public Cell(int row, int col) {
-        this.row = row;
-        this.col = col;
-        this.box = (row / 3) * 3 + col / 3;
-        this.value = 0;
-        this.isGiven = false;
-        for (int i = 1; i <= 9; i++) {
-            candidates.set(i);
-        }
+    public Cell(int index, int value) {
+        this.index = index;
+        this.value = value;
+        if (value == 0) this.candidates.set(1, 10);
+        this.justSolved = value != 0;
     }
 
-    public Cell(int row, int col, int value) {
-        this.row = row;
-        this.col = col;
-        this.box = (row / 3) * 3 + col / 3;
-        setValue(value);
-        this.isGiven = true;
+    public Cell(int index, BitSet candidates) {
+        this.index = index;
+        this.candidates.or(candidates);
     }
 
-    public void setGiven() {
-        this.isGiven = true;
-    }
-
-    public void resetGiven() {
-        this.isGiven = false;
-    }
-
-    public boolean isGiven() {
-        return this.isGiven;
+    public void setValue(int value) {
+        this.value = value;
+        this.candidates.clear();
+        this.justSolved = true;
     }
 
     public int getRow() {
-        return row;
+        return index / 9;
     }
 
     public int getCol() {
-        return col;
+        return index % 9;
     }
 
     public int getBox() {
-        return box;
+        return (index / 9) / 3 * 3 + (index % 9) / 3;
     }
 
-    public int getValue() {
-        return value;
+    public int getHorizontalChute() {
+        return getBox() / 3;
     }
+
+    public int getVerticalChute() {
+        return getBox() % 3;
+    }
+
 
     public List<Integer> getCandidates() {
         List<Integer> candidateList = new ArrayList<>();
@@ -70,56 +60,92 @@ public class Cell {
         return candidateList;
     }
 
-    public void setValue(Integer value) {
-        this.value = value;
-        this.candidates.clear();
-        this.justSolved = true;
+    public int getValue() {
+        return value;
     }
 
     public boolean hasCandidate(int digit) {
         return candidates.get(digit);
     }
 
+    public boolean hasCandidates(List<Integer> digits) {
+        for (int digit : digits) {
+            if (!candidates.get(digit)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public int getCandidateCount() {
         return candidates.cardinality();
+    }
+
+    public boolean isBiValue() {
+        return candidates.cardinality() == 2;
     }
 
     public int getFirstCandidate() {
         return candidates.nextSetBit(0);
     }
 
-    public boolean removeCandidate(int digit) {
-        if (candidates.get(digit)) {
-            candidates.set(digit, false);
-            return true;
-        }
-        return false;
+    public boolean isPeer(Cell other) {
+        return this != other && (this.getRow() == other.getRow() || this.getCol() == other.getCol() || this.getBox() == other.getBox());
     }
 
-    public List<Integer> removeCandidates(List<Integer> digits) {
-        List<Integer> removed = new ArrayList<>();
-        for (int digit : digits) {
-            if (removeCandidate(digit)) {
-                removed.add(digit);
-            }
-        }
-        return removed;
+    public boolean isSolved() {
+        return candidates.cardinality() == 0;
     }
 
-    public void removeCandidates(BitSet valuesToRemove) {
-        this.candidates.andNot(valuesToRemove);
+    public void unsetJustSolved() {
+        this.justSolved = false;
     }
 
-    public void clearCandidates() {
-        this.candidates.clear();
+
+    @Override
+    public String toString() {
+        String LETTERS = "ABCDEFGHJ";
+        return String.format("%s%s", LETTERS.charAt(getRow()), getCol() + 1);
     }
 
-    public boolean isCandidate(int digit) {
-        return candidates.get(digit);
+    public int index() {
+        return index;
     }
 
-    public boolean isNotSolved() {
-        return value == 0;
+    public int value() {
+        return value;
+    }
+
+    public BitSet candidates() {
+        return candidates;
+    }
+
+    public boolean justSolved() {
+        return justSolved;
+    }
+
+    public int getUnitIndex(UnitType unitType) {
+        return switch (unitType) {
+            case ROW -> getRow();
+            case COL -> getCol();
+            case BOX -> getBox();
+        };
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (Cell) obj;
+        return this.index == that.index &&
+                Objects.equals(this.value, that.value) &&
+                Objects.equals(this.candidates, that.candidates) &&
+                this.justSolved == that.justSolved;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(index, value, candidates, justSolved);
     }
 
     public List<Integer> removeAllBut(List<Integer> digits) {
@@ -129,6 +155,7 @@ public class Cell {
         }
         return removed;
     }
+
 
     public List<Integer> removeAllBut(int digit) {
         List<Integer> removed = new ArrayList<>();
@@ -141,53 +168,34 @@ public class Cell {
         return removed;
     }
 
-    public boolean isSolved() {
-        return value != 0;
+    public void removeCandidates(BitSet valuesToRemove) {
+        this.candidates.andNot(valuesToRemove);
     }
 
-    public boolean isPeer(Cell other) {
-        return this != other && (row == other.row || col == other.col || box == other.box);
+    public List<Integer> removeCandidates(List<Integer> valuesToRemove) {
+        List<Integer> removed = new ArrayList<>();
+        for (int value : valuesToRemove) {
+            if (candidates.get(value)) {
+                this.candidates.clear(value);
+                removed.add(value);
+            }
+        }
+        return removed;
+    }
+
+    public boolean removeCandidate(int digit) {
+        if (candidates.get(digit)) {
+            candidates.clear(digit);
+            return true;
+        }
+        return false;
     }
 
     public List<UnitType> getCommonUnitType(Cell other) {
         List<UnitType> unitTypes = new ArrayList<>();
-        if (this.row == other.row) unitTypes.add(UnitType.ROW);
-        if (this.col == other.col) unitTypes.add(UnitType.COL);
-        if (this.box == other.box) unitTypes.add(UnitType.BOX);
+        if (this.getRow() == other.getRow()) unitTypes.add(UnitType.ROW);
+        if (this.getCol() == other.getCol()) unitTypes.add(UnitType.COL);
+        if (this.getBox() == other.getBox()) unitTypes.add(UnitType.BOX);
         return unitTypes;
-    }
-
-    @Override
-    public String toString() {
-        String LETTERS = "ABCDEFGHJ";
-        return String.format("%s%s", LETTERS.charAt(row), col + 1);
-    }
-
-    public boolean isBiValue() {
-        return candidates.cardinality() == 2;
-    }
-
-    public int getUnitIndex(UnitType unitType) {
-        return switch (unitType) {
-            case ROW -> row;
-            case COL -> col;
-            case BOX -> box;
-        };
-    }
-
-    public int getHorizontalChute() {
-        return getBox() / 3;
-    }
-
-    public int getVerticalChute() {
-        return getBox() % 3;
-    }
-
-    public void unsetJustSolved() {
-        this.justSolved = false;
-    }
-
-    public boolean isJustSolved() {
-        return justSolved;
     }
 }

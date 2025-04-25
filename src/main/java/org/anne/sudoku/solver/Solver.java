@@ -1,131 +1,102 @@
 package org.anne.sudoku.solver;
 
-import org.anne.sudoku.utils.PrintUtils;
-import org.anne.sudoku.utils.Timer;
-import org.anne.sudoku.utils.Utils;
+import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Cell;
+import org.anne.sudoku.model.Grid;
+import org.anne.sudoku.solver.techniques.*;
 
-import static org.anne.sudoku.Constants.DIGITS;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Solver {
-    public static final int N = 9;
-    public final String puzzle;
-    private String solution;
-    public final int[] grid = new int[N * N];
-    private final boolean[][] rows = new boolean[N][N + 1];
-    private final boolean[][] cols = new boolean[N][N + 1];
-    private final boolean[][] squares = new boolean[N][N + 1];
+    Grid grid;
+    List<SolvingTechnique> techniques;
+    Grade highestDifficulty = Grade.UNKNOWN;
 
-    static int backtrackCount = 0;
-    // static final String defaultPuzzle = "85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.";
-    // static final String defaultPuzzle = "..7........1....3..5..4.6...4....7...6...3........1..2.....7.......6..8...2.....1";
-    // static final String defaultPuzzle = "5.4.6.......2...8...81....9.395...67....7.91.47...1.....13....5.....92.3.8.7.....";
-    static final String defaultPuzzle = "5.43697.12367.1849...248...45......76974.23583......64...175...7419.65839.58341.2";
-    // static final String defaultPuzzle = "632.7..9.5.13.2......8.....76...3.81.........95.7...36.....7......6.48.2.4..8.56.";
-
-    public Solver(String input) {
-        puzzle = sanitize(input);
-        for (int i = 0; i < N * N; i++) {
-            set(i, puzzle.charAt(i) - '0');
-        }
+    public Solver(String puzzle) {
+        this.grid = new Grid(puzzle);
+        this.techniques = List.of(
+                new NakedSingles(), // VERY_EASY
+                new HiddenSingles(),
+                new NakedPairs(),
+                new NakedTriples(), // EASY
+                new HiddenPairs(),
+                new HiddenTriples(), // MODERATE
+                new NakedQuads(),
+                new HiddenQuads(),
+                new PointingPairs(),
+                new BoxLineReduction(),
+                new XWings(), // HARD
+                new ChuteRemotePairs(),
+                new SimpleColoring(),
+                new YWings(),
+                new RectangleElimination(),
+                new SwordFish(),
+                new XYZWings(),
+                new BiValueUniversalGrave(),
+                new XCycles(), // VERY_HARD
+                new XYChains(),
+                new ThreeDMedusa(),
+                new JellyFish(),
+                new UniqueRectangles(),
+                new fireworks()
+        );
     }
 
-    public void set(int index, int digit) {
-        grid[index] = digit;
-        if (digit != 0) {
-            rows[index / N][digit] = true;
-            cols[index % N][digit] = true;
-            squares[(index / N) / 3 * 3 + (index % N) / 3][digit] = true;
-        }
-    }
-
-    public String getSolution() {
-        if (solution == null) {
-            solve();
-            solution = Utils.arrayToString(grid);
-        }
-        return solution;
-    }
-
-    public boolean solve() {
-        int index = bestIndex();
-        if (index == -1) return true; // All cells are filled, sudoku is solved
-
-        for (int digit : DIGITS) {
-            if (isValidMove(index, digit)) {
-                set(index, digit);
-                if (solve()) return true;
-                backtrack(index, digit);
+    public void solve() {
+        int steps = 0;
+        boolean changed;
+        StringBuilder sb = new StringBuilder();
+        do {
+            if (grid.isSolved()) {
+                System.out.println();
+                techniques.forEach(SolvingTechnique::printCounters);
+                break;
             }
-        }
-        backtrackCount++;
-        return false;
-    }
-
-    public int get(int index) {
-        return grid[index];
-    }
-
-    public void backtrack(int index, int digit) {
-        grid[index] = 0;
-        rows[index / N][digit] = false;
-        cols[index % N][digit] = false;
-        squares[(index / N) / 3 * 3 + (index % N) / 3][digit] = false;
-    }
-
-    private String sanitize(String input) {
-        return String.format("%-" + (N * N) + "s", input)
-                .replaceAll("[^0-9]", "0")
-                .substring(0, N * N);
-    }
-
-    public boolean isValidMove(int index, int digit) {
-        return !rows[index / N][digit] && !cols[index % N][digit] && !squares[(index / N) / 3 * 3 + (index % N) / 3][digit];
-    }
-
-    private int countCandidates(int index) {
-        int count = 0;
-        for (int digit = 1; digit <= N; digit++) {
-            if (isValidMove(index, digit)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public int bestIndex() {
-        int minCandidates = N + 1;
-        int bestIndex = -1;
-        for (int i = 0; i < N * N; i++) {
-            if (grid[i] == 0) {
-                int options = countCandidates(i);
-                if (options == 0) return i;
-                if (options < minCandidates) {
-                    minCandidates = options;
-                    bestIndex = i;
+            changed = false;
+            steps++;
+            grid.checkForSolvedCells();
+            grid.showPossible();
+//            System.out.println(grid);
+            List<Cell> changedCells = new ArrayList<>();
+            for (SolvingTechnique technique : techniques) {
+                changedCells.addAll(technique.apply(grid));
+                if (changedCells.isEmpty()) {
+                    continue;
                 }
+                if (technique.getDifficulty().getLevel() > highestDifficulty.getLevel()) {
+                    highestDifficulty = technique.getDifficulty();
+                }
+                System.out.printf("Step %d: %s%n%s", steps, technique.getName(), technique.getLog());
+                for (Cell cell : changedCells) {
+                    if (cell.getCandidateCount() == 1) {
+                        grid.set(cell.index(), cell.getFirstCandidate(), false);
+                        sb.append(String.format("Last candidate, %d, in %s changed to solution%n", cell.getValue(), cell));
+                    }
+                }
+                System.out.println(sb);
+                sb.setLength(0);
+                changed = true;
+                break;
             }
-        }
-        return bestIndex;
+        } while (changed);
     }
 
-    public static void main(String[] args) {
-        Timer timer = new Timer();
-        Solver solver = new Solver(args.length == 0 ? defaultPuzzle : args[0]);
-        if (!Utils.isValidPuzzle(solver.puzzle)) {
-            System.out.println("Invalid input!");
-            return;
+    public int getCounter(String techniqueName) {
+        for (SolvingTechnique technique : techniques) {
+            if (technique.getName().equals(techniqueName)) {
+                return technique.getCounter();
+            }
         }
-        if (Utils.isAlreadySolved(solver.puzzle)) {
-            System.out.println("Puzzle is already solved!");
-            return;
-        }
-        if (!solver.solve()) {
-            System.out.println("No solution found!");
-            System.out.println(PrintUtils.printOne(solver.puzzle));
-            return;
-        }
-        System.out.println(PrintUtils.printBoth(solver.puzzle, solver.grid));
-        System.out.println(timer.duration());
-        System.out.println("Number of backtracks: " + backtrackCount);
+        return 0;
     }
+
+    public Grade getGrade() {
+        return highestDifficulty;
+    }
+
+    public Grid getGrid() {
+        return grid;
+    }
+
 }

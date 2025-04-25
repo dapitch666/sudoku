@@ -5,159 +5,47 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SolverTest {
+public class SolverTest {
 
     @Test
-    void solve() {
-        Solver solver = new Solver("85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.");
+    void moderateTest() {
+        String puzzle = "72..96..3...2.5....8...4.2........6.1.65.38.7.4........3.8...9....7.2...2..43..18";
+        String solved = "725196483463285971981374526372948165196523847548617239634851792819762354257439618";
+        runTest(puzzle, solved, new String[]{"Hidden Pairs", "Naked Triples"}, new int[]{1, 1}, true);
+    }
 
-        int[] expectedSolution = {
-                8, 5, 9, 6, 1, 2, 4, 3, 7,
-                7, 2, 3, 8, 5, 4, 1, 6, 9,
-                1, 6, 4, 3, 7, 9, 5, 2, 8,
-                9, 8, 6, 1, 4, 7, 3, 5, 2,
-                3, 7, 5, 2, 6, 8, 9, 1, 4,
-                2, 4, 1, 5, 9, 3, 7, 8, 6,
-                4, 3, 2, 9, 8, 1, 6, 7, 5,
-                6, 1, 7, 4, 2, 5, 8, 9, 3,
-                5, 9, 8, 7, 3, 6, 2, 4, 1
-        };
+    public static void runTest(String puzzle, String solved, String[] techniques, int[] counts, boolean debug) {
+        Solver solver = new Solver(puzzle);
+        // Capture output
+        if (!debug) System.setOut(new PrintStream(new ByteArrayOutputStream()));
 
         solver.solve();
-        assertArrayEquals(expectedSolution, solver.grid);
-    }
-
-    @Test
-    void testMainWithValidInput() {
-        // Capture the output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-
-        // Run the main method
-        String[] args = {"85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4."};
-        Solver.main(args);
-
-        // Verify the output contains expected strings
-        String output = outContent.toString();
-        assertTrue(output.contains("Executed in"));
-        assertTrue(output.contains("ms"));
-        assertTrue(output.contains("Solution:"));
 
         // Reset the standard output
-        System.setOut(System.out);
+        if (!debug) System.setOut(System.out);
+
+        assertEquals(solved, solver.grid.currentState());
+        for (int i = 0; i < techniques.length; i++) {
+            assertEquals(counts[i], solver.getCounter(techniques[i]));
+        }
     }
 
-    @Test
-    void testMainWithInValidInput() {
-        // Capture the output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
+    public static void runTest(String puzzle, String solved, String[] techniques, boolean debug) {
+        Solver solver = new Solver(puzzle);
+        // Capture output
+        if (!debug) System.setOut(new PrintStream(new ByteArrayOutputStream()));
 
-        // Run the main method
-        String[] args = {"855..24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4."};
-        Solver.main(args);
-
-        // Verify the output contains expected strings
-        String output = outContent.toString();
-        assertTrue(output.contains("Invalid input"));
+        solver.solve();
 
         // Reset the standard output
-        System.setOut(System.out);
-    }
+        if (!debug) System.setOut(System.out);
 
-    @Test
-    void testMainWithNoSolution() {
-        // Capture the output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-
-        // Run the main method
-        String[] args = {"85.7.24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4."};
-        Solver.main(args);
-
-        // Verify the output contains expected strings
-        String output = outContent.toString();
-        assertTrue(output.contains("No solution found!"));
-
-        // Reset the standard output
-        System.setOut(System.out);
-    }
-
-    @Test
-    void testMainWithAlreadySolved() {
-        // Capture the output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-
-        // Run the main method
-        String[] args = {"859612437723854169164379528986147352375268914241593786432981675617425893598736241"};
-        Solver.main(args);
-
-        // Verify the output contains expected strings
-        String output = outContent.toString();
-        assertTrue(output.contains("Puzzle is already solved!"));
-
-        // Reset the standard output
-        System.setOut(System.out);
-    }
-
-    @Test
-    void testMainWithShortInput() {
-        // Capture the output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-
-        // Run the main method
-        String[] args = {"123456789"};
-        Solver.main(args);
-
-        // Verify the output contains expected strings
-        String output = outContent.toString();
-        assertTrue(output.contains("Executed in"));
-        assertTrue(output.contains("ms"));
-        assertTrue(output.contains("Solution:"));
-
-        // Reset the standard output
-        System.setOut(System.out);
-    }
-
-    @Test
-    void testMainWithLongInput() {
-        // Capture the output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-
-        // Run the main method
-        String[] args = {"85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.123456789"};
-        Solver.main(args);
-
-        // Verify the output contains expected strings
-        String output = outContent.toString();
-        assertTrue(output.contains("Executed in"));
-        assertTrue(output.contains("ms"));
-        assertTrue(output.contains("Solution:"));
-
-        // Reset the standard output
-        System.setOut(System.out);
-    }
-
-    @Test
-    void testMainWithEmptyInput() {
-        // Capture the output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-
-        // Run the main method
-        String[] args = {""};
-        Solver.main(args);
-
-        // Verify the output contains expected strings
-        String output = outContent.toString();
-        assertTrue(output.contains("Solution:"));
-
-        // Reset the standard output
-        System.setOut(System.out);
+        assertEquals(solved, solver.grid.currentState());
+        for (String technique : techniques) {
+            assertTrue(solver.getCounter(technique) > 0);
+        }
     }
 }
