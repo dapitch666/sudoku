@@ -1,6 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Predicates;
 import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
@@ -18,7 +19,7 @@ public class HiddenQuads extends SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(grid.getCells(unitType, unitIndex), list -> list.size() >= 2 && list.size() <= 4);
+                Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(grid.getCells(Predicates.inUnit(unitType, unitIndex)), list -> list.size() >= 2 && list.size() <= 4);
                 for (int i : map.keySet()) {
                     for (int j : map.keySet()) {
                         if (i == j) {

@@ -1,6 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Predicates;
 import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
@@ -19,7 +20,7 @@ public class HiddenSingles extends SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) { // For each row, column, square
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(grid.getCells(unitType, unitIndex), list -> list.size() == 1);
+                Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(grid.getCells(Predicates.inUnit(unitType, unitIndex)), list -> list.size() == 1);
                 for (int i : map.keySet()) {
                     Cell cell = map.get(i).getFirst();
                     List<Integer> removed = cell.removeAllBut(List.of(i));

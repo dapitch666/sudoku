@@ -1,6 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Predicates;
 import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
@@ -46,7 +47,7 @@ public class UniqueRectangles extends SolvingTechnique {
     private List<Cell> rule2(Rectangle rectangle) {
         if (!rectangle.bothRoofAreTriValue() || !rectangle.roofHasSameCandidates()) return List.of();
         int digit = rectangle.cellC().getCandidates().stream().filter(d -> !rectangle.commonCandidates().contains(d)).findFirst().orElseThrow();
-        var changed = grid.getCommonPeersWithCandidate(rectangle.cellC(), rectangle.cellD(), digit);
+        var changed = Arrays.stream(grid.getCells(Predicates.peers(rectangle.cellC()).and(Predicates.peers(rectangle.cellD())).and(Predicates.hasCandidate(digit)))).toList();
         if (!changed.isEmpty()) {
             log("Unique Rectangle Type 2 found: %s. Removed candidates %d from %s%n", rectangle, digit, changed);
             changed.forEach(cell -> cell.removeCandidate(digit));
@@ -59,9 +60,10 @@ public class UniqueRectangles extends SolvingTechnique {
     private List<Cell> rule3(Rectangle rectangle) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : rectangle.cellC().getCommonUnitType(rectangle.cellD())) {
-            List<Cell> cells = Arrays.stream(grid.getCells(unitType, rectangle.cellC().getUnitIndex(unitType)))
-                    .filter(cell -> !cell.isSolved())
-                    .filter(cell -> cell != rectangle.cellC() && cell != rectangle.cellD())
+            List<Cell> cells = Arrays.stream(grid.getCells(
+                            Predicates.inUnit(unitType, rectangle.cellC().getUnitIndex(unitType))
+                                    .and(Predicates.unsolvedCells)
+                                    .and(cell -> cell != rectangle.cellC() && cell != rectangle.cellD())))
                     .toList();
             List<Integer> extraCandidates = rectangle.extraCandidates();
             List<Cell> kCells = getNakedSubset(cells, extraCandidates);
@@ -93,7 +95,7 @@ public class UniqueRectangles extends SolvingTechnique {
         } else if (grid.isConjugatePair(rectangle.cellC(), rectangle.cellD(), rectangle.commonCandidates().getLast())) {
             digit = rectangle.commonCandidates().getFirst();
         }
-        if (digit == -1)     return List.of();
+        if (digit == -1) return List.of();
         log("Unique Rectangle Type 4 found: %s.%nRemoving %d from roof cells [%s, %s]%n", rectangle, digit, rectangle.cellC(), rectangle.cellD());
         rectangle.cellC().removeCandidate(digit);
         rectangle.cellD().removeCandidate(digit);
@@ -151,7 +153,7 @@ public class UniqueRectangles extends SolvingTechnique {
 
     private List<Rectangle> getRectangles() {
         List<Rectangle> rectangles = new ArrayList<>();
-        Cell[] biValueCells = grid.getBiValueCells();
+        Cell[] biValueCells = grid.getCells(Predicates.biValueCells);
         for (int i = 0; i < biValueCells.length; i++) {
             Cell cellA = biValueCells[i];
             List<Integer> candidates = cellA.getCandidates();
@@ -162,13 +164,13 @@ public class UniqueRectangles extends SolvingTechnique {
                 // Find a cell that has both cellA candidates perpendicular to cellA cellB
                 Cell[] cells;
                 if (cellA.getRow() == cellB.getRow()) {
-                    cells = grid.getCellsInUnitWithCandidates(candidates, UnitType.COL, cellA.getCol());
+                    cells = grid.getCells(Predicates.inUnit(UnitType.COL, cellA.getCol()).and(Predicates.hasCandidates(candidates)));
                 } else if (cellA.getCol() == cellB.getCol()) {
-                    cells = grid.getCellsInUnitWithCandidates(candidates, UnitType.ROW, cellA.getRow());
+                    cells = grid.getCells(Predicates.inUnit(UnitType.ROW, cellA.getRow()).and(Predicates.hasCandidates(candidates)));
                 } else if (cellA.getBox() == cellB.getBox()) {
                     continue;
                 } else if (cellA.getHorizontalChute() == cellB.getHorizontalChute() || cellA.getVerticalChute() == cellB.getVerticalChute()) {
-                    cells = grid.getCellsInUnitWithCandidates(candidates, UnitType.BOX, cellA.getBox());
+                    cells = grid.getCells(Predicates.inUnit(UnitType.BOX, cellA.getBox()).and(Predicates.hasCandidates(candidates)));
                 } else {
                     continue;
                 }

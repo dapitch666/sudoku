@@ -1,6 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Predicates;
 import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
@@ -17,9 +18,10 @@ public class ChuteRemotePairs extends SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (int index = 0; index < 3; index++) {
             for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
-                List<Cell> chute = new ArrayList<>(List.of(grid.getCells(unitType, index * 3)));
-                chute.addAll(List.of(grid.getCells(unitType, index * 3 + 1)));
-                chute.addAll(List.of(grid.getCells(unitType, index * 3 + 2)));
+                List<Cell> chute = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    chute.addAll(List.of(grid.getCells(Predicates.inUnit(unitType, index * 3 + i))));
+                }
                 for (Cell cell1 : chute) {
                     if (cell1.getCandidateCount() == 2) {
                         for (Cell cell2 : chute) {
@@ -37,9 +39,7 @@ public class ChuteRemotePairs extends SolvingTechnique {
                                 }
                                 if (remotePair.stream().filter(intSet::contains).count() == 1) {
                                     int i = remotePair.stream().filter(intSet::contains).findFirst().orElseThrow();
-                                    List<Cell> cell1Peers = Arrays.stream(grid.getPeers(cell1)).toList();
-                                    List<Cell> peers = Arrays.stream(grid.getPeers(cell2)).filter(cell1Peers::contains).toList();
-                                    for (Cell cell : peers) {
+                                    for (Cell cell : grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2)))) {
                                         if (cell.removeCandidate(i)) {
                                             changed.add(cell);
                                             log("Chute remote pair %s in %s and %s. Removed %s from %s%n", remotePair, cell1, cell2, i, cell);

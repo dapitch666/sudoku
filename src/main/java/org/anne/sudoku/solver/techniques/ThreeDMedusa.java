@@ -3,6 +3,7 @@ package org.anne.sudoku.solver.techniques;
 import org.anne.sudoku.Grade;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
+import org.anne.sudoku.model.Predicates;
 
 import java.util.*;
 
@@ -26,7 +27,7 @@ public class ThreeDMedusa extends SolvingTechnique {
         List<Rule> rules = List.of(this::rule1, this::rule2, this::rule3, this::rule4, this::rule5, this::rule6);
 
         // Find all candidates that can be connected through bi-value cells or bi-location
-        for (Cell startCell : grid.getUnsolvedCells()) {
+        for (Cell startCell : grid.getCells(Predicates.unsolvedCells)) {
             for (int candidate : startCell.getCandidates()) {
                 // Reset the color network for each new attempt
                 coloredCandidates = new HashSet<>();
@@ -71,8 +72,7 @@ public class ThreeDMedusa extends SolvingTechnique {
             int oppositeColor = (current.color == GREEN) ? YELLOW : GREEN;
 
             // Look for bi-location connections
-            for (Cell peer : grid.getPeers(current.cell)) {
-                if (peer.isSolved()) continue;
+            for (Cell peer : grid.getCells(Predicates.peers(current.cell).and(Predicates.unsolvedCells))) {
                 if (peer.getCandidates().contains(current.candidate) && grid.isStrongLink(current.cell, peer, current.candidate())) {
                     ColoredCandidate newCC = new ColoredCandidate(peer, current.candidate, oppositeColor);
                     if (visited.contains(newCC) || isAlreadyColored(newCC)) continue;
@@ -188,7 +188,7 @@ public class ThreeDMedusa extends SolvingTechnique {
                     .filter(cc -> cc.candidate == candidate && cc.color != color && cc.cell != cell)
                     .toList()) {
 
-                for (Cell peer : grid.getCommonPeersWithCandidate(cell, other.cell, candidate)) {
+                for (Cell peer : grid.getCells(Predicates.peers(cell).and(Predicates.peers(other.cell)).and(Predicates.hasCandidate(candidate)))) {
                     if (candidatesToRemove.stream().anyMatch(cc -> cc.cell() == peer && cc.candidate() == candidate)) {
                         continue; // Ignore candidates that are already marked for removal
                     }
@@ -245,7 +245,7 @@ public class ThreeDMedusa extends SolvingTechnique {
      * the cell would be emptied if that color was correct, so the opposite color must be correct
      */
     private List<Cell> rule6() {
-        for (Cell cell : grid.getUnsolvedCells()) {
+        for (Cell cell : grid.getCells(Predicates.unsolvedCells)) {
             if (hasColoredCandidates(cell)) continue;
             Map<Integer, Set<Integer>> colorCount = new HashMap<>();
             for (int candidate : cell.getCandidates()) {

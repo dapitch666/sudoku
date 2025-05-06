@@ -1,6 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Predicates;
 import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
@@ -18,7 +19,7 @@ public class NakedPairs extends SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                Cell[] unit = grid.getCells(unitType, unitIndex);
+                Cell[] unit = grid.getCells(Predicates.inUnit(unitType, unitIndex));
 
                 for (int i = 0; i < 9; i++) {
                     if (unit[i].getCandidateCount() != 2) {

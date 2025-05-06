@@ -3,6 +3,7 @@ package org.anne.sudoku.solver.techniques;
 import org.anne.sudoku.Grade;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
+import org.anne.sudoku.model.Predicates;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class XYZWings extends SolvingTechnique {
                     Integer[] candidates = hinge.getCandidates().stream().filter(candidate -> candidate != x).toArray(Integer[]::new);
                     int y = candidates[0];
                     int z = candidates[1];
-                    Cell[] peers = grid.getPeers(hinge);
+                    Cell[] peers = grid.getCells(Predicates.peers(hinge));
                     Cell wing1 = null, wing2 = null;
                     for (Cell peer : peers) {
                         if (peer.getCandidates().size() == 2 && peer.hasCandidate(x) && peer.hasCandidate(y)) {

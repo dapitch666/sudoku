@@ -3,11 +3,9 @@ package org.anne.sudoku.solver.techniques;
 import org.anne.sudoku.Grade;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
+import org.anne.sudoku.model.Predicates;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class XYChains extends SolvingTechnique {
     public XYChains() {
@@ -16,7 +14,7 @@ public class XYChains extends SolvingTechnique {
 
     @Override
     public List<Cell> apply(Grid grid) {
-        for (Cell cell : grid.getBiValueCells()) {
+        for (Cell cell : grid.getCells(Predicates.biValueCells)) {
             for (int digit : cell.getCandidates()) {
                 Set<List<Cell>> chains = new HashSet<>();
                 // Try to build chain from this cell
@@ -24,10 +22,9 @@ public class XYChains extends SolvingTechnique {
                 if (!chains.isEmpty()) {
                     for (List<Cell> chain : chains) {
                         if (chain.size() < 3 || !chain.getLast().hasCandidate(digit)) continue;
-                        // if (chain.getFirst().isPeer(chain.getLast())) continue;
                         Cell cell1 = chain.getFirst();
                         Cell cell2 = chain.getLast();
-                        List<Cell> peers = grid.getCommonPeersWithCandidate(cell1, cell2, digit);
+                        List<Cell> peers = Arrays.stream(grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2)).and(Predicates.hasCandidate(digit)))).toList();
                         if (peers.isEmpty()) continue;
                         log(0, "XY Chain found for %d: %s%n", digit, chain);
                         for (Cell c : peers) {
@@ -56,7 +53,7 @@ public class XYChains extends SolvingTechnique {
         }
 
         // Look for next link in chain among peers
-        for (Cell peer : grid.getPeers(currentCell)) {
+        for (Cell peer : grid.getCells(Predicates.peers(currentCell))) {
             if (peer.isBiValue() && peer.hasCandidate(otherDigit) && !currentChain.contains(peer)) {
                 currentChain.add(peer);
                 findXYChain(grid, targetDigit, otherDigit, currentChain, results);

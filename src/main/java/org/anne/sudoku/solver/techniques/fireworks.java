@@ -3,6 +3,8 @@ package org.anne.sudoku.solver.techniques;
 import org.anne.sudoku.Grade;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
+import org.anne.sudoku.model.Predicates;
+import org.anne.sudoku.model.UnitType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,11 +18,12 @@ public class fireworks extends SolvingTechnique {
 
     @Override
     public List<Cell> apply(Grid grid) {
-        for (Cell cell : grid.getUnsolvedCells()) {
+        for (Cell cell : grid.getCells(Predicates.unsolvedCells)) {
             Map<Integer, List<Cell>> fireworks = new HashMap<>();
-            List<Cell> peers = Arrays.stream(grid.getPeers(cell))
-                    .filter(c -> !c.isSolved() && c.getBox() != cell.getBox())
-                    .toList();
+
+            Cell[] peers = grid.getCells(Predicates.peers(cell).and(Predicates.unsolvedCells)
+                    .and(Predicates.inUnit(UnitType.BOX, cell.getBox()).negate()));
+
             Map<Integer, List<Cell>> map = new HashMap<>();
             for (int digit : cell.getCandidates()) {
                 List<Cell> cells = new ArrayList<>();

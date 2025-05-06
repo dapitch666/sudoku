@@ -1,10 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
-import org.anne.sudoku.model.Cycle;
-import org.anne.sudoku.model.Graph;
-import org.anne.sudoku.model.Grid;
-import org.anne.sudoku.model.Cell;
+import org.anne.sudoku.model.*;
 
 import java.util.*;
 
@@ -73,7 +70,7 @@ public class XCycles extends SolvingTechnique {
     private List<Cell> rule1(int digit, Cycle<Cell> cycle) {
         List<Cell> changed = new ArrayList<>();
         for (int i = 0; i < cycle.size() - 1; i += 2) {
-            for (Cell cell : grid.getCommonPeersWithCandidate(cycle.get(i), cycle.get(i + 1), digit)) {
+            for (Cell cell : grid.getCells(Predicates.peers(cycle.get(i)).and(Predicates.peers(cycle.get(i + 1))).and(Predicates.hasCandidate(digit)))) {
                 if (!cycle.contains(cell) && cell.removeCandidate(digit)) {
                     changed.add(cell);
                     log("Removed %d from %s%n", digit, cell);

@@ -1,6 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Predicates;
 import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
@@ -108,7 +109,7 @@ public class SKLoops extends SolvingTechnique {
 
     private List<PseudoCell[]> findRectangles(Grid grid) {
         List<PseudoCell[]> rectangles = new ArrayList<>();
-        Cell[] solvedCells = grid.getSolvedCells();
+        Cell[] solvedCells = grid.getCells(Predicates.solvedCells);
         for (int i = 0; i < solvedCells.length; i++) {
             PseudoCell cellA = new PseudoCell(solvedCells[i], getCellsInBoxAndUnit(solvedCells[i], UnitType.ROW),
                     getCellsInBoxAndUnit(solvedCells[i], UnitType.ROW));
@@ -307,7 +308,7 @@ public class SKLoops extends SolvingTechnique {
 
     private Pair getPairsInBoxAndUnit(Cell cell, UnitType unitType) {
         List<Cell> cells = new ArrayList<>();
-        for (Cell peer : grid.getPeers(cell)) {
+        for (Cell peer : grid.getCells(Predicates.peers(cell))) {
             if (peer.getBox() != cell.getBox()) continue;
             if (unitType == UnitType.ROW && peer.getRow() == cell.getRow()) {
                 cells.add(peer);
@@ -320,7 +321,7 @@ public class SKLoops extends SolvingTechnique {
 
     private Cell[] getCellsInBoxAndUnit(Cell cell, UnitType unitType) {
         List<Cell> cells = new ArrayList<>();
-        for (Cell peer : grid.getPeers(cell)) {
+        for (Cell peer : grid.getCells(Predicates.peers(cell))) {
             if (peer.getBox() != cell.getBox()) continue;
             if (unitType == UnitType.ROW && peer.getRow() == cell.getRow()) {
                 cells.add(peer);

@@ -31,7 +31,8 @@ public class BruteForce {
         for (int digit : prepareCandidates(cell, order)) {
             grid.set(cell.index(), digit, false);
             if (solve(grid, order)) return true;
-            grid.backtrack(cell.index(), digit);
+            // grid.backtrack(cell.index(), digit);
+            grid.clear(cell.index());
         }
         backtrackCount++;
         return false;

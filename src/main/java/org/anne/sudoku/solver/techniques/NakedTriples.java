@@ -1,6 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Predicates;
 import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
@@ -17,7 +18,7 @@ public class NakedTriples extends SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                Cell[] unit = grid.getCells(unitType, unitIndex);
+                Cell[] unit = grid.getCells(Predicates.inUnit(unitType, unitIndex));
                 List<Cell> cells = Arrays.stream(unit).filter(cell -> cell.getCandidateCount() == 2 || cell.getCandidateCount() == 3).toList();
                 for (int i = 0; i < cells.size(); i++) {
                     for (int j = i + 1; j < cells.size(); j++) {

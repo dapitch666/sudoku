@@ -1,6 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Predicates;
 import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
@@ -20,7 +21,7 @@ public class SwordFish extends SolvingTechnique {
             for (int digit = 1; digit <= 9; digit++) {
                 List<Cell[]> list = new ArrayList<>();
                 for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                    Cell[] cells = grid.getCellsInUnitWithCandidate(digit, unitType, unitIndex);
+                    Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex).and(Predicates.hasCandidate(digit)));
                     if (cells.length == 2 || cells.length == 3) {
                         list.add(cells);
                     }
@@ -45,11 +46,12 @@ public class SwordFish extends SolvingTechnique {
                             if (unitsIndex.size() == 3) {
                                 List<Cell> changed = new ArrayList<>();
                                 for (int col : unitsIndex) {
-                                    for (Cell cell : grid.getCellsInUnitWithCandidate(digit, unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, col))
+                                    for (Cell cell : grid.getCells(Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, col).and(Predicates.hasCandidate(digit)))) {
                                         if (!swordfish.contains(cell) && cell.removeCandidate(digit)) {
                                             changed.add(cell);
                                             log("Swordfish %d in %s. Removed %d from %s%n", digit, swordfish.stream().map(Cell::toString).toList(), digit, cell);
                                         }
+                                    }
                                 }
                                 if (!changed.isEmpty()) {
                                     incrementCounter();

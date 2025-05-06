@@ -29,6 +29,12 @@ public class Cell {
         this.justSolved = true;
     }
 
+    public void clear() {
+        this.value = 0;
+        this.candidates.set(1, 10);
+        this.justSolved = false;
+    }
+
     public int getRow() {
         return index / 9;
     }
@@ -48,7 +54,6 @@ public class Cell {
     public int getVerticalChute() {
         return getBox() % 3;
     }
-
 
     public List<Integer> getCandidates() {
         List<Integer> candidateList = new ArrayList<>();

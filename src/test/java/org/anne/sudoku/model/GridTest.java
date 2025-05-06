@@ -13,7 +13,7 @@ class GridTest {
         assertEquals(2, grid.getCell(24).getRow());
         assertEquals(6, grid.getCell(24).getCol());
         assertEquals(2, grid.getCell(24).getBox());
-        assertEquals(22, grid.getSolvedCells().length);
+        assertEquals(22, grid.getCells(Predicates.solvedCells).length);
     }
 
     @Test

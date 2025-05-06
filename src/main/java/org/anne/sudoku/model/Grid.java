@@ -4,10 +4,8 @@ import org.anne.sudoku.Grade;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class Grid {
-    private final int[] grid = new int[81];
     private final Cell[] cells = new Cell[81];
     private final BitSet mask = new BitSet(81);
     private final boolean[][] rows = new boolean[9][10];
@@ -42,8 +40,6 @@ public class Grid {
     }
 
     public void set(int index, int value, boolean isClue) {
-        grid[index] = value;
-        // cells[index] = new Cell(index, new BitSet(9));
         if (value != 0) {
             rows[index / 9][value] = true;
             cols[index % 9][value] = true;
@@ -61,8 +57,8 @@ public class Grid {
     }
 
     public void clear(int index) {
-        int value = grid[index];
-        grid[index] = 0;
+        int value = get(index);
+        cells[index].clear();
         rows[index / 9][value] = false;
         cols[index % 9][value] = false;
         boxes[(index / 9) / 3 * 3 + (index % 9) / 3][value] = false;
@@ -70,18 +66,11 @@ public class Grid {
     }
 
     public int get(int index) {
-        return grid[index];
+        return cells[index].getValue();
     }
 
     public int get(int row, int col) {
-        return grid[row * 9 + col];
-    }
-
-    public void backtrack(int index, int digit) {
-        grid[index] = 0;
-        rows[index / 9][digit] = false;
-        cols[index % 9][digit] = false;
-        boxes[(index / 9) / 3 * 3 + (index % 9) / 3][digit] = false;
+        return get(row * 9 + col);
     }
 
     public boolean isValidDigit(int index, int digit) {
@@ -93,7 +82,7 @@ public class Grid {
         Cell bestCell = null;
 
         for (int index = 0; index < 81; index++) {
-            if (grid[index] == 0) {
+            if (get(index) == 0) {
                 BitSet candidateSet = new BitSet(9);
                 for (int digit = 1; digit <= 9; digit++) {
                     if (isValidDigit(index, digit)) {
@@ -113,7 +102,7 @@ public class Grid {
 
     public boolean isSolved() {
         for (int i = 0; i < 81; i++) {
-            if (grid[i] == 0) return false;
+            if (get(i) == 0) return false;
         }
         return true;
     }
@@ -121,7 +110,7 @@ public class Grid {
     public String getPuzzle() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 81; i++) {
-            sb.append(mask.get(i) ? grid[i] : ".");
+            sb.append(mask.get(i) ? get(i) : ".");
         }
         return sb.toString();
     }
@@ -129,7 +118,7 @@ public class Grid {
     public String getSolution() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 81; i++) {
-            sb.append(grid[i]);
+            sb.append(get(i));
         }
         return sb.toString();
     }
@@ -157,18 +146,11 @@ public class Grid {
         return cells[row * 9 + col];
     }
 
-    public Cell[] getSolvedCells() {
-        return Arrays.stream(cells).filter(Cell::isSolved).toArray(Cell[]::new);
+    public Cell[] getCells(Predicate<Cell> predicate) {
+        return Arrays.stream(cells)
+                .filter(predicate)
+                .toArray(Cell[]::new);
     }
-
-    public Cell[] getUnsolvedCells() {
-        return Arrays.stream(cells).filter(cell -> !cell.isSolved()).toArray(Cell[]::new);
-    }
-
-    public Cell[] getCellsWithNCandidates(int n) {
-        return Arrays.stream(cells).filter(cell -> cell.getCandidateCount() == n).toArray(Cell[]::new);
-    }
-
 
     @Override
     public String toString() {
@@ -176,41 +158,19 @@ public class Grid {
     }
 
     public void checkForSolvedCells() {
-        for (Cell cell : cells) {
-            if (cell.justSolved()) {
-                int digit = grid[cell.index()];
-                for (Cell peer : getPeers(cell)) {
-                    if (!peer.isSolved() && peer.hasCandidate(digit)) {
-                        peer.candidates().clear(digit);
-                    }
-                }
-                cell.unsetJustSolved();
+        for (Cell cell : getCells(Predicates.justSolvedCells)) {
+            int digit = get(cell.index());
+            for (Cell peer : getCells(Predicates.peers(cell).and(Predicates.unsolvedCells).and(Predicates.hasCandidate(digit)))) {
+                peer.candidates().clear(digit);
             }
+            cell.unsetJustSolved();
         }
-    }
-
-    public Cell[] getPeers(Cell cell) {
-        return Arrays.stream(cells)
-                .filter(c -> c != cell && (c.getRow() == cell.getRow() || c.getCol() == cell.getCol() || c.getBox() == cell.getBox()))
-                .toArray(Cell[]::new);
-    }
-
-    public Cell[] getCellsInUnitWithCandidate(int digit, UnitType unitType, int unitIndex) {
-        return Arrays.stream(cells)
-                .filter(cell -> cell.getUnitIndex(unitType) == unitIndex && cell.hasCandidate(digit))
-                .toArray(Cell[]::new);
-    }
-
-    public Cell[] getCells(UnitType unitType, int unitIndex) {
-        return Arrays.stream(cells)
-                .filter(cell -> cell.getUnitIndex(unitType) == unitIndex)
-                .toArray(Cell[]::new);
     }
 
     public Map<Cell, List<Cell>> findStrongLinks(int digit) {
         Map<Cell, List<Cell>> strongLinks = new HashMap<>();
-        for (Cell cell : getCells(c -> c.hasCandidate(digit))) {
-            List<Cell> peers = Arrays.stream(getPeers(cell)).filter(c -> c.hasCandidate(digit) && isStrongLink(cell, c, digit)).toList();
+        for (Cell cell : getCells(Predicates.hasCandidate(digit))) {
+            List<Cell> peers = Arrays.stream(getCells(Predicates.peers(cell).and(Predicates.hasCandidate(digit)))).filter(c -> isStrongLink(cell, c, digit)).toList();
             if (!peers.isEmpty()) {
                 strongLinks.put(cell, peers);
             }
@@ -221,7 +181,7 @@ public class Grid {
     public Map<Cell, List<Cell>> findWeakLinks(int digit) {
         Map<Cell, List<Cell>> weakLinks = new HashMap<>();
         for (Cell cell : getCells(c -> c.hasCandidate(digit))) {
-            List<Cell> peers = Arrays.stream(getPeers(cell)).filter(c -> c.hasCandidate(digit)).toList();
+            List<Cell> peers = Arrays.stream(getCells(Predicates.peers(cell).and(Predicates.hasCandidate(digit)))).toList();
             if (!peers.isEmpty()) {
                 weakLinks.put(cell, peers);
             }
@@ -230,43 +190,20 @@ public class Grid {
         return weakLinks;
     }
 
-
     public void showPossible() {
-        for (Cell cell : cells) {
-            if (!cell.isSolved()) {
-                Set<Integer> values = Arrays.stream(getPeers(cell))
-                        .filter(Cell::isSolved)
-                        .mapToInt(c -> get(c.index()))
-                        .boxed()
-                        .collect(Collectors.toSet());
-                for (int value : values) {
-                    cell.candidates().clear(value);
-                }
-            }
+        for (Cell cell : getCells(Predicates.unsolvedCells)) {
+            BitSet values = Arrays.stream(getCells(Predicates.peers(cell).and(Predicates.solvedCells)))
+                    .mapToInt(c -> get(c.index()))
+                    .collect(BitSet::new, BitSet::set, BitSet::or);
+            cell.removeCandidates(values);
         }
-    }
-
-    public Cell[] getCells(Predicate<Cell> predicate) {
-        return Arrays.stream(cells)
-                .filter(predicate)
-                .toArray(Cell[]::new);
-    }
-
-    public List<Cell> getCommonPeersWithCandidate(Cell cell1, Cell cell2, int digit) {
-        List<Cell> commonPeers = new ArrayList<>();
-        for (Cell peer : getPeers(cell1)) {
-            if (peer.isPeer(cell2) && peer.hasCandidate(digit)) {
-                commonPeers.add(peer);
-            }
-        }
-        return commonPeers;
     }
 
     public String currentState() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 81; i++) {
             if (cells[i].isSolved()) {
-                sb.append(cells[i].getValue());
+                sb.append(get(i));
             } else {
                 sb.append(".");
             }
@@ -275,7 +212,9 @@ public class Grid {
     }
 
     public boolean isConjugatePair(Cell cell1, Cell cell2, int digit) {
-        return cell1.hasCandidate(digit) && cell2.hasCandidate(digit) && getCommonPeersWithCandidate(cell1, cell2, digit).isEmpty();
+        return cell1.hasCandidate(digit) && cell2.hasCandidate(digit)
+                && getCells(Predicates.peers(cell1).and(Predicates.peers(cell2)).and(Predicates.hasCandidate(digit)))
+                .length == 0;
     }
 
     public boolean isStrongLink(Cell cell1, Cell cell2, int digit) {
@@ -296,17 +235,10 @@ public class Grid {
         return isStrong;
     }
 
-    public Cell[] getBiValueCells() {
-        return Arrays.stream(cells).filter(Cell::isBiValue).toArray(Cell[]::new);
-    }
-
     public Cell findFourthCorner(Cell cell1, Cell cell2, Cell cell3) {
         int row4 = (cell1.getRow() == cell2.getRow()) ? cell3.getRow() : (cell1.getRow() == cell3.getRow()) ? cell2.getRow() : cell1.getRow();
         int col4 = (cell1.getCol() == cell2.getCol()) ? cell3.getCol() : (cell1.getCol() == cell3.getCol()) ? cell2.getCol() : cell1.getCol();
         return getCell(row4, col4);
     }
 
-    public Cell[] getCellsInUnitWithCandidates(List<Integer> candidates, UnitType unitType, int unitIndex) {
-        return Arrays.stream(getCells(unitType, unitIndex)).filter(c -> new HashSet<>(c.getCandidates()).containsAll(candidates)).toArray(Cell[]::new);
-    }
 }

@@ -1,6 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Predicates;
 import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
@@ -18,7 +19,7 @@ public class XWings extends SolvingTechnique {
             for (int i = 1; i <= 9; i++) {
                 List<Cell[]> list = new ArrayList<>();
                 for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                    Cell[] cells = grid.getCellsInUnitWithCandidate(i, unitType, unitIndex);
+                    Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex).and(Predicates.hasCandidate(i)));
                     if (cells.length == 2) {
                         list.add(cells);
                     }
@@ -35,7 +36,7 @@ public class XWings extends SolvingTechnique {
                         if (unitsIndex.size() == 2) {
                             List<Cell> changed = new ArrayList<>();
                             for (int unitIndex : unitsIndex) {
-                                for (Cell cell : grid.getCells(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitIndex)) {
+                                for (Cell cell : grid.getCells(Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitIndex))) {
                                     List<Integer> removed = new ArrayList<>();
                                     if (!xWing.contains(cell) && cell.removeCandidate(i)) {
                                         removed.add(i);
