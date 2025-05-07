@@ -9,12 +9,10 @@ import org.anne.sudoku.model.UnitType;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class fireworks extends SolvingTechnique {
-    public fireworks() {
+public class Fireworks extends SolvingTechnique {
+    public Fireworks() {
         super("Fireworks", Grade.VERY_HARD);
     }
-
-    private Grid grid;
 
     @Override
     public List<Cell> apply(Grid grid) {

@@ -73,15 +73,6 @@ public class Cell {
         return candidates.get(digit);
     }
 
-    public boolean hasCandidates(List<Integer> digits) {
-        for (int digit : digits) {
-            if (!candidates.get(digit)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public int getCandidateCount() {
         return candidates.cardinality();
     }

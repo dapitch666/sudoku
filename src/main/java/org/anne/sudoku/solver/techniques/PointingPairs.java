@@ -51,11 +51,9 @@ public class PointingPairs extends SolvingTechnique {
                 }
             }
         }
-        if(!changed.isEmpty())
-
-    {
-        incrementCounter();
-    }
+        if (!changed.isEmpty()) {
+            incrementCounter();
+        }
         return changed;
-}
+    }
 }

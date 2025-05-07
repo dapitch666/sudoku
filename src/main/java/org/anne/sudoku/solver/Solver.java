@@ -39,7 +39,8 @@ public class Solver {
                 new ThreeDMedusa(),
                 new JellyFish(),
                 new UniqueRectangles(),
-                new fireworks()
+                new Fireworks(),
+                new SKLoops()
         );
     }
 
