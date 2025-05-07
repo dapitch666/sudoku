@@ -136,9 +136,9 @@ public class ThreeDMedusa extends SolvingTechnique {
     private List<Cell> rule2() {
         for (ColoredCandidate coloredCandidate : coloredCandidates) {
             List<ColoredCandidate> sameColorCandidates = coloredCandidates.stream()
-                        .filter(cc -> cc.color == coloredCandidate.color && cc.candidate == coloredCandidate.candidate)
-                        .filter(cc -> coloredCandidate.cell.isPeer(cc.cell))
-                        .toList();
+                    .filter(cc -> cc.color == coloredCandidate.color && cc.candidate == coloredCandidate.candidate)
+                    .filter(cc -> coloredCandidate.cell.isPeer(cc.cell))
+                    .toList();
             if (!sameColorCandidates.isEmpty()) {
                 log("Rule 2: Candidate %d in %s and %s have the same color. All candidates with this color can be removed:%n", coloredCandidate.candidate, sameColorCandidates.getFirst().cell, coloredCandidate.cell);
                 return eliminateColor(coloredCandidate.color);
@@ -163,11 +163,10 @@ public class ThreeDMedusa extends SolvingTechnique {
                     .map(ColoredCandidate::candidate)
                     .toList();
             if (candidates.size() == 2) { // same color candidate has already been dealt with on Rule 1
-                List<Integer> removed = cell.removeAllBut(candidates);
-                if (!removed.isEmpty()) {
-                    log("Rule 3: 2 colors appear in cell %s. Removing the uncolored candidates %s%n", cell, removed);
-                    return List.of(cell);
-                }
+                BitSet removed = cell.removeAllBut(candidates);
+                if (removed.isEmpty()) continue;
+                log("Rule 3: 2 colors appear in cell %s. Removing the uncolored candidates %s%n", cell, removed);
+                return List.of(cell);
             }
         }
         return List.of();

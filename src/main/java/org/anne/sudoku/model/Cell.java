@@ -1,9 +1,7 @@
 package org.anne.sudoku.model;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Cell {
     private final int index;
@@ -56,13 +54,7 @@ public class Cell {
     }
 
     public List<Integer> getCandidates() {
-        List<Integer> candidateList = new ArrayList<>();
-        for (int i = 1; i <= 9; i++) {
-            if (candidates.get(i)) {
-                candidateList.add(i);
-            }
-        }
-        return candidateList;
+        return candidates.stream().boxed().collect(Collectors.toList());
     }
 
     public int getValue() {
@@ -97,13 +89,6 @@ public class Cell {
         this.justSolved = false;
     }
 
-
-    @Override
-    public String toString() {
-        String LETTERS = "ABCDEFGHJ";
-        return String.format("%s%s", LETTERS.charAt(getRow()), getCol() + 1);
-    }
-
     public int index() {
         return index;
     }
@@ -128,6 +113,54 @@ public class Cell {
         };
     }
 
+    public BitSet removeAllBut(BitSet valuesToKeep) {
+        BitSet removed = (BitSet) this.candidates.clone();
+        removed.andNot(valuesToKeep);
+        this.candidates.and(valuesToKeep);
+        return removed;
+    }
+
+    public BitSet removeAllBut(List<Integer> digits) {
+        BitSet valuesToKeep = digits.stream()
+                .mapToInt(i -> i)
+                .collect(BitSet::new, BitSet::set, BitSet::or);
+        return removeAllBut(valuesToKeep);
+    }
+
+    public BitSet removeCandidates(BitSet valuesToRemove) {
+        BitSet removed = (BitSet) this.candidates.clone();
+        removed.and(valuesToRemove);
+        this.candidates.andNot(valuesToRemove);
+        return removed;
+    }
+
+    public BitSet removeCandidates(List<Integer> digits) {
+        BitSet valuesToRemove = digits.stream()
+                .mapToInt(i -> i)
+                .collect(BitSet::new, BitSet::set, BitSet::or);
+        return removeCandidates(valuesToRemove);
+    }
+
+    public boolean removeCandidate(int digit) {
+        if (!candidates.get(digit)) return false;
+        candidates.clear(digit);
+        return true;
+    }
+
+    public List<UnitType> getCommonUnitType(Cell other) {
+        List<UnitType> unitTypes = new ArrayList<>();
+        if (this.getRow() == other.getRow()) unitTypes.add(UnitType.ROW);
+        if (this.getCol() == other.getCol()) unitTypes.add(UnitType.COL);
+        if (this.getBox() == other.getBox()) unitTypes.add(UnitType.BOX);
+        return unitTypes;
+    }
+
+    @Override
+    public String toString() {
+        String LETTERS = "ABCDEFGHJ";
+        return String.format("%s%s", LETTERS.charAt(getRow()), getCol() + 1);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -142,56 +175,5 @@ public class Cell {
     @Override
     public int hashCode() {
         return Objects.hash(index, value, candidates, justSolved);
-    }
-
-    public List<Integer> removeAllBut(List<Integer> digits) {
-        List<Integer> removed = candidates.stream().filter(i -> !digits.contains(i)).boxed().toList();
-        for (int candidate : removed) {
-            removeCandidate(candidate);
-        }
-        return removed;
-    }
-
-
-    public List<Integer> removeAllBut(int digit) {
-        List<Integer> removed = new ArrayList<>();
-        for (int i = 1; i <= 9; i++) {
-            if (i != digit) {
-                removed.add(i);
-                removeCandidate(i);
-            }
-        }
-        return removed;
-    }
-
-    public void removeCandidates(BitSet valuesToRemove) {
-        this.candidates.andNot(valuesToRemove);
-    }
-
-    public List<Integer> removeCandidates(List<Integer> valuesToRemove) {
-        List<Integer> removed = new ArrayList<>();
-        for (int value : valuesToRemove) {
-            if (candidates.get(value)) {
-                this.candidates.clear(value);
-                removed.add(value);
-            }
-        }
-        return removed;
-    }
-
-    public boolean removeCandidate(int digit) {
-        if (candidates.get(digit)) {
-            candidates.clear(digit);
-            return true;
-        }
-        return false;
-    }
-
-    public List<UnitType> getCommonUnitType(Cell other) {
-        List<UnitType> unitTypes = new ArrayList<>();
-        if (this.getRow() == other.getRow()) unitTypes.add(UnitType.ROW);
-        if (this.getCol() == other.getCol()) unitTypes.add(UnitType.COL);
-        if (this.getBox() == other.getBox()) unitTypes.add(UnitType.BOX);
-        return unitTypes;
     }
 }

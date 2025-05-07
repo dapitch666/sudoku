@@ -71,7 +71,7 @@ public class SKLoops extends SolvingTechnique {
             for (Cell cell : grid.getCells(Predicates.inUnit(link.unitType, link.unitIndex)
                     .and(cell -> !lockedCells.contains(cell)))) {
 
-                List<Integer> removedCandidates = cell.removeCandidates(link.lockedCandidates.stream().boxed().toList());
+                BitSet removedCandidates = cell.removeCandidates(link.lockedCandidates);
                 if (removedCandidates.isEmpty()) continue;
                 changed.add(cell);
                 log("%s removed from %s%n", removedCandidates, cell);

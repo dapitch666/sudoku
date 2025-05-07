@@ -18,35 +18,29 @@ public class NakedTriples extends SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                Cell[] unit = grid.getCells(Predicates.inUnit(unitType, unitIndex));
-                List<Cell> cells = Arrays.stream(unit).filter(cell -> cell.getCandidateCount() == 2 || cell.getCandidateCount() == 3).toList();
-                for (int i = 0; i < cells.size(); i++) {
-                    for (int j = i + 1; j < cells.size(); j++) {
-                        for (int k = j + 1; k < cells.size(); k++) {
-                            Set<Integer> triple = new HashSet<>();
-                            triple.addAll(cells.get(i).getCandidates());
-                            triple.addAll(cells.get(j).getCandidates());
-                            triple.addAll(cells.get(k).getCandidates());
-                            if (triple.size() != 3) {
-                                continue;
+                Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex)
+                        .and(cell -> cell.getCandidateCount() == 2 || cell.getCandidateCount() == 3));
+                for (int i = 0; i < cells.length; i++) {
+                    for (int j = i + 1; j < cells.length; j++) {
+                        for (int k = j + 1; k < cells.length; k++) {
+                            Cell[] tripleCells = {cells[i], cells[j], cells[k]};
+                            BitSet triple = new BitSet(9);
+                            Arrays.stream(tripleCells).forEach(c -> triple.or(c.candidates()));
+                            if (triple.cardinality() != 3) continue;
+
+                            Map<Cell, BitSet> map = new HashMap<>();
+                            for (Cell cell : grid.getCells(Predicates.inUnit(unitType, unitIndex)
+                                    .and(Predicates.unsolvedCells)
+                                    .and(c -> !Arrays.asList(tripleCells).contains(c)))) {
+                                BitSet removed = cell.removeCandidates(triple);
+                                if (removed.isEmpty()) continue;
+                                map.put(cell, removed);
                             }
-                            for (Cell cell : unit) {
-                                if (!cell.isSolved() && cell != cells.get(i) && cell != cells.get(j) && cell != cells.get(k)) {
-                                    List<Integer> removed = new ArrayList<>();
-                                    for (int candidate : triple) {
-                                        if (cell.removeCandidate(candidate)) {
-                                            removed.add(candidate);
-                                        }
-                                    }
-                                    if (!removed.isEmpty()) {
-                                        changed.add(cell);
-                                        log("Naked triple %s in %s, on cells [%s, %s, %s]. Removed %s from %s%n", triple, unitType.toString(unitIndex), cells.get(i), cells.get(j), cells.get(k), removed, cell);
-                                    }
-                                }
-                            }
-                            if (!changed.isEmpty()) {
-                                incrementCounter();
-                            }
+                            if (map.isEmpty()) continue;
+                            incrementCounter();
+                            log("Naked triple %s in %s, on cells %s%n", triple, unitType.toString(unitIndex), Arrays.toString(tripleCells));
+                            map.keySet().forEach(cell -> log("- Removed %s from %s%n", map.get(cell), cell));
+                            changed.addAll(map.keySet());
                         }
                     }
                 }

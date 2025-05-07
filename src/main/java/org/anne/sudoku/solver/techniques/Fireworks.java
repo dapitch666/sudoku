@@ -59,17 +59,15 @@ public class Fireworks extends SolvingTechnique {
                     continue;
                 }
                 for (Cell c : cells) {
-                    List<Integer> removed = c.removeAllBut(candidates);
-                    if (!removed.isEmpty()) {
-                        changed.add(c);
-                        log("Removed candidates %s from %s%n",removed, c);
-                    }
+                    BitSet removed = c.removeAllBut(candidates);
+                    if (removed.isEmpty()) continue;
+                    changed.add(c);
+                    log("Removed candidates %s from %s%n",removed, c);
                 }
-                if (!changed.isEmpty()) {
-                    log(0, "FireWorks in %s on %s%n", cells, candidates);
-                    incrementCounter();
-                    return changed;
-                }
+                if (changed.isEmpty()) continue;
+                log(0, "FireWorks in %s on %s%n", cells, candidates);
+                incrementCounter();
+                return changed;
             }
         }
         return List.of();

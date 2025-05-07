@@ -3,6 +3,9 @@ package org.anne.sudoku.solver.techniques;
 import java.util.*;
 import java.util.function.Predicate;
 import org.anne.sudoku.model.Cell;
+import org.anne.sudoku.model.Grid;
+import org.anne.sudoku.model.Predicates;
+import org.anne.sudoku.model.UnitType;
 
 public class Helper {
 

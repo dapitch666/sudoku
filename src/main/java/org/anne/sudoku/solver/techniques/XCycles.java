@@ -59,7 +59,7 @@ public class XCycles extends SolvingTechnique {
         // As the first link in the cycle is considered a weak link,
         // the cell with the discontinuity is the last one.
         Cell cell = cycle.getLast();
-        var removed = cell.removeAllBut(digit);
+        var removed = cell.removeAllBut(List.of(digit));
         if (!removed.isEmpty()) {
             log("Removed %s from %s%n", removed, cell);
             return List.of(cell);

@@ -1,6 +1,7 @@
 package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
+import org.anne.sudoku.model.Predicates;
 import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
@@ -17,38 +18,31 @@ public class NakedQuads extends SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                int finalUnitIndex = unitIndex;
-                Cell[] unit = grid.getCells(cell -> cell.getUnitIndex(unitType) == finalUnitIndex);
-                List<Cell> cells = Arrays.stream(unit).filter(cell -> cell.getCandidateCount() >= 2 && cell.getCandidateCount() <= 4).toList();
-                for (int i = 0; i < cells.size(); i++) {
-                    for (int j = i + 1; j < cells.size(); j++) {
-                        for (int k = j + 1; k < cells.size(); k++) {
-                            for (int l = k + 1; l < cells.size(); l++) {
-                                Set<Integer> quad = new HashSet<>();
-                                quad.addAll(cells.get(i).getCandidates());
-                                quad.addAll(cells.get(j).getCandidates());
-                                quad.addAll(cells.get(k).getCandidates());
-                                quad.addAll(cells.get(l).getCandidates());
-                                if (quad.size() != 4) {
-                                    continue;
+                Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex)
+                        .and(cell -> cell.getCandidateCount() >= 2 && cell.getCandidateCount() <= 4));
+                for (int i = 0; i < cells.length; i++) {
+                    for (int j = i + 1; j < cells.length; j++) {
+                        for (int k = j + 1; k < cells.length; k++) {
+                            for (int l = k + 1; l < cells.length; l++) {
+                                Cell[] quadCells = {cells[i], cells[j], cells[k], cells[l]};
+                                BitSet quad = new BitSet(9);
+                                Arrays.stream(quadCells).forEach(c -> quad.or(c.candidates()));
+                                if (quad.cardinality() != 4) continue;
+
+                                Map<Cell, BitSet> map = new HashMap<>();
+                                for (Cell cell : grid.getCells(Predicates.inUnit(unitType, unitIndex)
+                                        .and(Predicates.unsolvedCells)
+                                        .and(c -> !Arrays.asList(quadCells).contains(c)))) {
+                                    BitSet removed = cell.removeCandidates(quad);
+                                    if (removed.isEmpty()) continue;
+                                    map.put(cell, removed);
                                 }
-                                for (Cell cell : unit) {
-                                    if (!cell.isSolved() && cell != cells.get(i) && cell != cells.get(j) && cell != cells.get(k) && cell != cells.get(l)) {
-                                        List<Integer> removed = new ArrayList<>();
-                                        for (int candidate : quad) {
-                                            if (cell.removeCandidate(candidate)) {
-                                                removed.add(candidate);
-                                            }
-                                        }
-                                        if (!removed.isEmpty()) {
-                                            changed.add(cell);
-                                            log("Naked quad in %s, %s, %s and %s. Removed %s from %s%n", cells.get(i), cells.get(j), cells.get(k), cells.get(l), removed, cell);
-                                        }
-                                    }
-                                }
-                                if (!changed.isEmpty()) {
-                                    incrementCounter();
-                                }
+                                if (map.isEmpty()) continue;
+                                incrementCounter();
+                                log("Naked quad %s in %s, on cells %s%n",
+                                        quad, unitType.toString(unitIndex), Arrays.toString(quadCells));
+                                map.keySet().forEach(cell -> log("- Removed %s from %s%n", map.get(cell), cell));
+                                changed.addAll(map.keySet());
                             }
                         }
                     }

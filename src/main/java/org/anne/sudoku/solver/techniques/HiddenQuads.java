@@ -42,11 +42,10 @@ public class HiddenQuads extends SolvingTechnique {
                                     continue;
                                 }
                                 for (Cell cell : quad) {
-                                    List<Integer> removed = cell.removeAllBut(List.of(i, j, k, l));
-                                    if (!removed.isEmpty()) {
-                                        changed.add(cell);
-                                        log("Hidden quad (%s, %s, %s, %s) in %s. Removed %s from %s%n", i, j, k, l, quad.stream().map(Cell::toString).collect(Collectors.joining(", ")), removed, cell);
-                                    }
+                                    BitSet removed = cell.removeAllBut(List.of(i, j, k, l));
+                                    if (removed.isEmpty()) continue;
+                                    changed.add(cell);
+                                    log("Hidden quad (%s, %s, %s, %s) in %s. Removed %s from %s%n", i, j, k, l, quad.stream().map(Cell::toString).collect(Collectors.joining(", ")), removed, cell);
                                 }
                                 if (!changed.isEmpty()) incrementCounter();
                             }

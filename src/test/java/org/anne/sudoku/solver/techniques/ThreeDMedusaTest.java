@@ -71,7 +71,6 @@ public class ThreeDMedusaTest {
         runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{8}, false);
     }
 
-    @Disabled // Need Unique Rectangle
     @Test
     void ThreeDMedusaTestRule6() {
         String puzzle = "9...6.5....1....4.3..7....8....584...6.....8...2.4.3..1....5..9.2....8....7.3...2";

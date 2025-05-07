@@ -6,8 +6,7 @@ import org.anne.sudoku.model.UnitType;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class NakedPairs extends SolvingTechnique {
     public NakedPairs() {
@@ -19,34 +18,24 @@ public class NakedPairs extends SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : UnitType.values()) {
             for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                Cell[] unit = grid.getCells(Predicates.inUnit(unitType, unitIndex));
-
-                for (int i = 0; i < 9; i++) {
-                    if (unit[i].getCandidateCount() != 2) {
-                        continue;
-                    }
-                    for (int j = i + 1; j < 9; j++) {
-                        if (unit[j].getCandidateCount() != 2 || !unit[i].getCandidates().equals(unit[j].getCandidates())) {
-                            continue;
+                Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex).and(Predicates.biValueCells));
+                for (int i = 0; i < cells.length; i++) {
+                    for (int j = i + 1; j < cells.length; j++) {
+                        if (!cells[i].candidates().equals(cells[j].candidates())) continue;
+                        BitSet pair = cells[i].candidates();
+                        Cell[] pairCells = {cells[i], cells[j]};
+                        Map<Cell, BitSet> map = new HashMap<>();
+                        for (Cell cell : grid.getCells(Predicates.inUnit(unitType, unitIndex).and(Predicates.unsolvedCells)
+                                .and(c -> !Arrays.asList(pairCells).contains(c)))) {
+                            BitSet removed = cell.removeCandidates(pair.stream().boxed().toList());
+                            if (removed.isEmpty()) continue;
+                            map.put(cell, removed);
                         }
-                        List<Integer> pair = unit[i].getCandidates();
-                        for (Cell cell : unit) {
-                            if (cell != unit[i] && cell != unit[j]) {
-                                List<Integer> removed = new ArrayList<>();
-                                for (int candidate : pair) {
-                                    if (cell.removeCandidate(candidate)) {
-                                        removed.add(candidate);
-                                    }
-                                }
-                                if (!removed.isEmpty()) {
-                                    changed.add(cell);
-                                    log("Naked pair %s in %s, on cells [%s, %s]. Removed %s from %s%n", pair, unitType.toString(unitIndex), unit[i], unit[j], removed, cell);
-                                }
-                            }
-                        }
-                        if (!changed.isEmpty()) {
-                            incrementCounter();
-                        }
+                        if (map.isEmpty()) continue;
+                        incrementCounter();
+                        log("Naked pair %s in %s, on cells %s%n", pair, unitType.toString(unitIndex), Arrays.toString(pairCells));
+                        map.keySet().forEach(cell -> log("- Removed %s from %s%n", map.get(cell), cell));
+                        changed.addAll(map.keySet());
                     }
                 }
             }
