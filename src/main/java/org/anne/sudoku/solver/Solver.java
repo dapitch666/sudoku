@@ -24,8 +24,7 @@ public class Solver {
                 new HiddenTriples(), // MODERATE
                 new NakedQuads(),
                 new HiddenQuads(),
-                new PointingPairs(),
-                new BoxLineReduction(),
+                new IntersectionRemoval(),
                 new XWings(), // HARD
                 new ChuteRemotePairs(),
                 new SimpleColoring(),
