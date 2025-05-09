@@ -32,6 +32,4 @@ public class SimpleColoringTest {
         String solved = "495876213786213459321945867513468792278391645649752381154627938937584126862139574";
         runTest(puzzle, solved, new String[]{"Simple Coloring"}, new int[]{2}, false);
     }
-
-
 }

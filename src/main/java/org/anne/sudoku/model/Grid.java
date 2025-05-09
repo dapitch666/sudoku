@@ -167,27 +167,17 @@ public class Grid {
         }
     }
 
-    public Map<Cell, List<Cell>> findStrongLinks(int digit) {
-        Map<Cell, List<Cell>> strongLinks = new HashMap<>();
+    public Map<Cell, List<Cell>> findLinks(int digit, boolean isStrong) {
+        Map<Cell, List<Cell>> links = new HashMap<>();
         for (Cell cell : getCells(Predicates.hasCandidate(digit))) {
-            List<Cell> peers = Arrays.stream(getCells(Predicates.peers(cell).and(Predicates.hasCandidate(digit)))).filter(c -> isStrongLink(cell, c, digit)).toList();
+            List<Cell> peers = Arrays.stream(getCells(Predicates.peers(cell).and(Predicates.hasCandidate(digit))))
+                    .filter(c -> !isStrong || isStrongLink(cell, c, digit))
+                    .toList();
             if (!peers.isEmpty()) {
-                strongLinks.put(cell, peers);
+                links.put(cell, peers);
             }
         }
-        return strongLinks;
-    }
-
-    public Map<Cell, List<Cell>> findWeakLinks(int digit) {
-        Map<Cell, List<Cell>> weakLinks = new HashMap<>();
-        for (Cell cell : getCells(c -> c.hasCandidate(digit))) {
-            List<Cell> peers = Arrays.stream(getCells(Predicates.peers(cell).and(Predicates.hasCandidate(digit)))).toList();
-            if (!peers.isEmpty()) {
-                weakLinks.put(cell, peers);
-            }
-        }
-
-        return weakLinks;
+        return links;
     }
 
     public void showPossible() {

@@ -19,8 +19,8 @@ public class XCycles extends SolvingTechnique {
             // Find all cycles for the current digit
             // A cycle is a sequence of cells that alternate between strong and weak links
             // and form a closed loop.
-            var strongLinks = grid.findStrongLinks(digit);
-            var weakLinks = grid.findWeakLinks(digit);
+            var strongLinks = grid.findLinks(digit, true);
+            var weakLinks = grid.findLinks(digit, false);
             var cycles = new Graph<>(strongLinks, weakLinks).findAllCycles();
             for (Cycle<Cell> cycle : cycles) {
                 // Classify the cycle

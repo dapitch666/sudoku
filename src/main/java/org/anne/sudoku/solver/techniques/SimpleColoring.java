@@ -19,18 +19,21 @@ public class SimpleColoring extends SolvingTechnique {
     public List<Cell> apply(Grid grid) {
         this.grid = grid;
         List<Rule> rules = List.of(this::rule1, this::rule2);
+        List<Cell> changed = new ArrayList<>();
         for (int digit = 1; digit <= 9; digit++) {
-            Map<Cell, List<Cell>> strongLinks = grid.findStrongLinks(digit);
+            Map<Cell, List<Cell>> strongLinks = grid.findLinks(digit, true);
             NetBuilder<Cell> netBuilder = new NetBuilder<>(strongLinks);
             for (Chain<Cell> chain : netBuilder.getChains()) {
                 List<ColoredCell> cells = new ArrayList<>();
                 colorNet(chain.getRoot(), cells, 1);
 
                 for (Rule rule : rules) {
-                    List<Cell> changed = rule.apply(digit, cells);
-                    if (!changed.isEmpty()) {
+                    if (rule.apply(digit, cells, changed)) {
                         incrementCounter();
-                        log(0, "Chain of %d%n", digit);
+                        for (Cell cell : changed) {
+                            cell.removeCandidate(digit);
+                        }
+                        log("- Removed %d from %s%n", digit, changed);
                         return changed;
                     }
                 }
@@ -47,39 +50,36 @@ public class SimpleColoring extends SolvingTechnique {
         }
     }
 
-    private List<Cell> rule1(int digit, List<ColoredCell> chain) {
-        List<Cell> changed = new ArrayList<>();
+    private boolean rule1(int digit, List<ColoredCell> chain, List<Cell> changed) {
         for (ColoredCell cell : chain) {
             for (ColoredCell other : chain) {
-                if (cell != other && cell.color == other.color && cell.cell.isPeer(other.cell)) {
-                    for (Cell c : chain.stream().filter(coloredCell -> coloredCell.color == cell.color).map(c -> c.cell).toList()) {
-                        c.removeCandidate(digit);
-                        changed.add(c);
-                        log("%d removed from %s due to Simple Coloring Rule 1%n", digit, c);
-                    }
-                    return changed;
-                }
+                if (cell == other || cell.color != other.color || !cell.cell.isPeer(other.cell)) continue;
+                changed.addAll(chain.stream()
+                        .filter(coloredCell -> coloredCell.color == cell.color)
+                        .map(c -> c.cell)
+                        .toList());
+                log("Rule 1 on chain of %d%n", digit);
+                return true;
             }
         }
-        return List.of();
+        return false;
     }
 
-    private List<Cell> rule2(int digit, List<ColoredCell> chain) {
-        List<Cell> changed = new ArrayList<>();
+    private boolean rule2(int digit, List<ColoredCell> chain, List<Cell> changed) {
         List<Cell> color1 = chain.stream().filter(c -> c.color == 1).map(ColoredCell::cell).toList();
         List<Cell> color2 = chain.stream().filter(c -> c.color == 2).map(ColoredCell::cell).toList();
         for (Cell cell : grid.getCells(cell -> cell.hasCandidate(digit))) {
             if (color1.contains(cell) || color2.contains(cell)) continue;
             if (color1.stream().anyMatch(c -> c.isPeer(cell)) && color2.stream().anyMatch(c -> c.isPeer(cell))) {
-                cell.removeCandidate(digit);
                 changed.add(cell);
-                log("%d removed from %s due to Simple Coloring Rule 2%n", digit, cell);
             }
         }
-        return changed;
+        if (changed.isEmpty()) return false;
+        log("Rule 2 on chain of %d%n", digit);
+        return true;
     }
 
-    record ColoredCell(Cell cell, int color) { // TODO: make this a class extending Cell
+    record ColoredCell(Cell cell, int color) {
         @Override
         public String toString() {
             return cell.toString();
@@ -88,6 +88,6 @@ public class SimpleColoring extends SolvingTechnique {
 
     @FunctionalInterface
     private interface Rule {
-        List<Cell> apply(int digit, List<ColoredCell> chain);
+        boolean apply(int digit, List<ColoredCell> chain, List<Cell> changed);
     }
 }
