@@ -40,7 +40,7 @@ public class XWings extends SolvingTechnique {
                             changed.add(cell);
                         }
                         if (changed.isEmpty()) continue;
-                        log(0, "X-Wing in %s%n- Removed %d from %s%n", xWing, digit, changed);
+                        log(0, "X-Wing in %s%n- Removed candidate %d from %s%n", xWing, digit, changed);
                         incrementCounter();
                         return changed;
                     }

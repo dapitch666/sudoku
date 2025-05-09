@@ -62,7 +62,7 @@ public class Fireworks extends SolvingTechnique {
                     BitSet removed = c.removeAllBut(candidates);
                     if (removed.isEmpty()) continue;
                     changed.add(c);
-                    log("Removed candidates %s from %s%n",removed, c);
+                    log("Removed candidate(s) %s from %s%n", removed, c);
                 }
                 if (changed.isEmpty()) continue;
                 log(0, "FireWorks in %s on %s%n", cells, candidates);

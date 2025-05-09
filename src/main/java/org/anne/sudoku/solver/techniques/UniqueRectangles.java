@@ -37,7 +37,7 @@ public class UniqueRectangles extends SolvingTechnique {
         Cell cell = rectangle.cellC().isBiValue() ? rectangle.cellD() : rectangle.cellC();
         var removed = cell.removeCandidates(rectangle.commonCandidates());
         if (removed.isEmpty()) return List.of();
-        log("Unique Rectangle Type 1 found: %s%n- Removed candidates %s from %s%n", rectangle, removed, cell);
+        log("Unique Rectangle Type 1 found: %s%n- Removed candidate(s) %s from %s%n", rectangle, removed, cell);
         incrementCounter();
         return List.of(cell);
     }
@@ -47,7 +47,7 @@ public class UniqueRectangles extends SolvingTechnique {
         int digit = rectangle.cellC().getCandidates().stream().filter(d -> !rectangle.commonCandidates().contains(d)).findFirst().orElseThrow();
         var changed = Arrays.stream(grid.getCells(Predicates.peers(rectangle.cellC()).and(Predicates.peers(rectangle.cellD())).and(Predicates.hasCandidate(digit)))).toList();
         if (!changed.isEmpty()) {
-            log("Unique Rectangle Type 2 found: %s%n- Removed candidates %d from %s%n", rectangle, digit, changed);
+            log("Unique Rectangle Type 2 found: %s%n- Removed candidate(s) %d from %s%n", rectangle, digit, changed);
             changed.forEach(cell -> cell.removeCandidate(digit));
             incrementCounter();
             return changed;
@@ -70,7 +70,7 @@ public class UniqueRectangles extends SolvingTechnique {
                 if (cell == rectangle.cellC() || cell == rectangle.cellD() || kCells.contains(cell)) continue;
                 var removed = cell.removeCandidates(extraCandidates);
                 if (removed.isEmpty()) continue;
-                log("- Removed candidates %s from %s%n", removed, cell);
+                log("- Removed candidate(s) %s from %s%n", removed, cell);
                 changed.add(cell);
             }
         }
@@ -88,7 +88,7 @@ public class UniqueRectangles extends SolvingTechnique {
             digit = rectangle.commonCandidates().getFirst();
         }
         if (digit == -1) return List.of();
-        log("Unique Rectangle Type 4 found: %s%n- Removed %d from roof cells [%s, %s]%n", rectangle, digit, rectangle.cellC(), rectangle.cellD());
+        log("Unique Rectangle Type 4 found: %s%n- Removed candidate %d from roof cells [%s, %s]%n", rectangle, digit, rectangle.cellC(), rectangle.cellD());
         rectangle.cellC().removeCandidate(digit);
         rectangle.cellD().removeCandidate(digit);
         incrementCounter();
@@ -100,7 +100,7 @@ public class UniqueRectangles extends SolvingTechnique {
         for (int digit : rectangle.commonCandidates()) {
             if (grid.isConjugatePair(rectangle.cellA, rectangle.cellC, digit) && grid.isConjugatePair(rectangle.cellA, rectangle.cellD, digit)) {
                 int digitToRemove = rectangle.commonCandidates().stream().filter(d -> d != digit).findFirst().orElseThrow();
-                log("Unique Rectangle Type 5 found: %s.%nRemoving %d from roof cells [%s, %s]%n", rectangle, digitToRemove, rectangle.cellA, rectangle.cellB);
+                log("Unique Rectangle Type 5 found: %s.%n- Removed candidate %d from roof cells [%s, %s]%n", rectangle, digitToRemove, rectangle.cellA, rectangle.cellB);
                 rectangle.cellA.removeCandidate(digitToRemove);
                 rectangle.cellB.removeCandidate(digitToRemove);
                 incrementCounter();

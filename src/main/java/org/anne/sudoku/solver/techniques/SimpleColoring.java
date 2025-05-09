@@ -33,7 +33,7 @@ public class SimpleColoring extends SolvingTechnique {
                         for (Cell cell : changed) {
                             cell.removeCandidate(digit);
                         }
-                        log("- Removed %d from %s%n", digit, changed);
+                        log("- Removed candidate %d from %s%n", digit, changed);
                         return changed;
                     }
                 }

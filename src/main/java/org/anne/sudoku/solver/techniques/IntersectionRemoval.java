@@ -50,7 +50,7 @@ public class IntersectionRemoval extends SolvingTechnique {
                     }
                     if (eliminatedCells.isEmpty()) continue;
                     incrementCounter();
-                    log("%s between %s and %s%n- Removed %s from %s%n",
+                    log("%s between %s and %s%n- Removed candidate %d from %s%n",
                             cells.size() == 2 ? "PAIR" : "TRIPLE", unitType.toString(unitIndex),
                             targetUnitType.toString(targetUnitIndex), candidate, eliminatedCells);
                     changed.addAll(eliminatedCells);

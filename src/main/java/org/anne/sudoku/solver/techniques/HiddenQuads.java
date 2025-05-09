@@ -37,7 +37,7 @@ public class HiddenQuads extends SolvingTechnique {
                                     BitSet removed = cell.removeAllBut(List.of(i, j, k, l));
                                     if (removed.isEmpty()) continue;
                                     changed.add(cell);
-                                    log("- Removed %s from %s%n", removed, cell);
+                                    log("- Removed candidate(s) %s from %s%n", removed, cell);
                                 }
                                 if (changed.isEmpty()) continue;
                                 log(0, "Hidden quad {%s, %s, %s, %s} in %s, on cells %s%n", i, j, k, l, unitType.toString(unitIndex), quad);

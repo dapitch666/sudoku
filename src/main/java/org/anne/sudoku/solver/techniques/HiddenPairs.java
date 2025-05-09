@@ -31,7 +31,7 @@ public class HiddenPairs extends SolvingTechnique {
                         if (removedMap.isEmpty()) continue;
                         incrementCounter();
                         log("Hidden pair {%d, %d} in %s, on cells %s%n", i, j, unitType.toString(unitIndex), map.get(i));
-                        removedMap.keySet().forEach(cell -> log("- Removed %s from %s%n", removedMap.get(cell), cell));
+                        removedMap.keySet().forEach(cell -> log("- Removed candidate(s) %s from %s%n", removedMap.get(cell), cell));
                         changed.addAll(removedMap.keySet());
                     }
                 }

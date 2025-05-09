@@ -280,7 +280,7 @@ public class ThreeDMedusa extends SolvingTechnique {
         // Eliminate all candidates of the specified color
         for (ColoredCandidate cc : coloredCandidates.stream().filter(cc -> cc.color == colorToEliminate).toList()) {
             cc.cell.removeCandidate(cc.candidate);
-            log("Removed %d from %s%n", cc.candidate, cc.cell);
+            log("Removed candidate %d from %s%n", cc.candidate, cc.cell);
             modifiedCells.add(cc.cell);
         }
         return modifiedCells;

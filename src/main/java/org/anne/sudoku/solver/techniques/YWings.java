@@ -7,6 +7,7 @@ import org.anne.sudoku.model.Predicates;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 
 public class YWings extends SolvingTechnique {
@@ -16,30 +17,26 @@ public class YWings extends SolvingTechnique {
 
     @Override
     public List<Cell> apply(Grid grid) {
-        for (Cell key : grid.getCells(Predicates.cellsWithNCandidates(2))) {
-            List<Integer> keyCandidates = key.getCandidates();
-            for (Cell cell1 : grid.getCells(Predicates.peers(key))) {
-                if (cell1.getCandidateCount() != 2) {
-                    continue;
-                }
+        for (Cell key : grid.getCells(Predicates.biValueCells)) {
+            BitSet keyCandidates = key.candidates();
+            for (Cell cell1 : grid.getCells(Predicates.peers(key).and(Predicates.biValueCells))) {
                 if (keyCandidates.stream().filter(cell1::hasCandidate).count() == 1) {
                     List<Cell> changed = new ArrayList<>();
-                    int B = keyCandidates.stream().filter(cell1::hasCandidate).findFirst().orElseThrow();
-                    int A = keyCandidates.stream().filter(candidate -> candidate != B).findFirst().orElseThrow();
-                    int C = cell1.getCandidates().stream().filter(candidate -> candidate != B).findFirst().orElseThrow();
-                    for (Cell cell2 : grid.getCells(Predicates.peers(key))) {
-                        if (cell2.getCandidateCount() == 2 && cell2.hasCandidate(A) && cell2.hasCandidate(C)) {
-                            for (Cell peer : grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2)))) {
-                                if (peer.removeCandidate(C)) {
-                                    log("Y-Wing in %s, %s and %s, removed candidate %d from %s%n", key, cell1, cell2, C, peer);
-                                    changed.add(peer);
-                                }
-                            }
+                    int b = keyCandidates.stream().filter(cell1::hasCandidate).findFirst().orElseThrow();
+                    int a = keyCandidates.stream().filter(candidate -> candidate != b).findFirst().orElseThrow();
+                    int c = cell1.getCandidates().stream().filter(candidate -> candidate != b).findFirst().orElseThrow();
+                    for (Cell cell2 : grid.getCells(Predicates.peers(key)
+                            .and(Predicates.biValueCells)
+                            .and(Predicates.hasCandidates(List.of(a, c))))) {
+                        for (Cell peer : grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2)).and(Predicates.hasCandidate(c)))) {
+                            peer.removeCandidate(c);
+                            changed.add(peer);
                         }
-                    }
-                    if (!changed.isEmpty()) {
-                        incrementCounter();
-                        return changed;
+                        if (!changed.isEmpty()) {
+                            incrementCounter();
+                            log(0, "Y-Wing on %s (hinge), %s and %s%n- Removed candidate %d from %s%n", key, cell1, cell2, c, changed);
+                            return changed;
+                        }
                     }
                 }
             }

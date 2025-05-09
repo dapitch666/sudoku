@@ -49,7 +49,7 @@ public class XCycles extends SolvingTechnique {
         // the cell with the discontinuity is the first one.
         Cell cell = cycle.getFirst();
         cell.removeCandidate(digit);
-        log("Removed %d from %s%n", digit, cell);
+        log("Removed candidate %d from %s%n", digit, cell);
         return List.of(cell);
     }
 
@@ -61,7 +61,7 @@ public class XCycles extends SolvingTechnique {
         Cell cell = cycle.getLast();
         var removed = cell.removeAllBut(List.of(digit));
         if (!removed.isEmpty()) {
-            log("Removed %s from %s%n", removed, cell);
+            log("Removed candidate(s) %s from %s%n", removed, cell);
             return List.of(cell);
         }
         return List.of();
@@ -73,7 +73,7 @@ public class XCycles extends SolvingTechnique {
             for (Cell cell : grid.getCells(Predicates.peers(cycle.get(i)).and(Predicates.peers(cycle.get(i + 1))).and(Predicates.hasCandidate(digit)))) {
                 if (!cycle.contains(cell) && cell.removeCandidate(digit)) {
                     changed.add(cell);
-                    log("Removed %d from %s%n", digit, cell);
+                    log("Removed candidate %d from %s%n", digit, cell);
                 }
             }
         }

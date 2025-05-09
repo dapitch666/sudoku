@@ -41,7 +41,7 @@ public class NakedQuads extends SolvingTechnique {
                                 incrementCounter();
                                 log("Naked quad %s in %s, on cells %s%n",
                                         quad, unitType.toString(unitIndex), Arrays.toString(quadCells));
-                                map.keySet().forEach(cell -> log("- Removed %s from %s%n", map.get(cell), cell));
+                                map.keySet().forEach(cell -> log("- Removed candidate(s) %s from %s%n", map.get(cell), cell));
                                 changed.addAll(map.keySet());
                             }
                         }

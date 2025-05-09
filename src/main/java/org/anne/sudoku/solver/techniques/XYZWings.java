@@ -42,7 +42,7 @@ public class XYZWings extends SolvingTechnique {
                         if (peer.hasCandidate(x) && peer.isPeer(wing1) && peer.isPeer(wing2)) {
                             changed.add(peer);
                             peer.removeCandidate(x);
-                            log("XYZ-Wing in %s (hinge), %s and %s (%d, %d, %d). Removed %d from %s%n", hinge, wing1, wing2, x, y, z, x, peer);
+                            log("XYZ-Wing in %s (hinge), %s and %s (%d, %d, %d). Removed candidate %d from %s%n", hinge, wing1, wing2, x, y, z, x, peer);
                         }
                     }
                     if (!changed.isEmpty()) {

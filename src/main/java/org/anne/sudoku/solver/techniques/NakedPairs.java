@@ -34,7 +34,7 @@ public class NakedPairs extends SolvingTechnique {
                         if (map.isEmpty()) continue;
                         incrementCounter();
                         log("Naked pair %s in %s, on cells %s%n", pair, unitType.toString(unitIndex), Arrays.toString(pairCells));
-                        map.keySet().forEach(cell -> log("- Removed %s from %s%n", map.get(cell), cell));
+                        map.keySet().forEach(cell -> log("- Removed candidate(s) %s from %s%n", map.get(cell), cell));
                         changed.addAll(map.keySet());
                     }
                 }

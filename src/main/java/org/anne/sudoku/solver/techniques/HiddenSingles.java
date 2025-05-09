@@ -30,7 +30,7 @@ public class HiddenSingles extends SolvingTechnique {
                     if (removed.isEmpty()) continue;
                     changed.add(cell);
                     incrementCounter();
-                    log("%d found once in %s%n- Removed %s from %s%n", i, unitType.toString(unitIndex), removed, cell);
+                    log("%d found once in %s%n- Removed candidate(s) %s from %s%n", i, unitType.toString(unitIndex), removed, cell);
                 }
             }
         }

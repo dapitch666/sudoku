@@ -54,7 +54,7 @@ public class JellyFish extends SolvingTechnique {
                                         for (Cell cell : grid.getCells(cell -> cell.getUnitIndex(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW) == col && cell.hasCandidate(finalDigit1))) {
                                             if (!jellyFish.contains(cell) && cell.removeCandidate(digit)) {
                                                 changed.add(cell);
-                                                log("JellyFish %d in %s. Removed %d from %s%n", digit, jellyFish.stream().map(Cell::toString).toList(), digit, cell);
+                                                log("JellyFish %d in %s%n- Removed candidate %d from %s%n", digit, jellyFish.stream().map(Cell::toString).toList(), digit, cell);
                                             }
                                         }
                                         if (!changed.isEmpty()) {

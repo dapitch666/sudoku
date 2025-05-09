@@ -73,7 +73,7 @@ public class ChuteRemotePairs extends SolvingTechnique {
         }
         if (!changed.isEmpty()) {
             incrementCounter();
-            log("Remote pair %s in %s and %s%n- Removed %d from %s%n", cell1.candidates(), cell1, cell2, digit, changed);
+            log("Remote pair %s in %s and %s%n- Removed candidate %d from %s%n", cell1.candidates(), cell1, cell2, digit, changed);
             return true;
         }
         return false;
@@ -86,7 +86,7 @@ public class ChuteRemotePairs extends SolvingTechnique {
                 .and(c -> c.candidates().intersects(digits)))) {
             BitSet removed = cell.removeCandidates(digits);
             if (!removed.isEmpty()) {
-                log("- Removed %s from %s%n", removed, cell);
+                log("- Removed candidate(s) %s from %s%n", removed, cell);
                 changed.add(cell);
             }
         }

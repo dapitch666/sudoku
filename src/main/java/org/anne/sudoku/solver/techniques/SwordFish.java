@@ -49,7 +49,7 @@ public class SwordFish extends SolvingTechnique {
                                     for (Cell cell : grid.getCells(Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, col).and(Predicates.hasCandidate(digit)))) {
                                         if (!swordfish.contains(cell) && cell.removeCandidate(digit)) {
                                             changed.add(cell);
-                                            log("Swordfish %d in %s. Removed %d from %s%n", digit, swordfish.stream().map(Cell::toString).toList(), digit, cell);
+                                            log("Swordfish %d in %s. Removed candidate %d from %s%n", digit, swordfish.stream().map(Cell::toString).toList(), digit, cell);
                                         }
                                     }
                                 }

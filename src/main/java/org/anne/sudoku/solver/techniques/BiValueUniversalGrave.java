@@ -27,7 +27,7 @@ public class BiValueUniversalGrave extends SolvingTechnique {
                     || grid.getCells(Predicates.inUnit(UnitType.COL, cell.getCol()).and(Predicates.hasCandidate(digit))).length > 2
                     || grid.getCells(Predicates.inUnit(UnitType.BOX, cell.getBox()).and(Predicates.hasCandidate(digit))).length > 2) {
                 BitSet removed = cell.removeAllBut(List.of(digit));
-                log("BUG found in %s. %d must be the solution%n- Removed %s from %s%n", cell, digit, removed, cell);
+                log("BUG found in %s. %d must be the solution%n- Removed candidate(s) %s from %s%n", cell, digit, removed, cell);
                 incrementCounter();
                 return List.of(cell);
             }

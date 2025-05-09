@@ -39,7 +39,7 @@ public class NakedTriples extends SolvingTechnique {
                             if (map.isEmpty()) continue;
                             incrementCounter();
                             log("Naked triple %s in %s, on cells %s%n", triple, unitType.toString(unitIndex), Arrays.toString(tripleCells));
-                            map.keySet().forEach(cell -> log("- Removed %s from %s%n", map.get(cell), cell));
+                            map.keySet().forEach(cell -> log("- Removed candidate(s) %s from %s%n", map.get(cell), cell));
                             changed.addAll(map.keySet());
                         }
                     }
