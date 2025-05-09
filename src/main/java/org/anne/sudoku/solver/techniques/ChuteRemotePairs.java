@@ -13,46 +13,88 @@ public class ChuteRemotePairs extends SolvingTechnique {
         super("Chute Remote Pairs", Grade.HARD);
     }
 
+    private Grid grid;
+
     @Override
     public List<Cell> apply(Grid grid) {
+        this.grid = grid;
         List<Cell> changed = new ArrayList<>();
         for (int index = 0; index < 3; index++) {
             for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
-                List<Cell> chute = new ArrayList<>();
-                for (int i = 0; i < 3; i++) {
-                    chute.addAll(List.of(grid.getCells(Predicates.inUnit(unitType, index * 3 + i))));
-                }
+                List<Cell> chute = getChute(unitType, index);
                 for (Cell cell1 : chute) {
-                    if (cell1.getCandidateCount() == 2) {
-                        for (Cell cell2 : chute) {
-                            if (cell2 != cell1 && cell2.getCandidateCount() == 2 && cell1.getCandidates().equals(cell2.getCandidates()) && cell1.getBox() != cell2.getBox()) {
-                                List<Integer> remotePair = cell1.getCandidates();
-                                Set<Integer> intSet = new HashSet<>();
-                                for (Cell cell : chute) {
-                                    if (cell.getRow() != cell1.getRow() && cell.getRow() != cell2.getRow() && cell.getCol() != cell2.getCol()
-                                            && cell.getCol() != cell1.getCol() && cell.getBox() != cell1.getBox() && cell.getBox() != cell2.getBox()) {
-                                        intSet.addAll(cell.getCandidates());
-                                        if (cell.isSolved()) {
-                                            intSet.add(cell.getValue());
-                                        }
-                                    }
-                                }
-                                if (remotePair.stream().filter(intSet::contains).count() == 1) {
-                                    int i = remotePair.stream().filter(intSet::contains).findFirst().orElseThrow();
-                                    for (Cell cell : grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2)))) {
-                                        if (cell.removeCandidate(i)) {
-                                            changed.add(cell);
-                                            log("Chute remote pair %s in %s and %s. Removed %s from %s%n", remotePair, cell1, cell2, i, cell);
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                    if (!cell1.isBiValue()) continue;
+                    for (Cell cell2 : chute) {
+                        if (!isValidRemotePair(cell1, cell2)) continue;
+
+                        BitSet remotePairCandidates = getRemotePairCandidates(chute, cell1, cell2);
+                        if (processSingleCandidate(cell1, cell2, remotePairCandidates, changed)) return changed;
+                        if (processDoubleElimination(cell1, cell2, remotePairCandidates, changed)) return changed;
                     }
                 }
             }
         }
-        if (!changed.isEmpty()) incrementCounter();
-        return changed;
+        return List.of();
+    }
+
+    private List<Cell> getChute(UnitType unitType, int index) {
+        List<Cell> chute = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            chute.addAll(List.of(grid.getCells(Predicates.inUnit(unitType, index * 3 + i))));
+        }
+        return chute;
+    }
+
+    private boolean isValidRemotePair(Cell cell1, Cell cell2) {
+        return cell1.candidates().equals(cell2.candidates()) && cell1 != cell2 && !cell1.isPeer(cell2);
+    }
+
+    private BitSet getRemotePairCandidates(List<Cell> chute, Cell cell1, Cell cell2) {
+        BitSet candidates = new BitSet(9);
+        for (Cell cell : chute) {
+            if (cell == cell1 || cell == cell2 || cell.isPeer(cell1) || cell.isPeer(cell2)) continue;
+            if (cell.isSolved()) {
+                candidates.set(cell.getValue());
+            } else {
+                candidates.or(cell.candidates());
+            }
+        }
+        candidates.and(cell1.candidates());
+        return candidates;
+    }
+
+    private boolean processSingleCandidate(Cell cell1, Cell cell2, BitSet candidates, List<Cell> changed) {
+        if (candidates.cardinality() != 1) return false;
+        int digit = candidates.nextSetBit(0);
+        for (Cell cell : grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2))
+                .and(Predicates.hasCandidate(digit)))) {
+            cell.removeCandidate(digit);
+            changed.add(cell);
+        }
+        if (!changed.isEmpty()) {
+            incrementCounter();
+            log("Remote pair %s in %s and %s%n- Removed %d from %s%n", cell1.candidates(), cell1, cell2, digit, changed);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean processDoubleElimination(Cell cell1, Cell cell2, BitSet candidates, List<Cell> changed) {
+        if (!candidates.isEmpty()) return false;
+        BitSet digits = (BitSet) cell1.candidates().clone();
+        for (Cell cell : grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2))
+                .and(c -> c.candidates().intersects(digits)))) {
+            BitSet removed = cell.removeCandidates(digits);
+            if (!removed.isEmpty()) {
+                log("- Removed %s from %s%n", removed, cell);
+                changed.add(cell);
+            }
+        }
+        if (!changed.isEmpty()) {
+            incrementCounter();
+            log(0, "Remote pair %s (double elimination) in %s and %s%n", digits, cell1, cell2);
+            return true;
+        }
+        return false;
     }
 }
