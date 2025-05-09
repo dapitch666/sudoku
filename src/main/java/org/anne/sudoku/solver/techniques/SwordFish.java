@@ -7,62 +7,73 @@ import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static org.anne.sudoku.solver.techniques.Helper.mergeArrays;
 
 public class SwordFish extends SolvingTechnique {
     public SwordFish() {
         super("Sword Fish", Grade.HARD);
     }
 
+    private Grid grid;
+
     @Override
     public List<Cell> apply(Grid grid) {
+        this.grid = grid;
         for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
             for (int digit = 1; digit <= 9; digit++) {
-                List<Cell[]> list = new ArrayList<>();
-                for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                    Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex).and(Predicates.hasCandidate(digit)));
-                    if (cells.length == 2 || cells.length == 3) {
-                        list.add(cells);
-                    }
-                }
-                // Find aligned cells
-                for (int i = 0; i < list.size(); i++) {
-                    Cell[] first = list.get(i);
-                    for (int j = i + 1; j < list.size(); j++) {
-                        Cell[] second = list.get(j);
-                        for (int k = j + 1; k < list.size(); k++) {
-                            Cell[] third = list.get(k);
-                            List<Cell> swordfish = new ArrayList<>();
-                            swordfish.addAll(Arrays.stream(first).toList());
-                            swordfish.addAll(Arrays.stream(second).toList());
-                            swordfish.addAll(Arrays.stream(third).toList());
-                            List<Integer> unitsIndex;
-                            if (unitType == UnitType.ROW) {
-                                unitsIndex = swordfish.stream().map(Cell::getCol).distinct().toList();
-                            } else {
-                                unitsIndex = swordfish.stream().map(Cell::getRow).distinct().toList();
+                List<Cell[]> candidateUnits = findCandidateUnits(unitType, digit);
+                for (int i = 0; i < candidateUnits.size(); i++) {
+                    for (int j = i + 1; j < candidateUnits.size(); j++) {
+                        for (int k = j + 1; k < candidateUnits.size(); k++) {
+                            List<Cell> swordfish = mergeArrays(candidateUnits.get(i), candidateUnits.get(j), candidateUnits.get(k));
+                            List<Integer> distinctUnits = getDistinctUnits(swordfish, unitType);
+                            if (distinctUnits.size() != 3) continue;
+
+                            List<Cell> changed = getChangedCells(unitType, digit, swordfish, distinctUnits);
+                            if (changed.isEmpty()) continue;
+                            for (Cell cell : changed) {
+                                cell.removeCandidate(digit);
                             }
-                            if (unitsIndex.size() == 3) {
-                                List<Cell> changed = new ArrayList<>();
-                                for (int col : unitsIndex) {
-                                    for (Cell cell : grid.getCells(Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, col).and(Predicates.hasCandidate(digit)))) {
-                                        if (!swordfish.contains(cell) && cell.removeCandidate(digit)) {
-                                            changed.add(cell);
-                                            log("Swordfish %d in %s. Removed candidate %d from %s%n", digit, swordfish.stream().map(Cell::toString).toList(), digit, cell);
-                                        }
-                                    }
-                                }
-                                if (!changed.isEmpty()) {
-                                    incrementCounter();
-                                    return changed;
-                                }
-                            }
+                            log("Swordfish in %s%n- Removed candidate {%d} from %s%n", swordfish, digit, changed);
+                            incrementCounter();
+                            return changed;
                         }
                     }
                 }
             }
         }
         return List.of();
+    }
+
+    private List<Cell[]> findCandidateUnits(UnitType unitType, int digit) {
+        List<Cell[]> candidateUnits = new ArrayList<>();
+        for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
+            Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex).and(Predicates.hasCandidate(digit)));
+            if (cells.length == 2 || cells.length == 3) {
+                candidateUnits.add(cells);
+            }
+        }
+        return candidateUnits;
+    }
+
+    private List<Integer> getDistinctUnits(List<Cell> cells, UnitType unitType) {
+        return cells.stream()
+                .map(cell -> cell.getUnitIndex(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW))
+                .distinct()
+                .toList();
+    }
+
+    private List<Cell> getChangedCells(UnitType unitType, int digit, List<Cell> swordfish, List<Integer> distinctUnits) {
+        List<Cell> changed = new ArrayList<>();
+        for (int index : distinctUnits) {
+            changed.addAll(List.of(grid.getCells(
+                    Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, index)
+                            .and(Predicates.hasCandidate(digit))
+                            .and(cell -> !swordfish.contains(cell))
+            )));
+        }
+        return changed;
     }
 }

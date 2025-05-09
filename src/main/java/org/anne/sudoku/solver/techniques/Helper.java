@@ -29,6 +29,15 @@ public class Helper {
         return getPossibleCellsMap(Arrays.stream(unit).toList(), predicate);
     }
 
+    @SafeVarargs
+    static <T> List<T> mergeArrays(T[]... arrays) {
+        List<T> merged = new ArrayList<>();
+        for (T[] array : arrays) {
+            merged.addAll(List.of(array));
+        }
+        return merged;
+    }
+
     public static int findFourthBox(int b1, int b2, int b3) {
         // Convert indices to (x,y) coordinates
         int x1 = b1 % 3;

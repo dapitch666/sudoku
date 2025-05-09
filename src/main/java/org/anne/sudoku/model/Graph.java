@@ -52,31 +52,4 @@ public class Graph<T> {
         path.removeLast();
         visited.remove(current);
     }
-
-    public static void main(String[] args) {
-        Graph<Character> graph = new Graph<>();
-
-        graph.addNode('A', List.of('B'), List.of('B', 'D'));
-        graph.addNode('B', List.of('A', 'C'), List.of('A', 'C', 'E'));
-        graph.addNode('C', List.of('F'), List.of('B', 'D', 'F'));
-        graph.addNode('D', List.of('C'), List.of('A', 'C', 'G'));
-        graph.addNode('E', List.of('F'), List.of('B', 'F'));
-        graph.addNode('F', List.of('E'), List.of('C', 'E'));
-        graph.addNode('G', List.of('D'), List.of('D'));
-
-        Set<Cycle<Character>> cycles = graph.findAllCycles();
-        System.out.println("Found cycles: " + cycles);
-
-        graph = new Graph<>();
-        graph.addNode('A', List.of('B', 'G'), List.of('B', 'G'));
-        graph.addNode('B', List.of('A'), List.of('A', 'C'));
-        graph.addNode('C', List.of('D'), List.of('B', 'D'));
-        graph.addNode('D', List.of('C'), List.of('C', 'E'));
-        graph.addNode('E', List.of('F'), List.of('D', 'F'));
-        graph.addNode('F', List.of('E'), List.of('E', 'G'));
-        graph.addNode('G', List.of('A'), List.of('A', 'F'));
-
-        var cycles2 = graph.findAllCycles();
-        System.out.println("Found cycles: " + cycles2);
-    }
 }

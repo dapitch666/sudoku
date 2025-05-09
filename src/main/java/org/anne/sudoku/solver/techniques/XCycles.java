@@ -34,7 +34,7 @@ public class XCycles extends SolvingTechnique {
                 var changed = rule.apply(digit, cycle);
                 if (!changed.isEmpty()) {
                     incrementCounter();
-                    log(0, "%s on %d (length %d) detected in %s:%n", cycleType, digit, cycle.size(), cycle.stream().map(Cell::toString).toList());
+                    log(0, "%s on %d (length %d) detected in %s%n", cycleType, digit, cycle.size(), cycle.stream().map(Cell::toString).toList());
                     return changed;
                 }
             }
@@ -42,15 +42,20 @@ public class XCycles extends SolvingTechnique {
         return List.of();
     }
 
-    private List<Cell> rule3(int digit, Cycle<Cell> cycle) {
-        // If the adjacent links are links with weak inference (broken line),
-        // the candidate can be eliminated from the cell at the discontinuity.
-        // As the first link in the cycle is considered a weak link,
-        // the cell with the discontinuity is the first one.
-        Cell cell = cycle.getFirst();
-        cell.removeCandidate(digit);
-        log("Removed candidate %d from %s%n", digit, cell);
-        return List.of(cell);
+    private List<Cell> rule1(int digit, Cycle<Cell> cycle) {
+        List<Cell> changed = new ArrayList<>();
+        for (int i = 0; i < cycle.size() - 1; i += 2) {
+            changed.addAll(List.of(grid.getCells(
+                    Predicates.peers(cycle.get(i))
+                            .and(Predicates.peers(cycle.get(i + 1)))
+                            .and(Predicates.hasCandidate(digit))
+                            .and(cell -> !cycle.contains(cell)))));
+
+        }
+        if (changed.isEmpty()) return List.of();
+        changed.forEach(cell -> cell.removeCandidate(digit));
+        log("- Removed candidate {%d} from %s%n", digit, changed);
+        return changed;
     }
 
     private List<Cell> rule2(int digit, Cycle<Cell> cycle) {
@@ -60,24 +65,20 @@ public class XCycles extends SolvingTechnique {
         // the cell with the discontinuity is the last one.
         Cell cell = cycle.getLast();
         var removed = cell.removeAllBut(List.of(digit));
-        if (!removed.isEmpty()) {
-            log("Removed candidate(s) %s from %s%n", removed, cell);
-            return List.of(cell);
-        }
-        return List.of();
+        if (removed.isEmpty()) return List.of();
+        log("- Removed candidate(s) %s from %s%n", removed, cell);
+        return List.of(cell);
     }
 
-    private List<Cell> rule1(int digit, Cycle<Cell> cycle) {
-        List<Cell> changed = new ArrayList<>();
-        for (int i = 0; i < cycle.size() - 1; i += 2) {
-            for (Cell cell : grid.getCells(Predicates.peers(cycle.get(i)).and(Predicates.peers(cycle.get(i + 1))).and(Predicates.hasCandidate(digit)))) {
-                if (!cycle.contains(cell) && cell.removeCandidate(digit)) {
-                    changed.add(cell);
-                    log("Removed candidate %d from %s%n", digit, cell);
-                }
-            }
-        }
-        return changed;
+    private List<Cell> rule3(int digit, Cycle<Cell> cycle) {
+        // If the adjacent links are links with weak inference (broken line),
+        // the candidate can be eliminated from the cell at the discontinuity.
+        // As the first link in the cycle is considered a weak link,
+        // the cell with the discontinuity is the first one.
+        Cell cell = cycle.getFirst();
+        cell.removeCandidate(digit);
+        log("- Removed candidate {%d} from %s%n", digit, cell);
+        return List.of(cell);
     }
 
     private CycleType classifyCycle(Cycle<Cell> cycle, Map<Cell, List<Cell>> strongLinks) {

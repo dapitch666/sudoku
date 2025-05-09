@@ -12,53 +12,52 @@ public class XYChains extends SolvingTechnique {
         super("XY-Chains", Grade.VERY_HARD);
     }
 
+    private Grid grid;
+
     @Override
     public List<Cell> apply(Grid grid) {
+        this.grid = grid;
         for (Cell cell : grid.getCells(Predicates.biValueCells)) {
             for (int digit : cell.getCandidates()) {
                 Set<List<Cell>> chains = new HashSet<>();
                 // Try to build chain from this cell
-                findXYChain(grid, digit, digit, new ArrayList<>(List.of(cell)), chains);
-                if (!chains.isEmpty()) {
-                    for (List<Cell> chain : chains) {
-                        if (chain.size() < 3 || !chain.getLast().hasCandidate(digit)) continue;
-                        Cell cell1 = chain.getFirst();
-                        Cell cell2 = chain.getLast();
-                        List<Cell> peers = Arrays.stream(grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2)).and(Predicates.hasCandidate(digit)))).toList();
-                        if (peers.isEmpty()) continue;
-                        log(0, "XY Chain found for %d: %s%n", digit, chain);
-                        for (Cell c : peers) {
-                            c.removeCandidate(digit);
-                            log("%d removed from %s%n", digit, c);
-                        }
-                        incrementCounter();
-                        return peers;
-                    }
+                findXYChain(digit, digit, new ArrayList<>(List.of(cell)), chains);
+                if (chains.isEmpty()) continue;
+                for (List<Cell> chain : chains) {
+                    Cell cell1 = chain.getFirst();
+                    Cell cell2 = chain.getLast();
+                    List<Cell> changed = Arrays.stream(grid.getCells(Predicates.peers(cell1)
+                            .and(Predicates.peers(cell2))
+                            .and(Predicates.hasCandidate(digit))))
+                            .toList();
+                    if (changed.isEmpty()) continue;
+                    log("XY Chain found for {%d}: %s%n", digit, chain);
+                    return removeCandidateFromCellsAndLog(changed, digit);
                 }
             }
         }
         return List.of();
     }
 
-    private void findXYChain(Grid grid, int targetDigit, int currentDigit,
-                             List<Cell> currentChain, Set<List<Cell>> results) {
-        if (currentChain.isEmpty()) return;
-
+    private void findXYChain(int targetDigit, int currentDigit, List<Cell> currentChain, Set<List<Cell>> results) {
         Cell currentCell = currentChain.getLast();
-        // Get the other digit in current bivalue cell
-        int otherDigit = currentCell.getCandidates().stream().filter(c -> c != currentDigit).findFirst().orElseThrow();
-        // If other digit is target digit, we found a chain
-        if (otherDigit == targetDigit) {
+        // Get the other digit in current bi-value cell
+        int otherDigit = currentCell.candidates().stream().filter(c -> c != currentDigit).findFirst().orElseThrow();
+        // If other digit is target digit, we closed the chain
+        if (otherDigit == targetDigit && currentChain.size() > 2) {
             results.add(new ArrayList<>(currentChain));
         }
 
         // Look for next link in chain among peers
-        for (Cell peer : grid.getCells(Predicates.peers(currentCell))) {
-            if (peer.isBiValue() && peer.hasCandidate(otherDigit) && !currentChain.contains(peer)) {
-                currentChain.add(peer);
-                findXYChain(grid, targetDigit, otherDigit, currentChain, results);
-                currentChain.removeLast();
-            }
+        for (Cell peer : grid.getCells(
+                Predicates.peers(currentCell)
+                        .and(Predicates.biValueCells)
+                        .and(Predicates.hasCandidate(otherDigit)))
+        ) {
+            if (currentChain.contains(peer)) continue;
+            currentChain.add(peer);
+            findXYChain(targetDigit, otherDigit, currentChain, results);
+            currentChain.removeLast();
         }
     }
 }

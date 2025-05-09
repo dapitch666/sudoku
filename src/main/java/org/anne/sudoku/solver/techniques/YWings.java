@@ -17,15 +17,15 @@ public class YWings extends SolvingTechnique {
 
     @Override
     public List<Cell> apply(Grid grid) {
-        for (Cell key : grid.getCells(Predicates.biValueCells)) {
-            BitSet keyCandidates = key.candidates();
-            for (Cell cell1 : grid.getCells(Predicates.peers(key).and(Predicates.biValueCells))) {
+        for (Cell hinge : grid.getCells(Predicates.biValueCells)) {
+            BitSet keyCandidates = hinge.candidates();
+            for (Cell cell1 : grid.getCells(Predicates.peers(hinge).and(Predicates.biValueCells))) {
                 if (keyCandidates.stream().filter(cell1::hasCandidate).count() == 1) {
                     List<Cell> changed = new ArrayList<>();
                     int b = keyCandidates.stream().filter(cell1::hasCandidate).findFirst().orElseThrow();
                     int a = keyCandidates.stream().filter(candidate -> candidate != b).findFirst().orElseThrow();
                     int c = cell1.getCandidates().stream().filter(candidate -> candidate != b).findFirst().orElseThrow();
-                    for (Cell cell2 : grid.getCells(Predicates.peers(key)
+                    for (Cell cell2 : grid.getCells(Predicates.peers(hinge)
                             .and(Predicates.biValueCells)
                             .and(Predicates.hasCandidates(List.of(a, c))))) {
                         for (Cell peer : grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2)).and(Predicates.hasCandidate(c)))) {
@@ -34,7 +34,7 @@ public class YWings extends SolvingTechnique {
                         }
                         if (!changed.isEmpty()) {
                             incrementCounter();
-                            log(0, "Y-Wing on %s (hinge), %s and %s%n- Removed candidate %d from %s%n", key, cell1, cell2, c, changed);
+                            log(0, "Y-Wing on %s (hinge), %s and %s%n- Removed candidate %d from %s%n", hinge, cell1, cell2, c, changed);
                             return changed;
                         }
                     }

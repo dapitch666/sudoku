@@ -37,7 +37,7 @@ public class RectangleElimination extends SolvingTechnique {
                             if (oppositeBoxCellsWithCandidate.length != 0 && Arrays.stream(oppositeBoxCellsWithCandidate)
                                     .allMatch(cell -> cell.isPeer(wing1) || cell.isPeer(wing2))) {
                                 wing2.removeCandidate(candidate);
-                                log("%s found in Hinge %s, wing1 %s and wing2 %s, we can remove %s as candidate in %s%n", candidate, hinge, wing1, wing2, candidate, wing2);
+                                log("%d found in %s (hinge), %s and %s%n- Removed candidate %d from %s%n", candidate, hinge, wing1, wing2, candidate, wing2);
                                 incrementCounter();
                                 return List.of(wing2);
                             }

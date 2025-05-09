@@ -1,6 +1,5 @@
 package org.anne.sudoku.solver.techniques;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.anne.sudoku.solver.SolverTest.runTest;
@@ -24,14 +23,14 @@ public class ThreeDMedusaTest {
     void ThreeDMedusaTest3() {
         String puzzle = "986.2.3....4956.............73..5..96...1...31..3..27.............1437....1.8.694";
         String solved = "986721345314956827527834961873265419692417583145398276458679132269143758731582694";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, true);
+        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, false);
     }
 
     @Test
     void ThreeDMedusaTest4() {
         String puzzle = "9.8.2..76......1...7.....2...54...913..7.2..546...58...4.....5...6......21..7.3.4";
         String solved = "958321476624957183173864529785436291391782645462195837847613952536249718219578364";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{6}, true);
+        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{6}, false);
     }
 
     @Test
@@ -48,12 +47,12 @@ public class ThreeDMedusaTest {
         runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, false);
     }
 
-    @Disabled // Need Hidden Unique Rectangle, WXYZ Wing and Alternating Infer. Chains
-    @Test
+    @Test // Need Hidden Unique Rectangle, WXYZ Wing and Alternating Infer. Chains
     void ThreeDMedusaTestRule3() {
         String puzzle = ".5..2....192.....4..46..........8..5..69418..9..7..........63..3.....621....8..9.";
-        String solved = "653427189192835764874619253247368915536941872918752436725196348389574621461283597";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, true);
+        String solved = "65..2..8.1928...648.46.........689.55.69418..9..7....6.....63.83.....621.6..8..97";
+        // String solved = "653427189192835764874619253247368915536941872918752436725196348389574621461283597";
+        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, false);
     }
 
     @Test
@@ -75,7 +74,7 @@ public class ThreeDMedusaTest {
     void ThreeDMedusaTestRule6() {
         String puzzle = "9...6.5....1....4.3..7....8....584...6.....8...2.4.3..1....5..9.2....8....7.3...2";
         String solved = "948362571271589643356714928739258416564193287812647395183425769625971834497836152";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, true);
+        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, false);
     }
 
 }

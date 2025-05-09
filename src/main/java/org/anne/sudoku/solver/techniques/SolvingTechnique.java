@@ -49,6 +49,15 @@ public abstract class SolvingTechnique {
         sb.insert(i, String.format(pattern, args));
     }
 
+    protected List<Cell> removeCandidateFromCellsAndLog(List<Cell> cells, int digit) {
+        for (Cell cell : cells) {
+            cell.removeCandidate(digit);
+        }
+        log("- Removed {%d} from %s%n", digit, cells);
+        incrementCounter();
+        return cells;
+    }
+
     public String getLog() {
         String message = sb.toString();
         sb.setLength(0);
