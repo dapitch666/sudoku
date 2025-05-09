@@ -16,13 +16,11 @@ public class NakedSingles extends SolvingTechnique {
     @Override
     public List<Cell> apply(Grid grid) {
         List<Cell> changed = new ArrayList<>();
-        for (Cell cell : grid.getCells(Predicates.unsolvedCells)) {
-            if (cell.getCandidateCount() == 1) {
-                grid.set(cell.index(), cell.getFirstCandidate(), false);
-                log("Last candidate [%d] in %s changed to solution%n", cell.getValue(), cell);
-                changed.add(cell);
-                incrementCounter();
-            }
+        for (Cell cell : grid.getCells(Predicates.cellsWithNCandidates(1))) {
+            grid.set(cell.index(), cell.getFirstCandidate(), false);
+            log("Last candidate {%d} in %s changed to solution%n", cell.getValue(), cell);
+            changed.add(cell);
+            incrementCounter();
         }
         return changed;
     }

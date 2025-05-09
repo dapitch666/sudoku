@@ -24,14 +24,13 @@ public class HiddenSingles extends SolvingTechnique {
                     // Get all cells in the unit that can contain the candidate
                     Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex)
                             .and(Predicates.hasCandidate(i)));
-                    if (cells.length == 1) { // Only one cell can contain the candidate
-                        Cell cell = cells[0];
-                        BitSet removed = cell.removeAllBut(List.of(i));
-                        if (removed.isEmpty()) continue;
-                        changed.add(cell);
-                        incrementCounter();
-                        log("%d found once in %s.%n- Removed %s from %s%n", i, unitType.toString(unitIndex), removed, cell);
-                    }
+                    if (cells.length != 1) continue; // Only one cell can contain the candidate
+                    Cell cell = cells[0];
+                    BitSet removed = cell.removeAllBut(List.of(i));
+                    if (removed.isEmpty()) continue;
+                    changed.add(cell);
+                    incrementCounter();
+                    log("%d found once in %s%n- Removed %s from %s%n", i, unitType.toString(unitIndex), removed, cell);
                 }
             }
         }

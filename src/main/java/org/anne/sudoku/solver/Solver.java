@@ -71,7 +71,7 @@ public class Solver {
                 for (Cell cell : changedCells) {
                     if (cell.getCandidateCount() == 1) {
                         grid.set(cell.index(), cell.getFirstCandidate(), false);
-                        sb.append(String.format("Last candidate [%d] in %s changed to solution%n", cell.getValue(), cell));
+                        sb.append(String.format("Last candidate {%d} in %s changed to solution%n", cell.getValue(), cell));
                     }
                 }
                 System.out.println(sb);

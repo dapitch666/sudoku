@@ -22,38 +22,33 @@ public class HiddenQuads extends SolvingTechnique {
                 Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(grid.getCells(Predicates.inUnit(unitType, unitIndex)), list -> list.size() >= 2 && list.size() <= 4);
                 for (int i : map.keySet()) {
                     for (int j : map.keySet()) {
-                        if (i == j) {
-                            continue;
-                        }
+                        if (i == j) continue;
                         for (int k : map.keySet()) {
-                            if (i == k || j == k) {
-                                continue;
-                            }
+                            if (i == k || j == k) continue;
                             for (int l : map.keySet()) {
-                                if (l == i || l == j || l == k) {
-                                    continue;
-                                }
+                                if (l == i || l == j || l == k) continue;
                                 Set<Cell> quad = new HashSet<>();
                                 quad.addAll(map.get(i));
                                 quad.addAll(map.get(j));
                                 quad.addAll(map.get(k));
                                 quad.addAll(map.get(l));
-                                if (quad.size() != 4) {
-                                    continue;
-                                }
+                                if (quad.size() != 4) continue;
                                 for (Cell cell : quad) {
                                     BitSet removed = cell.removeAllBut(List.of(i, j, k, l));
                                     if (removed.isEmpty()) continue;
                                     changed.add(cell);
-                                    log("Hidden quad (%s, %s, %s, %s) in %s. Removed %s from %s%n", i, j, k, l, quad.stream().map(Cell::toString).collect(Collectors.joining(", ")), removed, cell);
+                                    log("- Removed %s from %s%n", removed, cell);
                                 }
-                                if (!changed.isEmpty()) incrementCounter();
+                                if (changed.isEmpty()) continue;
+                                log(0, "Hidden quad {%s, %s, %s, %s} in %s, on cells %s%n", i, j, k, l, unitType.toString(unitIndex), quad);
+                                incrementCounter();
+                                return changed;
                             }
                         }
                     }
                 }
             }
         }
-        return changed;
+        return List.of();
     }
 }
