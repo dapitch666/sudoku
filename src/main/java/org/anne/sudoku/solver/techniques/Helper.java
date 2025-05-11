@@ -9,24 +9,30 @@ import org.anne.sudoku.model.UnitType;
 
 public class Helper {
 
-    public static Map<Integer, List<Cell>> getPossibleCellsMap(List<Cell> unit, Predicate<List<Cell>> predicate) {
+    public static Map<Integer, List<Cell>> getPossibleCellsMap(List<Cell> unit, BitSet digits, Predicate<List<Cell>> predicate) {
         Map<Integer, List<Cell>> map = new HashMap<>();
-        for (int i = 1; i <= 9; i++) {
+        for (int digit : digits.stream().toArray()) {
             List<Cell> possibleCells = new ArrayList<>();
             for (Cell cell : unit) {
-                if (cell.hasCandidate(i)) {
+                if (cell.hasCandidate(digit)) {
                     possibleCells.add(cell);
                 }
             }
             if (predicate.test(possibleCells)) {
-                map.put(i, possibleCells);
+                map.put(digit, possibleCells);
             }
         }
         return map;
     }
 
     public static Map<Integer, List<Cell>> getPossibleCellsMap(Cell[] unit, Predicate<List<Cell>> predicate) {
-        return getPossibleCellsMap(Arrays.stream(unit).toList(), predicate);
+        BitSet digits = new BitSet();
+        digits.set(1, 10);
+        return getPossibleCellsMap(Arrays.stream(unit).toList(), digits, predicate);
+    }
+
+    public static Map<Integer, List<Cell>> getPossibleCellsMap(Cell[] unit, BitSet digits, Predicate<List<Cell>> predicate) {
+        return getPossibleCellsMap(Arrays.stream(unit).toList(), digits, predicate);
     }
 
     @SafeVarargs

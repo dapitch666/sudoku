@@ -22,18 +22,8 @@ public class Fireworks extends SolvingTechnique {
             Cell[] peers = grid.getCells(Predicates.peers(cell).and(Predicates.unsolvedCells)
                     .and(Predicates.inUnit(UnitType.BOX, cell.getBox()).negate()));
 
-            Map<Integer, List<Cell>> map = new HashMap<>();
-            for (int digit : cell.getCandidates()) {
-                List<Cell> cells = new ArrayList<>();
-                for (Cell peer : peers) {
-                    if (peer.hasCandidate(digit)) {
-                        cells.add(peer);
-                    }
-                }
-                if (!cells.isEmpty()) {
-                    map.put(digit, cells);
-                }
-            }
+            Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(peers, cell.candidates(), l -> l.size() <= 2);
+
             if (map.size() >= 3) {
                 for (Map.Entry<Integer, List<Cell>> entry : map.entrySet()) {
                     int digit = entry.getKey();
@@ -55,14 +45,12 @@ public class Fireworks extends SolvingTechnique {
                 Set<Cell> cells = fireworks.values().stream()
                         .flatMap(Collection::stream)
                         .collect(Collectors.toSet());
-                if (cells.size() != 3) {
-                    continue;
-                }
+                if (cells.size() != 3) continue;
                 for (Cell c : cells) {
                     BitSet removed = c.removeAllBut(candidates);
                     if (removed.isEmpty()) continue;
                     changed.add(c);
-                    log("Removed candidate(s) %s from %s%n", removed, c);
+                    log("- Removed candidate(s) %s from %s%n", removed, c);
                 }
                 if (changed.isEmpty()) continue;
                 log(0, "FireWorks in %s on %s%n", cells, candidates);
