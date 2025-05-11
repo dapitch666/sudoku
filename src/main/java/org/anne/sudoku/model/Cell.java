@@ -65,6 +65,10 @@ public class Cell {
         return candidates.get(digit);
     }
 
+    public boolean hasCandidates(BitSet digits) {
+        return digits.stream().allMatch(candidates::get);
+    }
+
     public int getCandidateCount() {
         return candidates.cardinality();
     }

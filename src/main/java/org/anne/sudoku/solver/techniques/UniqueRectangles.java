@@ -7,7 +7,6 @@ import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UniqueRectangles extends SolvingTechnique {
     public UniqueRectangles() {
@@ -32,92 +31,105 @@ public class UniqueRectangles extends SolvingTechnique {
         return List.of();
     }
 
+    // Rule 1: If three corners of a rectangle have the same candidates,
+    // the fourth one can't have any of these candidates.
     private List<Cell> rule1(Rectangle rectangle) {
         if (!rectangle.cellC().isBiValue() && !rectangle.cellD().isBiValue()) return List.of();
         Cell cell = rectangle.cellC().isBiValue() ? rectangle.cellD() : rectangle.cellC();
-        var removed = cell.removeCandidates(rectangle.commonCandidates());
-        if (removed.isEmpty()) return List.of();
-        log("Unique Rectangle Type 1 found: %s%n- Removed candidate(s) %s from %s%n", rectangle, removed, cell);
-        incrementCounter();
-        return List.of(cell);
+        var changed = removeCandidatesFromCellAndLog(cell, rectangle.commonCandidates());
+        if (!changed.isEmpty()) {
+            log(0, "Unique Rectangle Type 1 found: %s%n", rectangle);
+        }
+        return changed;
     }
 
+    // Rule 2: If both roofs are tri-value and have the same candidates,
+    // the extra candidate MUST be in one of the roof cells and can be removed from common peers.
     private List<Cell> rule2(Rectangle rectangle) {
         if (!rectangle.bothRoofAreTriValue() || !rectangle.roofHasSameCandidates()) return List.of();
-        int digit = rectangle.cellC().getCandidates().stream().filter(d -> !rectangle.commonCandidates().contains(d)).findFirst().orElseThrow();
-        var changed = Arrays.stream(grid.getCells(Predicates.peers(rectangle.cellC()).and(Predicates.peers(rectangle.cellD())).and(Predicates.hasCandidate(digit)))).toList();
+        int digit = rectangle.cellC().candidates().stream()
+                .filter(d -> !rectangle.commonCandidates().get(d))
+                .findFirst()
+                .orElseThrow();
+        var changed = removeCandidateFromCellsAndLog(List.of(grid.getCells(Predicates.peers(rectangle.cellC())
+                        .and(Predicates.peers(rectangle.cellD()))
+                        .and(Predicates.hasCandidate(digit)))),
+                digit);
         if (!changed.isEmpty()) {
-            log("Unique Rectangle Type 2 found: %s%n- Removed candidate(s) %d from %s%n", rectangle, digit, changed);
-            changed.forEach(cell -> cell.removeCandidate(digit));
-            incrementCounter();
-            return changed;
+            log(0, "Unique Rectangle Type 2 found: %s%n", rectangle);
         }
-        return List.of();
+        return changed;
     }
 
+    // Rule 3: If the extra candidates are a naked subset,
+    // the extra candidates can be removed from all other common peers of the roof cells.
     private List<Cell> rule3(Rectangle rectangle) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : rectangle.cellC().getCommonUnitType(rectangle.cellD())) {
-            List<Cell> cells = Arrays.stream(grid.getCells(
-                            Predicates.inUnit(unitType, rectangle.cellC().getUnitIndex(unitType))
-                                    .and(Predicates.unsolvedCells)
-                                    .and(cell -> cell != rectangle.cellC() && cell != rectangle.cellD())))
-                    .toList();
-            List<Integer> extraCandidates = rectangle.extraCandidates();
-            List<Cell> kCells = getNakedSubset(cells, extraCandidates);
-            if (kCells.isEmpty()) continue;
+            var cells = grid.getCells(Predicates.inUnit(unitType, rectangle.cellC().getUnitIndex(unitType))
+                    .and(Predicates.unsolvedCells)
+                    .and(cell -> cell != rectangle.cellC() && cell != rectangle.cellD()));
+            List<Cell> subset = getNakedSubset(cells, rectangle.extraCandidates());
+            if (subset.isEmpty()) continue;
             for (Cell cell : cells) {
-                if (cell == rectangle.cellC() || cell == rectangle.cellD() || kCells.contains(cell)) continue;
-                var removed = cell.removeCandidates(extraCandidates);
+                if (cell == rectangle.cellC() || cell == rectangle.cellD() || subset.contains(cell)) continue;
+                var removed = cell.removeCandidates(rectangle.extraCandidates());
                 if (removed.isEmpty()) continue;
                 log("- Removed candidate(s) %s from %s%n", removed, cell);
                 changed.add(cell);
             }
         }
-        if (changed.isEmpty()) return List.of();
-        incrementCounter();
-        log(0, "Unique Rectangle Type 3 found: %s%n", rectangle);
+        if (!changed.isEmpty()) {
+            incrementCounter();
+            log(0, "Unique Rectangle Type 3 found: %s%n", rectangle);
+        }
         return changed;
     }
 
+    // Rule 4: If the roof cells are conjugate pairs, the other candidate can be removed from the roof cells.
     private List<Cell> rule4(Rectangle rectangle) {
         int digit = -1;
-        if (grid.isConjugatePair(rectangle.cellC(), rectangle.cellD(), rectangle.commonCandidates().getFirst())) {
-            digit = rectangle.commonCandidates().getLast();
-        } else if (grid.isConjugatePair(rectangle.cellC(), rectangle.cellD(), rectangle.commonCandidates().getLast())) {
-            digit = rectangle.commonCandidates().getFirst();
+        if (grid.isConjugatePair(rectangle.cellC(), rectangle.cellD(), rectangle.firstCommonCandidate())) {
+            digit = rectangle.secondCommonCandidate();
+        } else if (grid.isConjugatePair(rectangle.cellC(), rectangle.cellD(), rectangle.secondCommonCandidate())) {
+            digit = rectangle.firstCommonCandidate();
         }
         if (digit == -1) return List.of();
-        log("Unique Rectangle Type 4 found: %s%n- Removed candidate %d from roof cells [%s, %s]%n", rectangle, digit, rectangle.cellC(), rectangle.cellD());
-        rectangle.cellC().removeCandidate(digit);
-        rectangle.cellD().removeCandidate(digit);
-        incrementCounter();
-        return List.of(rectangle.cellC(), rectangle.cellD());
+        log("Unique Rectangle Type 4 found: %s%n", rectangle);
+        return removeCandidateFromCellsAndLog(rectangle.roofCells(), digit);
     }
 
+    // Rule 5: If the roof cells are diagonally opposed and one of the common candidates is a conjugate pair,
+    // the other candidate can be removed from the floor cell.
     private List<Cell> rule5(Rectangle rectangle) {
         if (rectangle.cellA.isPeer(rectangle.cellB)) return List.of();
-        for (int digit : rectangle.commonCandidates()) {
-            if (grid.isConjugatePair(rectangle.cellA, rectangle.cellC, digit) && grid.isConjugatePair(rectangle.cellA, rectangle.cellD, digit)) {
-                int digitToRemove = rectangle.commonCandidates().stream().filter(d -> d != digit).findFirst().orElseThrow();
-                log("Unique Rectangle Type 5 found: %s.%n- Removed candidate %d from roof cells [%s, %s]%n", rectangle, digitToRemove, rectangle.cellA, rectangle.cellB);
-                rectangle.cellA.removeCandidate(digitToRemove);
-                rectangle.cellB.removeCandidate(digitToRemove);
-                incrementCounter();
-                return List.of(rectangle.cellA, rectangle.cellB);
+        Map<Cell, Integer> candidatesToRemove = new HashMap<>();
+        for (int digit : List.of(rectangle.firstCommonCandidate(), rectangle.secondCommonCandidate())) {
+            for (Cell cell : List.of(rectangle.cellA, rectangle.cellB)) {
+                if (grid.isConjugatePair(cell, rectangle.cellC, digit) && grid.isConjugatePair(cell, rectangle.cellD, digit)) {
+                    int otherDigit = rectangle.commonCandidates().stream().filter(b -> b != digit).findFirst().orElseThrow();
+                    candidatesToRemove.put(cell, otherDigit);
+                }
             }
         }
-        return List.of();
+        if (candidatesToRemove.isEmpty()) return List.of();
+        incrementCounter();
+        log("Unique Rectangle Type 5 found: %s%n", rectangle);
+        candidatesToRemove.keySet().forEach(cell -> {
+            int digit = candidatesToRemove.get(cell);
+            cell.removeCandidate(digit);
+            log("- Removed candidate %d from %s%n", digit, cell);
+        });
+        return new ArrayList<>(candidatesToRemove.keySet());
     }
 
-    private List<Cell> getNakedSubset(List<Cell> cells, List<Integer> extraCandidates) {
-        for (int k = 2; k <= cells.size(); k++) {
-            int subsetSize = k - 1; // We need k-1 cells
-            List<List<Cell>> subsets = getSubsets(cells, subsetSize);
+    private List<Cell> getNakedSubset(Cell[] cells, BitSet extraCandidates) {
+        for (int k = 2; k <= cells.length; k++) {
+            List<List<Cell>> subsets = getSubsets(List.of(cells), k - 1); // We need k-1 cells
             for (List<Cell> subset : subsets) {
-                Set<Integer> unionCandidates = new HashSet<>();
-                subset.forEach(cell -> unionCandidates.addAll(cell.getCandidates()));
-                if (unionCandidates.size() == k && unionCandidates.containsAll(extraCandidates)) {
+                BitSet unionCandidates = new BitSet(9);
+                subset.forEach(cell -> unionCandidates.or(cell.candidates()));
+                if (unionCandidates.cardinality() == k && extraCandidates.stream().allMatch(unionCandidates::get)) {
                     return subset; // Return as soon as a valid subset is found
                 }
             }
@@ -146,37 +158,24 @@ public class UniqueRectangles extends SolvingTechnique {
     private List<Rectangle> getRectangles() {
         List<Rectangle> rectangles = new ArrayList<>();
         Cell[] biValueCells = grid.getCells(Predicates.biValueCells);
+
         for (int i = 0; i < biValueCells.length; i++) {
             Cell cellA = biValueCells[i];
-            List<Integer> candidates = cellA.getCandidates();
+            BitSet candidates = cellA.candidates();
+
             for (int j = i + 1; j < biValueCells.length; j++) {
                 Cell cellB = biValueCells[j];
-                // CellA and cellB must share the same candidates
-                if (!candidates.equals(cellB.getCandidates())) continue;
-                // Find a cell that has both cellA candidates perpendicular to cellA cellB
-                Cell[] cells;
-                if (cellA.getRow() == cellB.getRow()) {
-                    cells = grid.getCells(Predicates.inUnit(UnitType.COL, cellA.getCol()).and(Predicates.hasCandidates(candidates)));
-                } else if (cellA.getCol() == cellB.getCol()) {
-                    cells = grid.getCells(Predicates.inUnit(UnitType.ROW, cellA.getRow()).and(Predicates.hasCandidates(candidates)));
-                } else if (cellA.getBox() == cellB.getBox()) {
-                    continue;
-                } else if (cellA.getHorizontalChute() == cellB.getHorizontalChute() || cellA.getVerticalChute() == cellB.getVerticalChute()) {
-                    cells = grid.getCells(Predicates.inUnit(UnitType.BOX, cellA.getBox()).and(Predicates.hasCandidates(candidates)));
-                } else {
-                    continue;
-                }
-                for (Cell cellD : cells) {
+                if (!candidates.equals(cellB.candidates())) continue;
+
+                Cell[] perpendicularCells = findPerpendicularCells(cellA, cellB, candidates);
+                if (perpendicularCells == null) continue;
+
+                for (Cell cellD : perpendicularCells) {
                     if (cellD == cellA || cellD == cellB) continue;
-                    // Check if all three cells are in 2 different boxes, 2 different rows and 2 different columns
-                    List<Cell> cellsList = List.of(cellA, cellB, cellD);
-                    if (cellsList.stream().map(Cell::getRow).distinct().count() != 2 || cellsList.stream().map(Cell::getCol).distinct().count() != 2 || cellsList.stream().map(Cell::getBox).distinct().count() != 2) {
-                        continue;
-                    }
-                    // Find the fourth cell
+                    if (!isValidRectangle(cellA, cellB, cellD)) continue;
+
                     Cell cellC = grid.findFourthCorner(cellA, cellB, cellD);
-                    // Check if all cellA candidates are also cellC candidates
-                    if (cellC.hasCandidate(candidates.getFirst()) && cellC.hasCandidate(candidates.getLast())) {
+                    if (cellC.hasCandidates(candidates)) {
                         rectangles.add(new Rectangle(cellA, cellB, cellC, cellD));
                     }
                 }
@@ -185,21 +184,54 @@ public class UniqueRectangles extends SolvingTechnique {
         return rectangles;
     }
 
+    private Cell[] findPerpendicularCells(Cell cellA, Cell cellB, BitSet candidates) {
+        UnitType unitType;
+        if (cellA.getRow() == cellB.getRow()) {
+            unitType = UnitType.COL;
+        } else if (cellA.getCol() == cellB.getCol()) {
+            unitType = UnitType.ROW;
+        } else if (cellA.getHorizontalChute() == cellB.getHorizontalChute()) {
+            unitType = UnitType.BOX;
+        } else {
+            return null; // Not a valid rectangle
+        }
+        return grid.getCells(Predicates.inUnit(unitType, cellA.getUnitIndex(unitType))
+                .and(Predicates.hasCandidates(candidates))
+                .and(cell -> cell != cellA && cell != cellB));
+    }
+
+    private boolean isValidRectangle(Cell... cells) {
+        return Arrays.stream(cells).map(Cell::getRow).distinct().count() == 2 &&
+                Arrays.stream(cells).map(Cell::getCol).distinct().count() == 2 &&
+                Arrays.stream(cells).map(Cell::getBox).distinct().count() == 2;
+    }
+
     record Rectangle(Cell cellA, Cell cellB, Cell cellC, Cell cellD) {
         public Cell[] cells() {
             return new Cell[]{cellA, cellB, cellC, cellD};
         }
 
-        public List<Integer> commonCandidates() {
-            return cellA.getCandidates();
+        public List<Cell> roofCells() {
+            return List.of(cellC, cellD);
         }
 
-        public List<Integer> extraCandidates() {
-            return Arrays.stream(cells())
-                    .flatMap(c -> c.getCandidates().stream())
-                    .filter(c -> !commonCandidates().contains(c))
-                    .distinct()
-                    .collect(Collectors.toList());
+        public BitSet commonCandidates() {
+            return cellA.candidates();
+        }
+
+        public int firstCommonCandidate() {
+            return cellA.getFirstCandidate();
+        }
+
+        public int secondCommonCandidate() {
+            return commonCandidates().nextSetBit(firstCommonCandidate() + 1);
+        }
+
+        public BitSet extraCandidates() {
+            BitSet extraCandidates = (BitSet) cellC.candidates().clone();
+            extraCandidates.or(cellD.candidates());
+            extraCandidates.andNot(cellA.candidates());
+            return extraCandidates;
         }
 
         public boolean bothRoofAreTriValue() {
@@ -207,7 +239,7 @@ public class UniqueRectangles extends SolvingTechnique {
         }
 
         public boolean roofHasSameCandidates() {
-            return cellC.getCandidates().equals(cellD.getCandidates());
+            return cellC.candidates().equals(cellD.candidates());
         }
 
         @Override

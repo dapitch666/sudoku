@@ -6,12 +6,13 @@ import org.junit.jupiter.api.Test;
 import static org.anne.sudoku.solver.SolverTest.runTest;
 
 public class UniqueRectanglesTest {
-    @Disabled // need Avoidable Rectangle
     @Test
     void UniqueRectanglesTestType1() {
         String puzzle = ".16.98.2..2....784...........7..95.....3.7.....51..4...........681....5..5.67.81.";
-        String solved = "716498325923561784548723691167249538894357162235186479372815946681934257459672813";
-        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{2}, true);
+        String solved = ".16.98325.2.5617845.8.23..11672495388..3571....518647....815.4.681934257.5.67281.";
+        // need Avoidable Rectangle
+        // String solved = "716498325923561784548723691167249538894357162235186479372815946681934257459672813";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{2}, false);
     }
 
     @Test
@@ -36,12 +37,14 @@ public class UniqueRectanglesTest {
         runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, false);
     }
 
-    @Disabled // Need Aligned Pair Exclusion and Alternating Infer. Chains
+    @Disabled
     @Test
     void UniqueRectanglesTestType2c() {
         String puzzle = "..9....5..3.8.7.......9.8...9.6..13.7..9.1..4.15..4.9...2.8.......1.3.7..6....4..";
-        String solved = "879462351536817942421395867294678135783951624615234798342786519958143276167529483";
-        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, true);
+        // Need Aligned Pair Exclusion and Alternating Infer. Chains
+        // String solved = "879462351536817942421395867294678135783951624615234798342786519958143276167529483";
+        String solved = "8.9....5.53.8.7.......9.8..2946.813.78.9.1..4.15..4.98..2.8......81.3.7..6....48.";
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, false);
     }
 
     @Test

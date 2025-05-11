@@ -1,5 +1,6 @@
 package org.anne.sudoku.model;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -26,6 +27,10 @@ public class Predicates {
     }
 
     public static Predicate<Cell> hasCandidates(List<Integer> candidates) {
+        return cell -> candidates.stream().allMatch(cell::hasCandidate);
+    }
+
+    public static Predicate<Cell> hasCandidates(BitSet candidates) {
         return cell -> candidates.stream().allMatch(cell::hasCandidate);
     }
 }

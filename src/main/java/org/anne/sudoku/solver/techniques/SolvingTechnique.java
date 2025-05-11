@@ -4,6 +4,8 @@ import org.anne.sudoku.Grade;
 import org.anne.sudoku.model.Grid;
 import org.anne.sudoku.model.Cell;
 
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 public abstract class SolvingTechnique {
@@ -50,12 +52,22 @@ public abstract class SolvingTechnique {
     }
 
     protected List<Cell> removeCandidateFromCellsAndLog(List<Cell> cells, int digit) {
+        List<Cell> changed = new ArrayList<>();
         for (Cell cell : cells) {
-            cell.removeCandidate(digit);
+            if (cell.removeCandidate(digit)) changed.add(cell);
         }
-        log("- Removed {%d} from %s%n", digit, cells);
+        if (changed.isEmpty()) return List.of();
+        log("- Removed {%d} from %s%n", digit, changed);
         incrementCounter();
         return cells;
+    }
+
+    protected List<Cell> removeCandidatesFromCellAndLog(Cell cell, BitSet candidates) {
+        BitSet removed = cell.removeCandidates(candidates);
+        if (removed.isEmpty()) return List.of();
+        log("- Removed %s from %s%n", removed, cell);
+        incrementCounter();
+        return List.of(cell);
     }
 
     public String getLog() {

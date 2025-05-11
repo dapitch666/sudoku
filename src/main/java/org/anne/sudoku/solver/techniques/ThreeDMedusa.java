@@ -211,17 +211,15 @@ public class ThreeDMedusa extends SolvingTechnique {
             for (int candidate : cell.candidates().stream().filter(cc -> cc != coloredCandidate.candidate).boxed().toList()) {
                 for (Cell c : grid.getCells(Predicates.peers(cell).and(Predicates.hasCandidate(candidate))
                         .and(c -> getColor(c, candidate) == oppositeColor))) {
-                    log("Rule 5: Uncolored candidate %d in %s can see a colored %d elsewhere (%s) and an oppositely colored %d in its own cell. It can be removed%n", candidate, cell, candidate, c, coloredCandidate.candidate);
+                    log("Rule 5: Uncolored candidate %d in %s can see a colored %d elsewhere (%s) and an oppositely colored %d in its own cell%n", candidate, cell, candidate, c, coloredCandidate.candidate);
+                    log("- Removed candidate %d from %s%n", candidate, cell);
+                    cell.removeCandidate(candidate);
                     candidatesToRemove.add(new ColoredCandidate(cell, candidate, NO_COLOR));
                     break;
                 }
             }
         }
-        if (!candidatesToRemove.isEmpty()) {
-            candidatesToRemove.forEach(cc -> cc.cell.removeCandidate(cc.candidate));
-            return candidatesToRemove.stream().map(ColoredCandidate::cell).distinct().toList();
-        }
-        return List.of();
+        return candidatesToRemove.stream().map(ColoredCandidate::cell).distinct().toList();
     }
 
     /**
