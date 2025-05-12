@@ -39,7 +39,8 @@ public class Solver {
                 new JellyFish(),
                 new UniqueRectangles(),
                 new Fireworks(),
-                new SKLoops()
+                new SKLoops(),
+                new ExtendedUniqueRectangles()
         );
     }
 

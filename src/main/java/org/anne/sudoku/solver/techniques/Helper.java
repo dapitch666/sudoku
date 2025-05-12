@@ -25,6 +25,14 @@ public class Helper {
         return map;
     }
 
+    public static BitSet mergedCandidates(Cell... cells) {
+        BitSet merged = new BitSet();
+        for (Cell cell : cells) {
+            merged.or(cell.candidates());
+        }
+        return merged;
+    }
+
     public static Map<Integer, List<Cell>> getPossibleCellsMap(Cell[] unit, Predicate<List<Cell>> predicate) {
         BitSet digits = new BitSet();
         digits.set(1, 10);

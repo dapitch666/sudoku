@@ -21,8 +21,8 @@ public class UniqueRectangles extends SolvingTechnique {
         List<Rectangle> rectangles = getRectangles();
         List<Rule> rules = List.of(this::rule1, this::rule2, this::rule3, this::rule4, this::rule5);
 
-        for (Rule rule : rules) {
-            for (Rectangle rectangle : rectangles) {
+        for (Rectangle rectangle : rectangles) {
+            for (Rule rule : rules) {
                 List<Cell> changed = rule.apply(rectangle);
                 if (!changed.isEmpty()) return changed;
             }

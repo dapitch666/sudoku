@@ -33,4 +33,8 @@ public class Predicates {
     public static Predicate<Cell> hasCandidates(BitSet candidates) {
         return cell -> candidates.stream().allMatch(cell::hasCandidate);
     }
+
+    public static Predicate<Cell> candidatesIntersect(BitSet candidates) {
+        return cell -> cell.candidates().intersects(candidates);
+    }
 }
