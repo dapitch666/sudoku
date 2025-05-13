@@ -40,7 +40,8 @@ public class Solver {
                 new UniqueRectangles(),
                 new Fireworks(),
                 new SKLoops(),
-                new ExtendedUniqueRectangles()
+                new ExtendedUniqueRectangles(),
+                new HiddenUniqueRectangles()
         );
     }
 

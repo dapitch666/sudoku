@@ -171,7 +171,7 @@ public class Grid {
         Map<Cell, List<Cell>> links = new HashMap<>();
         for (Cell cell : getCells(Predicates.hasCandidate(digit))) {
             List<Cell> peers = Arrays.stream(getCells(Predicates.peers(cell).and(Predicates.hasCandidate(digit))))
-                    .filter(c -> !isStrong || isStrongLink(cell, c, digit))
+                    .filter(c -> !isStrong || isConjugatePair(cell, c, digit))
                     .toList();
             if (!peers.isEmpty()) {
                 links.put(cell, peers);
@@ -202,27 +202,9 @@ public class Grid {
     }
 
     public boolean isConjugatePair(Cell cell1, Cell cell2, int digit) {
-        return cell1.hasCandidate(digit) && cell2.hasCandidate(digit)
+        return cell1 != cell2 && cell1.isPeer(cell2) && cell1.hasCandidate(digit) && cell2.hasCandidate(digit)
                 && getCells(Predicates.peers(cell1).and(Predicates.peers(cell2)).and(Predicates.hasCandidate(digit)))
                 .length == 0;
-    }
-
-    public boolean isStrongLink(Cell cell1, Cell cell2, int digit) {
-        if (!cell1.isPeer(cell2)) {
-            return false;
-        }
-        boolean isStrong = false;
-        for (UnitType unitType : cell1.getCommonUnitType(cell2)) {
-            int unitIndex = switch (unitType) {
-                case ROW -> cell1.getRow();
-                case COL -> cell1.getCol();
-                case BOX -> cell1.getBox();
-            };
-            if (getCells(c -> c.getUnitIndex(unitType) == unitIndex && c.hasCandidate(digit)).length == 2) {
-                isStrong = true;
-            }
-        }
-        return isStrong;
     }
 
     public Cell findFourthCorner(Cell cell1, Cell cell2, Cell cell3) {

@@ -70,7 +70,7 @@ public class ThreeDMedusa extends SolvingTechnique {
             for (Cell peer : grid.getCells(Predicates.peers(current.cell)
                     .and(Predicates.unsolvedCells)
                     .and(Predicates.hasCandidate(current.candidate))
-                    .and(cell -> grid.isStrongLink(current.cell, cell, current.candidate)))) {
+                    .and(cell -> grid.isConjugatePair(current.cell, cell, current.candidate)))) {
 
                 ColoredCandidate newCC = new ColoredCandidate(peer, current.candidate, oppositeColor);
                 if (visited.contains(newCC) || isAlreadyColored(newCC)) continue;
