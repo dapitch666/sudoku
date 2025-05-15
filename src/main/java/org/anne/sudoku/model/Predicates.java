@@ -1,5 +1,6 @@
 package org.anne.sudoku.model;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.Predicate;
@@ -36,5 +37,9 @@ public class Predicates {
 
     public static Predicate<Cell> candidatesIntersect(BitSet candidates) {
         return cell -> cell.candidates().intersects(candidates);
+    }
+
+    public static Predicate<Cell> in(Cell[] cells) {
+        return cell -> Arrays.asList(cells).contains(cell);
     }
 }

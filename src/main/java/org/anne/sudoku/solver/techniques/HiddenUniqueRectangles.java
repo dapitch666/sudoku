@@ -33,7 +33,7 @@ public class HiddenUniqueRectangles extends SolvingTechnique {
         if (rectangle.cell2.isBiValue() || rectangle.cell3.isBiValue() || rectangle.cell4.isBiValue()) return List.of();
         BitSet strongDigits4and2 = strongDigits(rectangle.cell2, rectangle.cell4);
         BitSet strongDigits4and3 = strongDigits(rectangle.cell3, rectangle.cell4);
-        if (strongDigits4and2.cardinality() != 1 || strongDigits4and2.equals(strongDigits4and3)) return List.of();
+        if (strongDigits4and2.cardinality() != 1 || !strongDigits4and2.equals(strongDigits4and3)) return List.of();
         int digit = rectangle.cell1.candidates().stream()
                 .filter(i -> i != strongDigits4and2.nextSetBit(0))
                 .findFirst()

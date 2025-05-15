@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import static org.anne.sudoku.solver.SolverTest.runTest;
 
 public class XCyclesTest {
-    @Disabled ("Need WXYZ Wing")
     @Test
     void xCyclesTest1() {
         String puzzle = ".........89.632..4..2.9.8...7....6..9....5..8..1....3...3.1.2..6..873.19.........";

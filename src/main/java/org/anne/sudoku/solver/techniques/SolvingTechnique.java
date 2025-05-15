@@ -70,6 +70,14 @@ public abstract class SolvingTechnique {
         return List.of(cell);
     }
 
+    protected BitSet combinedCandidates(Cell... cells) {
+        BitSet combined = new BitSet();
+        for (Cell cell : cells) {
+            combined.or(cell.candidates());
+        }
+        return combined;
+    }
+
     public String getLog() {
         String message = sb.toString();
         sb.setLength(0);

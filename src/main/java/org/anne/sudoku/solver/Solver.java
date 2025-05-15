@@ -41,7 +41,8 @@ public class Solver {
                 new Fireworks(),
                 new SKLoops(),
                 new ExtendedUniqueRectangles(),
-                new HiddenUniqueRectangles()
+                new HiddenUniqueRectangles(),
+                new WXYZWings()
         );
     }
 
