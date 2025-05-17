@@ -42,7 +42,8 @@ public class Solver {
                 new SKLoops(),
                 new ExtendedUniqueRectangles(),
                 new HiddenUniqueRectangles(),
-                new WXYZWings()
+                new WXYZWings(),
+                new SubsetExclusion()
         );
     }
 

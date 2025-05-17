@@ -25,10 +25,8 @@ class HiddenUniqueRectanglesTest {
     @Test
     void hiddenUniqueRectanglesTestType2b() {
         String puzzle = "8....1.6..21.4.......5.67...69...24...........72...13...36.9.......2.39..1.4....6";
-        String solved = "8572.1.6.621.4..8.394586712169...24.438..26..572.6413.2836.9...746.2.39.9154..826";
-        // Need Aligned Pair Exclusion
-        // String solved = "857291463621743985394586712169358247438172659572964138283619574746825391915437826";
-        runTest(puzzle, solved, new String[]{"Hidden Unique Rectangles"}, new int[]{1}, false);
+        String solved = "857291463621743985394586712169358247438172659572964138283619574746825391915437826";
+        runTest(puzzle, solved, new String[]{"Hidden Unique Rectangles", "Aligned Pair Exclusion"}, new int[]{1, 1}, false);
     }
 
     @Test
