@@ -23,7 +23,7 @@ public class JellyFish extends SolvingTechnique {
                 List<Cell[]> list = new ArrayList<>();
                 for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
                     Cell[] cellsWithCandidateInUnit = grid.getCells(Predicates.inUnit(unitType, unitIndex)
-                            .and(Predicates.hasCandidate(digit)));
+                            .and(Predicates.containsCandidate(digit)));
                     if (cellsWithCandidateInUnit.length >= 2 && cellsWithCandidateInUnit.length <= 4) {
                         list.add(cellsWithCandidateInUnit);
                     }
@@ -45,7 +45,7 @@ public class JellyFish extends SolvingTechnique {
                                 List<Cell> changed = new ArrayList<>();
                                 for (int unitIndex : unitsIndex) {
                                     changed.addAll(Arrays.asList(grid.getCells(Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitIndex)
-                                            .and(Predicates.hasCandidate(digit))
+                                            .and(Predicates.containsCandidate(digit))
                                             .and(cell -> !jellyFish.contains(cell)))));
                                 }
                                 if (changed.isEmpty()) continue;

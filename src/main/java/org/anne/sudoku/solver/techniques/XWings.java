@@ -19,7 +19,7 @@ public class XWings extends SolvingTechnique {
             for (int digit = 1; digit <= 9; digit++) {
                 List<Cell[]> list = new ArrayList<>();
                 for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-                    Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex).and(Predicates.hasCandidate(digit)));
+                    Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex).and(Predicates.containsCandidate(digit)));
                     if (cells.length == 2) {
                         list.add(cells);
                     }
@@ -34,7 +34,7 @@ public class XWings extends SolvingTechnique {
                         for (Cell cell : grid.getCells(
                                 Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitsIndex.getFirst())
                                         .or(Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitsIndex.getLast()))
-                                        .and(Predicates.hasCandidate(digit))
+                                        .and(Predicates.containsCandidate(digit))
                                         .and(c -> !xWing.contains(c)))) {
                             cell.removeCandidate(digit);
                             changed.add(cell);

@@ -19,7 +19,7 @@ public class Fireworks extends SolvingTechnique {
         for (Cell cell : grid.getCells(Predicates.unsolvedCells)) {
             Map<Integer, List<Cell>> fireworks = new HashMap<>();
 
-            Cell[] peers = grid.getCells(Predicates.peers(cell).and(Predicates.unsolvedCells)
+            Cell[] peers = grid.getCells(Predicates.isPeerOf(cell).and(Predicates.unsolvedCells)
                     .and(Predicates.inUnit(UnitType.BOX, cell.getBox()).negate()));
 
             Map<Integer, List<Cell>> map = Helper.getPossibleCellsMap(peers, cell.candidates(), l -> l.size() <= 2);

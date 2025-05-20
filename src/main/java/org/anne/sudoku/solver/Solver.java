@@ -16,16 +16,20 @@ public class Solver {
     public Solver(String puzzle) {
         this.grid = new Grid(puzzle);
         this.techniques = List.of(
-                new NakedSingles(), // VERY_EASY
+                // VERY_EASY
+                new NakedSingles(),
                 new HiddenSingles(),
                 new NakedPairs(),
-                new NakedTriples(), // EASY
+                // EASY
+                new NakedTriples(),
                 new HiddenPairs(),
-                new HiddenTriples(), // MODERATE
+                // MODERATE
+                new HiddenTriples(),
                 new NakedQuads(),
                 new HiddenQuads(),
                 new IntersectionRemoval(),
-                new XWings(), // HARD
+                // HARD
+                new XWings(),
                 new ChuteRemotePairs(),
                 new SimpleColoring(),
                 new YWings(),
@@ -33,7 +37,8 @@ public class Solver {
                 new SwordFish(),
                 new XYZWings(),
                 new BiValueUniversalGrave(),
-                new XCycles(), // VERY_HARD
+                // VERY_HARD
+                new XCycles(),
                 new XYChains(),
                 new ThreeDMedusa(),
                 new JellyFish(),
@@ -43,7 +48,9 @@ public class Solver {
                 new ExtendedUniqueRectangles(),
                 new HiddenUniqueRectangles(),
                 new WXYZWings(),
-                new SubsetExclusion()
+                new SubsetExclusion(),
+                // INSANE
+                new Exocets()
         );
     }
 

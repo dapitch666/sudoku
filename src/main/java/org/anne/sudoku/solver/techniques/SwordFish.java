@@ -50,7 +50,7 @@ public class SwordFish extends SolvingTechnique {
     private List<Cell[]> findCandidateUnits(UnitType unitType, int digit) {
         List<Cell[]> candidateUnits = new ArrayList<>();
         for (int unitIndex = 0; unitIndex < 9; unitIndex++) {
-            Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex).and(Predicates.hasCandidate(digit)));
+            Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex).and(Predicates.containsCandidate(digit)));
             if (cells.length == 2 || cells.length == 3) {
                 candidateUnits.add(cells);
             }
@@ -70,7 +70,7 @@ public class SwordFish extends SolvingTechnique {
         for (int index : distinctUnits) {
             changed.addAll(List.of(grid.getCells(
                     Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, index)
-                            .and(Predicates.hasCandidate(digit))
+                            .and(Predicates.containsCandidate(digit))
                             .and(cell -> !swordfish.contains(cell))
             )));
         }

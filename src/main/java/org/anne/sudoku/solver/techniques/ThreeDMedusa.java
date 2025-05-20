@@ -67,9 +67,9 @@ public class ThreeDMedusa extends SolvingTechnique {
             int oppositeColor = (current.color == GREEN) ? YELLOW : GREEN;
 
             // Look for bi-location connections
-            for (Cell peer : grid.getCells(Predicates.peers(current.cell)
+            for (Cell peer : grid.getCells(Predicates.isPeerOf(current.cell)
                     .and(Predicates.unsolvedCells)
-                    .and(Predicates.hasCandidate(current.candidate))
+                    .and(Predicates.containsCandidate(current.candidate))
                     .and(cell -> grid.isConjugatePair(current.cell, cell, current.candidate)))) {
 
                 ColoredCandidate newCC = new ColoredCandidate(peer, current.candidate, oppositeColor);
@@ -179,7 +179,7 @@ public class ThreeDMedusa extends SolvingTechnique {
                     .filter(cc -> cc.candidate == candidate && cc.color != color && cc.cell != cell)
                     .toList()) {
 
-                for (Cell peer : grid.getCells(Predicates.peers(cell).and(Predicates.peers(other.cell)).and(Predicates.hasCandidate(candidate)))) {
+                for (Cell peer : grid.getCells(Predicates.isPeerOf(cell).and(Predicates.isPeerOf(other.cell)).and(Predicates.containsCandidate(candidate)))) {
                     if (candidatesToRemove.stream().anyMatch(cc -> cc.cell() == peer && cc.candidate() == candidate)) {
                         continue; // Ignore candidates that are already marked for removal
                     }
@@ -209,7 +209,7 @@ public class ThreeDMedusa extends SolvingTechnique {
 
             int oppositeColor = coloredCandidate.color == GREEN ? YELLOW : GREEN;
             for (int candidate : cell.candidates().stream().filter(cc -> cc != coloredCandidate.candidate).boxed().toList()) {
-                for (Cell c : grid.getCells(Predicates.peers(cell).and(Predicates.hasCandidate(candidate))
+                for (Cell c : grid.getCells(Predicates.isPeerOf(cell).and(Predicates.containsCandidate(candidate))
                         .and(c -> getColor(c, candidate) == oppositeColor))) {
                     log("Rule 5: Uncolored candidate %d in %s can see a colored %d elsewhere (%s) and an oppositely colored %d in its own cell%n", candidate, cell, candidate, c, coloredCandidate.candidate);
                     log("- Removed candidate %d from %s%n", candidate, cell);

@@ -16,16 +16,16 @@ public class BiValueUniversalGrave extends SolvingTechnique {
 
     @Override
     public List<Cell> apply(Grid grid) {
-        Cell[] cells = grid.getCells(Predicates.cellsWithNCandidates(3));
+        Cell[] cells = grid.getCells(Predicates.cellsWithNCandidates(3, 3));
         if (cells.length != 1 ||
-                grid.getCells(Predicates.cellsWithNCandidates(2)).length != grid.getCells(Predicates.unsolvedCells).length - 1) {
+                grid.getCells(Predicates.cellsWithNCandidates(2, 2)).length != grid.getCells(Predicates.unsolvedCells).length - 1) {
             return List.of();
         }
         Cell cell = cells[0];
         for (int digit : cell.getCandidates()) {
-            if (grid.getCells(Predicates.inUnit(UnitType.ROW, cell.getRow()).and(Predicates.hasCandidate(digit))).length > 2
-                    || grid.getCells(Predicates.inUnit(UnitType.COL, cell.getCol()).and(Predicates.hasCandidate(digit))).length > 2
-                    || grid.getCells(Predicates.inUnit(UnitType.BOX, cell.getBox()).and(Predicates.hasCandidate(digit))).length > 2) {
+            if (grid.getCells(Predicates.inUnit(UnitType.ROW, cell.getRow()).and(Predicates.containsCandidate(digit))).length > 2
+                    || grid.getCells(Predicates.inUnit(UnitType.COL, cell.getCol()).and(Predicates.containsCandidate(digit))).length > 2
+                    || grid.getCells(Predicates.inUnit(UnitType.BOX, cell.getBox()).and(Predicates.containsCandidate(digit))).length > 2) {
                 BitSet removed = cell.removeAllBut(List.of(digit));
                 log("BUG found in %s. %d must be the solution%n- Removed candidate(s) %s from %s%n", cell, digit, removed, cell);
                 incrementCounter();

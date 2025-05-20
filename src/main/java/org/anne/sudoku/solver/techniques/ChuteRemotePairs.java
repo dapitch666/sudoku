@@ -66,8 +66,8 @@ public class ChuteRemotePairs extends SolvingTechnique {
     private boolean processSingleCandidate(Cell cell1, Cell cell2, BitSet candidates, List<Cell> changed) {
         if (candidates.cardinality() != 1) return false;
         int digit = candidates.nextSetBit(0);
-        for (Cell cell : grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2))
-                .and(Predicates.hasCandidate(digit)))) {
+        for (Cell cell : grid.getCells(Predicates.isPeerOf(cell1).and(Predicates.isPeerOf(cell2))
+                .and(Predicates.containsCandidate(digit)))) {
             cell.removeCandidate(digit);
             changed.add(cell);
         }
@@ -82,7 +82,7 @@ public class ChuteRemotePairs extends SolvingTechnique {
     private boolean processDoubleElimination(Cell cell1, Cell cell2, BitSet candidates, List<Cell> changed) {
         if (!candidates.isEmpty()) return false;
         BitSet digits = (BitSet) cell1.candidates().clone();
-        for (Cell cell : grid.getCells(Predicates.peers(cell1).and(Predicates.peers(cell2))
+        for (Cell cell : grid.getCells(Predicates.isPeerOf(cell1).and(Predicates.isPeerOf(cell2))
                 .and(c -> c.candidates().intersects(digits)))) {
             BitSet removed = cell.removeCandidates(digits);
             if (!removed.isEmpty()) {

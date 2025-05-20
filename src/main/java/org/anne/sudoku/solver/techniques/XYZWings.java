@@ -16,11 +16,11 @@ public class XYZWings extends SolvingTechnique {
     @Override
     public List<Cell> apply(Grid grid) {
         for (int digit = 1; digit <= 9; digit++) {
-            for (Cell hinge : grid.getCells(Predicates.hasCandidate(digit).and(Predicates.cellsWithNCandidates(3)))) {
+            for (Cell hinge : grid.getCells(Predicates.containsCandidate(digit).and(Predicates.cellsWithNCandidates(3, 3)))) {
                 int x = digit;
                 Integer[] candidates = hinge.getCandidates().stream().filter(candidate -> candidate != x).toArray(Integer[]::new);
                 int y = candidates[0], z = candidates[1];
-                Cell[] peers = grid.getCells(Predicates.peers(hinge).and(Predicates.hasCandidate(digit)));
+                Cell[] peers = grid.getCells(Predicates.isPeerOf(hinge).and(Predicates.containsCandidate(digit)));
                 if (peers.length < 2) continue;
                 Cell wing1 = null, wing2 = null;
                 for (Cell peer : peers) {
@@ -35,7 +35,7 @@ public class XYZWings extends SolvingTechnique {
                     }
                 }
                 if (wing2 == null) continue;
-                List<Cell> changed = Arrays.stream(peers).filter(Predicates.peers(wing1).and(Predicates.peers(wing2))).toList();
+                List<Cell> changed = Arrays.stream(peers).filter(Predicates.isPeerOf(wing1).and(Predicates.isPeerOf(wing2))).toList();
 
                 if (changed.isEmpty()) continue;
                 for (Cell peer : changed) {

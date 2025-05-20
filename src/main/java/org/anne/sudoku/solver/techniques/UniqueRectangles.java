@@ -44,16 +44,16 @@ public class UniqueRectangles extends SolvingTechnique {
     }
 
     // Rule 2: If both roofs are tri-value and have the same candidates,
-    // the extra candidate MUST be in one of the roof cells and can be removed from common peers.
+    // the extra candidate MUST be in one of the roof cells and can be removed from common isPeerOf.
     private List<Cell> rule2(Rectangle rectangle) {
         if (!rectangle.bothRoofAreTriValue() || !rectangle.roofHasSameCandidates()) return List.of();
         int digit = rectangle.cellC().candidates().stream()
                 .filter(d -> !rectangle.commonCandidates().get(d))
                 .findFirst()
                 .orElseThrow();
-        var changed = removeCandidateFromCellsAndLog(List.of(grid.getCells(Predicates.peers(rectangle.cellC())
-                        .and(Predicates.peers(rectangle.cellD()))
-                        .and(Predicates.hasCandidate(digit)))),
+        var changed = removeCandidateFromCellsAndLog(List.of(grid.getCells(Predicates.isPeerOf(rectangle.cellC())
+                        .and(Predicates.isPeerOf(rectangle.cellD()))
+                        .and(Predicates.containsCandidate(digit)))),
                 digit);
         if (!changed.isEmpty()) {
             log(0, "Unique Rectangle Type 2 found: %s%n", rectangle);
@@ -62,7 +62,7 @@ public class UniqueRectangles extends SolvingTechnique {
     }
 
     // Rule 3: If the extra candidates are a naked subset,
-    // the extra candidates can be removed from all other common peers of the roof cells.
+    // the extra candidates can be removed from all other common isPeerOf of the roof cells.
     private List<Cell> rule3(Rectangle rectangle) {
         List<Cell> changed = new ArrayList<>();
         for (UnitType unitType : rectangle.cellC().getCommonUnitType(rectangle.cellD())) {
@@ -196,7 +196,7 @@ public class UniqueRectangles extends SolvingTechnique {
             return null; // Not a valid rectangle
         }
         return grid.getCells(Predicates.inUnit(unitType, cellA.getUnitIndex(unitType))
-                .and(Predicates.hasCandidates(candidates))
+                .and(Predicates.containsAllCandidates(candidates))
                 .and(cell -> cell != cellA && cell != cellB));
     }
 

@@ -85,13 +85,13 @@ public class HiddenUniqueRectangles extends SolvingTechnique {
     private List<Rectangle> getRectangles() {
         List<Rectangle> rectangles = new ArrayList<>();
         for (Cell cell1 : grid.getCells(Predicates.biValueCells)) {
-            for (Cell cell2 : grid.getCells(Predicates.peers(cell1)
+            for (Cell cell2 : grid.getCells(Predicates.isPeerOf(cell1)
                     .and(Predicates.inUnit(UnitType.BOX, cell1.getBox()))
-                    .and(Predicates.hasCandidates(cell1.candidates())))) {
+                    .and(Predicates.containsAllCandidates(cell1.candidates())))) {
                 if (strongDigits(cell1, cell2).isEmpty()) continue;
-                for (Cell cell3 : grid.getCells(Predicates.peers(cell1)
+                for (Cell cell3 : grid.getCells(Predicates.isPeerOf(cell1)
                         .and(Predicates.inUnit(UnitType.BOX, cell1.getBox()).negate())
-                        .and(Predicates.hasCandidates(cell1.candidates())))) {
+                        .and(Predicates.containsAllCandidates(cell1.candidates())))) {
                     Cell cell4 = grid.findFourthCorner(cell1, cell2, cell3);
                     if (!cell4.isSolved() && cell4.getBox() == cell3.getBox() && cell4.hasCandidates(cell1.candidates())) {
                         rectangles.add(new Rectangle(cell1, cell2, cell3, cell4));

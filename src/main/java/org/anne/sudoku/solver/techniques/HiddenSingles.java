@@ -23,7 +23,7 @@ public class HiddenSingles extends SolvingTechnique {
                 for (int i = 1; i <= 9; i++) { // For each candidate
                     // Get all cells in the unit that can contain the candidate
                     Cell[] cells = grid.getCells(Predicates.inUnit(unitType, unitIndex)
-                            .and(Predicates.hasCandidate(i)));
+                            .and(Predicates.containsCandidate(i)));
                     if (cells.length != 1) continue; // Only one cell can contain the candidate
                     Cell cell = cells[0];
                     BitSet removed = cell.removeAllBut(List.of(i));

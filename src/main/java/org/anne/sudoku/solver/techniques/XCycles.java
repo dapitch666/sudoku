@@ -46,9 +46,9 @@ public class XCycles extends SolvingTechnique {
         List<Cell> changed = new ArrayList<>();
         for (int i = 0; i < cycle.size() - 1; i += 2) {
             changed.addAll(List.of(grid.getCells(
-                    Predicates.peers(cycle.get(i))
-                            .and(Predicates.peers(cycle.get(i + 1)))
-                            .and(Predicates.hasCandidate(digit))
+                    Predicates.isPeerOf(cycle.get(i))
+                            .and(Predicates.isPeerOf(cycle.get(i + 1)))
+                            .and(Predicates.containsCandidate(digit))
                             .and(cell -> !cycle.contains(cell)))));
 
         }

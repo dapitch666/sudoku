@@ -26,9 +26,9 @@ public class XYChains extends SolvingTechnique {
                 for (List<Cell> chain : chains) {
                     Cell cell1 = chain.getFirst();
                     Cell cell2 = chain.getLast();
-                    List<Cell> changed = Arrays.stream(grid.getCells(Predicates.peers(cell1)
-                            .and(Predicates.peers(cell2))
-                            .and(Predicates.hasCandidate(digit))))
+                    List<Cell> changed = Arrays.stream(grid.getCells(Predicates.isPeerOf(cell1)
+                            .and(Predicates.isPeerOf(cell2))
+                            .and(Predicates.containsCandidate(digit))))
                             .toList();
                     if (changed.isEmpty()) continue;
                     log("XY Chain found for {%d}: %s%n", digit, chain);
@@ -48,11 +48,11 @@ public class XYChains extends SolvingTechnique {
             results.add(new ArrayList<>(currentChain));
         }
 
-        // Look for next link in chain among peers
+        // Look for next link in chain among isPeerOf
         for (Cell peer : grid.getCells(
-                Predicates.peers(currentCell)
+                Predicates.isPeerOf(currentCell)
                         .and(Predicates.biValueCells)
-                        .and(Predicates.hasCandidate(otherDigit)))
+                        .and(Predicates.containsCandidate(otherDigit)))
         ) {
             if (currentChain.contains(peer)) continue;
             currentChain.add(peer);

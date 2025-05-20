@@ -33,7 +33,7 @@ public class WXYZWings extends SolvingTechnique {
     private List<Cell> rule1(Formation formation) {
         if (formation.z == -1) return List.of();
         // Remove the non-restricted candidate from the cells that can see all the cells in the formation with the same candidate
-        List<Cell> changed = Arrays.stream(grid.getCells(Predicates.hasCandidate(formation.z).and(Predicates.in(formation.cells).negate())))
+        List<Cell> changed = Arrays.stream(grid.getCells(Predicates.containsCandidate(formation.z).and(Predicates.in(formation.cells).negate())))
                 .filter(cell -> formation.getCellsWithZ().stream().allMatch(cell::isPeer))
                 .toList();
         if (!changed.isEmpty()) {
@@ -87,14 +87,14 @@ public class WXYZWings extends SolvingTechnique {
         // Candidates elimination
         List<Cell> changes = new ArrayList<>();
         for (Cell cell : grid.getCells(Predicates.inUnit(UnitType.BOX, boxCell.getBox()).and(Predicates.in(formation.cells).negate())
-                .and(Predicates.candidatesIntersect(boxCell.candidates())))) {
+                .and(Predicates.intersectCandidates(boxCell.candidates())))) {
             changes.add(cell);
             BitSet removed = cell.removeCandidates(boxCell.candidates());
             log("- Removed %s from %s%n", removed, cell);
         }
-        for (Cell cell : grid.getCells(Predicates.peers(hinge.getFirst()).and(Predicates.peers(rowOrColCell))
+        for (Cell cell : grid.getCells(Predicates.isPeerOf(hinge.getFirst()).and(Predicates.isPeerOf(rowOrColCell))
                 .and(Predicates.in(formation.cells).negate())
-                .and(Predicates.candidatesIntersect(rowOrColCell.candidates())))) {
+                .and(Predicates.intersectCandidates(rowOrColCell.candidates())))) {
             changes.add(cell);
             BitSet removed = cell.removeCandidates(rowOrColCell.candidates());
             log("- Removed %s from %s%n", removed, cell);
@@ -110,12 +110,12 @@ public class WXYZWings extends SolvingTechnique {
         Set<Formation> formations = new HashSet<>();
         Cell[] cells = grid.getCells(Predicates.unsolvedCells.and(cell -> cell.getCandidateCount() <= 4));
         for (Cell cellA : cells) {
-            for (Cell cellB : grid.getCells(Predicates.in(cells).and(Predicates.peers(cellA)))) {
+            for (Cell cellB : grid.getCells(Predicates.in(cells).and(Predicates.isPeerOf(cellA)))) {
                 if (combinedCandidates(cellA, cellB).cardinality() > 4) continue;
-                for (Cell cellC : grid.getCells(Predicates.in(cells).and(Predicates.peers(cellA).or(Predicates.peers(cellB))))) {
+                for (Cell cellC : grid.getCells(Predicates.in(cells).and(Predicates.isPeerOf(cellA).or(Predicates.isPeerOf(cellB))))) {
                     if (List.of(cellA, cellB).contains(cellC) || combinedCandidates(cellA, cellB, cellC).cardinality() > 4)
                         continue;
-                    for (Cell cellD : grid.getCells(Predicates.in(cells).and(Predicates.peers(cellA).or(Predicates.peers(cellB).or(Predicates.peers(cellC)))))) {
+                    for (Cell cellD : grid.getCells(Predicates.in(cells).and(Predicates.isPeerOf(cellA).or(Predicates.isPeerOf(cellB).or(Predicates.isPeerOf(cellC)))))) {
                         BitSet combinedCandidates = combinedCandidates(cellA, cellB, cellC, cellD);
                         if (List.of(cellA, cellB, cellC).contains(cellD) || combinedCandidates.cardinality() > 4)
                             continue;
@@ -154,7 +154,7 @@ public class WXYZWings extends SolvingTechnique {
         }
 
         public List<Cell> getCellsWithZ() {
-            return Arrays.stream(cells).filter(Predicates.hasCandidate(z)).toList();
+            return Arrays.stream(cells).filter(Predicates.containsCandidate(z)).toList();
         }
 
         public boolean isValidWXYZWing() {

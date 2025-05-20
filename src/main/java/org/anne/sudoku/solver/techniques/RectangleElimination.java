@@ -26,14 +26,14 @@ public class RectangleElimination extends SolvingTechnique {
                         // Find a weak link in opposite direction
                         Cell[] oppositeCells = grid.getCells(
                                 Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitType == UnitType.ROW ? hinge.getCol() : hinge.getRow())
-                                        .and(Predicates.hasCandidate(candidate)));
+                                        .and(Predicates.containsCandidate(candidate)));
                         if (oppositeCells.length == 2) continue;
                         for (Cell wing2 : oppositeCells) {
                             if (wing2.getBox() == hinge.getBox()) continue;
                             Cell wing1 = map.get(candidate).stream().filter(cell -> cell != hinge).findFirst().orElseThrow();
                             int oppositeBox = Helper.findFourthBox(hinge.getBox(), wing1.getBox(), wing2.getBox());
                             Cell[] oppositeBoxCellsWithCandidate = grid.getCells(Predicates.inUnit(UnitType.BOX, oppositeBox)
-                                    .and(Predicates.hasCandidate(candidate)));
+                                    .and(Predicates.containsCandidate(candidate)));
                             if (oppositeBoxCellsWithCandidate.length != 0 && Arrays.stream(oppositeBoxCellsWithCandidate)
                                     .allMatch(cell -> cell.isPeer(wing1) || cell.isPeer(wing2))) {
                                 wing2.removeCandidate(candidate);

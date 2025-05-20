@@ -160,7 +160,7 @@ public class Grid {
     public void checkForSolvedCells() {
         for (Cell cell : getCells(Predicates.justSolvedCells)) {
             int digit = get(cell.index());
-            for (Cell peer : getCells(Predicates.peers(cell).and(Predicates.unsolvedCells).and(Predicates.hasCandidate(digit)))) {
+            for (Cell peer : getCells(Predicates.isPeerOf(cell).and(Predicates.unsolvedCells).and(Predicates.containsCandidate(digit)))) {
                 peer.candidates().clear(digit);
             }
             cell.unsetJustSolved();
@@ -169,8 +169,8 @@ public class Grid {
 
     public Map<Cell, List<Cell>> findLinks(int digit, boolean isStrong) {
         Map<Cell, List<Cell>> links = new HashMap<>();
-        for (Cell cell : getCells(Predicates.hasCandidate(digit))) {
-            List<Cell> peers = Arrays.stream(getCells(Predicates.peers(cell).and(Predicates.hasCandidate(digit))))
+        for (Cell cell : getCells(Predicates.containsCandidate(digit))) {
+            List<Cell> peers = Arrays.stream(getCells(Predicates.isPeerOf(cell).and(Predicates.containsCandidate(digit))))
                     .filter(c -> !isStrong || isConjugatePair(cell, c, digit))
                     .toList();
             if (!peers.isEmpty()) {
@@ -182,7 +182,7 @@ public class Grid {
 
     public void showPossible() {
         for (Cell cell : getCells(Predicates.unsolvedCells)) {
-            BitSet values = Arrays.stream(getCells(Predicates.peers(cell).and(Predicates.solvedCells)))
+            BitSet values = Arrays.stream(getCells(Predicates.isPeerOf(cell).and(Predicates.solvedCells)))
                     .mapToInt(c -> get(c.index()))
                     .collect(BitSet::new, BitSet::set, BitSet::or);
             cell.removeCandidates(values);
@@ -203,7 +203,7 @@ public class Grid {
 
     public boolean isConjugatePair(Cell cell1, Cell cell2, int digit) {
         return cell1 != cell2 && cell1.isPeer(cell2) && cell1.hasCandidate(digit) && cell2.hasCandidate(digit)
-                && getCells(Predicates.peers(cell1).and(Predicates.peers(cell2)).and(Predicates.hasCandidate(digit)))
+                && getCells(Predicates.isPeerOf(cell1).and(Predicates.isPeerOf(cell2)).and(Predicates.containsCandidate(digit)))
                 .length == 0;
     }
 

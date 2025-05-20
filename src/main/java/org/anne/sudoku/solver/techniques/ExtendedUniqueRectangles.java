@@ -46,7 +46,7 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
         return List.of(cell);
     }
 
-    // Rule 2: Remove a candidate from peers of two roof cells if they share the same extra candidate
+    // Rule 2: Remove a candidate from isPeerOf of two roof cells if they share the same extra candidate
     private List<Cell> rule2(Rectangle rectangle) {
         BitSet floorCandidates = rectangle.floorCandidates();
         Map<Cell, BitSet> roofExtraCandidates = Arrays.stream(rectangle.roof())
@@ -56,9 +56,9 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
                 roofExtraCandidates.get(rectangle.cell5) != roofExtraCandidates.get(rectangle.cell6))
             return List.of();
         int digit = roofExtraCandidates.get(rectangle.cell5).nextSetBit(0);
-        List<Cell> peers = Arrays.stream(grid.getCells(Predicates.peers(rectangle.cell5)
-                        .and(Predicates.peers(rectangle.cell6))
-                        .and(Predicates.hasCandidate(digit))))
+        List<Cell> peers = Arrays.stream(grid.getCells(Predicates.isPeerOf(rectangle.cell5)
+                        .and(Predicates.isPeerOf(rectangle.cell6))
+                        .and(Predicates.containsCandidate(digit))))
                 .toList();
         List<Cell> changed = removeCandidateFromCellsAndLog(peers, digit);
         if (!changed.isEmpty()) {
@@ -110,8 +110,8 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
 
                 for (Cell cellC : Arrays.stream(cellsWith2or3Candidates)
                         .filter(Predicates.inUnit(UnitType.BOX, cellA.getBox()).negate()
-                                .and(Predicates.peers(cellA))
-                                .and(Predicates.candidatesIntersect(mergedCandidates)))
+                                .and(Predicates.isPeerOf(cellA))
+                                .and(Predicates.intersectCandidates(mergedCandidates)))
                         .toList()) {
                     mergedCandidates = Helper.mergedCandidates(cellA, cellB, cellC);
                     if (mergedCandidates.cardinality() > 3) continue;
@@ -122,9 +122,9 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
                     if (mergedCandidates.cardinality() != 3) continue;
 
                     int targetBox = targetBox(cellA.getBox(), cellC.getBox());
-                    for (Cell cellE : grid.getCells(Predicates.peers(cellA)
+                    for (Cell cellE : grid.getCells(Predicates.isPeerOf(cellA)
                             .and(Predicates.inUnit(UnitType.BOX, targetBox))
-                            .and(Predicates.candidatesIntersect(mergedCandidates)))) {
+                            .and(Predicates.intersectCandidates(mergedCandidates)))) {
                         Cell cellF = grid.findFourthCorner(cellA, cellB, cellE);
                         if (cellF.isSolved()) continue;
 
