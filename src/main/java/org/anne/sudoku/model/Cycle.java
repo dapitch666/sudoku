@@ -153,5 +153,30 @@ public class Cycle<T> implements List<T> {
     public String toString() {
         return list.toString();
     }
+
+    public enum CycleType {
+        CONTINUOUS,
+        DISCONTINUOUS_STRONG,
+        DISCONTINUOUS_WEAK;
+
+        @Override
+        public String toString() {
+            return switch (this) {
+                case CONTINUOUS -> "Continuous Alternating Nice Loop";
+                case DISCONTINUOUS_STRONG -> "Discontinuous Alternating Nice Loop (Strong)";
+                case DISCONTINUOUS_WEAK -> "Discontinuous Alternating Nice Loop (Weak)";
+            };
+        }
+    }
+
+    public CycleType getCycleType(Map<T, List<T>> strongLinks) {
+        if (size() % 2 == 0) {
+            return CycleType.CONTINUOUS;
+        }
+        if (!strongLinks.getOrDefault(getFirst(), List.of()).contains(getLast())) {
+            return CycleType.DISCONTINUOUS_WEAK;
+        }
+        return CycleType.DISCONTINUOUS_STRONG;
+    }
 }
 

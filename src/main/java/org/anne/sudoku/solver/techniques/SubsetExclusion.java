@@ -35,20 +35,25 @@ public class SubsetExclusion extends SolvingTechnique {
                 for (int i = 0; i < 2; i++) {
                     Cell cell = (i == 0) ? cell1 : cell2;
                     int index = (i == 0) ? 0 : 1;
+                    BitSet toRemove = new BitSet(9);
                     for (int digit : cell.getCandidates()) {
                         if (allowedCombinations.stream().noneMatch(combination -> combination[index] == digit)) {
-                            cell.removeCandidate(digit);
-                            log("Aligned Pair Exclusion found in %s%n%s- Removed {%d} from %s%n",
-                                    List.of(cell1, cell2), sb.toString(), digit, cell);
-                            changed.add(cell);
-                            incrementCounter();
-                            return changed;
+                            toRemove.set(digit);
                         }
                     }
+                    if (toRemove.isEmpty()) continue;
+                    cell.removeCandidates(toRemove);
+                    changed.add(cell);
+                    sb.append(String.format("- Removed %s from %s%n", toRemove, cell));
+                }
+                if (!changed.isEmpty()) {
+                    incrementCounter();
+                    log(0, "Aligned Pair Exclusion found in %s%n%s", List.of(cell1, cell2), sb.toString());
+                    return changed;
                 }
             }
         }
-        return changed;
+        return List.of();
     }
 
     private List<int[]> getAllAllowedCombinations(Cell cell1, Cell cell2, StringBuilder sb) {

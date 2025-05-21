@@ -51,7 +51,7 @@ public class UniqueRectanglesTest {
         runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, false);
     }
 
-    @Disabled ("Need Aligned Pair Exclusion and Alternating Infer. Chain")
+    @Disabled ("Need Alternating Infer. Chain")
     @Test
     void uniqueRectanglesTestType2c() {
         String puzzle = "..9....5..3.8.7.......9.8...9.6..13.7..9.1..4.15..4.9...2.8.......1.3.7..6....4..";

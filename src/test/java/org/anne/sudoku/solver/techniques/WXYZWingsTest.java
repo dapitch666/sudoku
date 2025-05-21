@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.anne.sudoku.solver.SolverTest.runTest;
 
 class WXYZWingsTest {
-    @Disabled("Need Aligned Pair Exclusion and Alternating Infer. Chains")
+    @Disabled("Need Alternating Infer. Chains")
     @Test
     void testWXYZWingsType1_and2_1() {
         String puzzle = ".....47..5..37..6.23......47...3.84....4.1....84.6...33......59.7..93..2..62.....";
@@ -29,7 +29,7 @@ class WXYZWingsTest {
         runTest(puzzle, solved, new String[]{"WXYZ-Wings"}, new int[]{2}, false);
     }
 
-    @Disabled ("Need Aligned Pair Exclusion, Grouped X-Cycle and Alternating Infer. Chains")
+    @Disabled ("Need Grouped X-Cycle and Alternating Infer. Chains")
     @Test
     void testWXYZWingsType2_1() {
         String puzzle = ".1......36.8...2.7..39..5.....6.4.1..3..5..2..4.3.2.....1..76..3.5...1.92......3.";

@@ -2,8 +2,10 @@ package org.anne.sudoku.solver.techniques;
 
 import org.anne.sudoku.Grade;
 import org.anne.sudoku.model.*;
+import org.anne.sudoku.model.Cycle;
 
 import java.util.*;
+
 
 public class XCycles extends SolvingTechnique {
     public XCycles() {
@@ -24,7 +26,7 @@ public class XCycles extends SolvingTechnique {
             var cycles = new Graph<>(strongLinks, weakLinks).findAllCycles();
             for (Cycle<Cell> cycle : cycles) {
                 // Classify the cycle
-                CycleType cycleType = classifyCycle(cycle, strongLinks);
+                Cycle.CycleType cycleType = cycle.getCycleType(strongLinks);
                 // Apply the appropriate rule based on the cycle type
                 Rule rule = switch (cycleType) {
                     case CONTINUOUS -> this::rule1;
@@ -79,31 +81,6 @@ public class XCycles extends SolvingTechnique {
         cell.removeCandidate(digit);
         log("- Removed candidate {%d} from %s%n", digit, cell);
         return List.of(cell);
-    }
-
-    private CycleType classifyCycle(Cycle<Cell> cycle, Map<Cell, List<Cell>> strongLinks) {
-        if (cycle.size() % 2 == 0) {
-            return CycleType.CONTINUOUS;
-        }
-        if (!strongLinks.getOrDefault(cycle.getFirst(), List.of()).contains(cycle.getLast())) {
-            return CycleType.DISCONTINUOUS_WEAK;
-        }
-        return CycleType.DISCONTINUOUS_STRONG;
-    }
-
-    private enum CycleType {
-        CONTINUOUS,
-        DISCONTINUOUS_STRONG,
-        DISCONTINUOUS_WEAK;
-
-        @Override
-        public String toString() {
-            return switch (this) {
-                case CONTINUOUS -> "Continuous Alternating Nice Loop";
-                case DISCONTINUOUS_STRONG -> "Discontinuous Alternating Nice Loop (Strong)";
-                case DISCONTINUOUS_WEAK -> "Discontinuous Alternating Nice Loop (Weak)";
-            };
-        }
     }
 
     @FunctionalInterface

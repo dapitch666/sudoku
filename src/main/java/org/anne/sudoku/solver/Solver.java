@@ -50,7 +50,8 @@ public class Solver {
                 new WXYZWings(),
                 new SubsetExclusion(),
                 // INSANE
-                new Exocets()
+                new Exocets(),
+                new GroupedXCycles()
         );
     }
 
