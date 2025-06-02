@@ -48,4 +48,8 @@ public class Predicates {
         return cell -> unitType == UnitType.ROW ? cell.getHorizontalChute() == other.getHorizontalChute()
                 : cell.getVerticalChute() == other.getVerticalChute();
     }
+
+    public static Predicate<Cell> valueIs(int digit) {
+        return cell -> cell.isSolved() && cell.getValue() == digit;
+    }
 }

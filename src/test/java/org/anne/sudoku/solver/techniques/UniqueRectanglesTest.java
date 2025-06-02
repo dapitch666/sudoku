@@ -9,9 +9,7 @@ public class UniqueRectanglesTest {
     @Test
     void uniqueRectanglesTestType1() {
         String puzzle = ".16.98.2..2....784...........7..95.....3.7.....51..4...........681....5..5.67.81.";
-        String solved = ".16.98325.2.5617845.8.23..11672495388..3571....518647....815.4.681934257.5.67281.";
-        // Need Avoidable Rectangle
-        // String solved = "716498325923561784548723691167249538894357162235186479372815946681934257459672813";
+        String solved = "716498325923561784548723691167249538894357162235186479372815946681934257459672813";
         runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{2}, false);
     }
 

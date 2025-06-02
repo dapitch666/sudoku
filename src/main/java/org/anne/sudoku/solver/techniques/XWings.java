@@ -27,13 +27,13 @@ public class XWings extends SolvingTechnique {
                 for (int j = 0; j < list.size(); j++) {
                     for (int k = j + 1; k < list.size(); k++) {
                         List<Cell> xWing = List.of(list.get(j)[0], list.get(j)[1], list.get(k)[0], list.get(k)[1]);
-                        List<Integer> unitsIndex = xWing.stream().map(c -> unitType == UnitType.ROW ? c.getCol() : c.getRow()).distinct().toList();
-                        if (unitsIndex.size() != 2) continue;
+                        List<Integer> unitIndices = xWing.stream().map(c -> unitType == UnitType.ROW ? c.getCol() : c.getRow()).distinct().toList();
+                        if (unitIndices.size() != 2) continue;
                         List<Cell> changed = new ArrayList<>();
 
                         for (Cell cell : grid.getCells(
-                                Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitsIndex.getFirst())
-                                        .or(Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitsIndex.getLast()))
+                                Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitIndices.getFirst())
+                                        .or(Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitIndices.getLast()))
                                         .and(Predicates.containsCandidate(digit))
                                         .and(c -> !xWing.contains(c)))) {
                             cell.removeCandidate(digit);

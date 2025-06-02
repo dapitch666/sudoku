@@ -37,7 +37,7 @@ public class WXYZWings extends SolvingTechnique {
                 .filter(cell -> formation.getCellsWithZ().stream().allMatch(cell::isPeer))
                 .toList();
         if (!changed.isEmpty()) {
-            log("WXYZ-Wing type 1 found in %s%n- Removed {%d} from %s%n", formation, formation.z, changed);
+            log("WXYZ-Wing type 1 found in %s%n", formation);
             removeCandidateFromCellsAndLog(changed, formation.z);
         }
         return changed;
