@@ -20,19 +20,14 @@ public class FinnedXWings extends SolvingTechnique {
             for (UnitType unitType : List.of(UnitType.ROW, UnitType.COL)) {
                 for (Formation formation : formations) {
                     // Check if the formation is a finned X-Wing and find the fin
-                    Cell[] finnedCells = findFinnedCells(formation, digit, unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW);
+                    Cell[] finnedCells = findFinnedCells(formation, digit, unitType.opposite());
                     if (finnedCells.length == 0) continue;
                     int box = finnedCells[0].getBox();
-                    List<Integer> unitIndices = Arrays.stream(formation.cells())
-                            .mapToInt(cell -> cell.getUnitIndex(unitType))
-                            .distinct()
-                            .boxed()
-                            .toList();
                     List<Cell> changed = new ArrayList<>();
                     // Remove the candidate pointed by the finned cells
                     for (Cell cell : grid.getCells(
                             Predicates.containsCandidate(digit)
-                                    .and(c -> c.getBox() == box && unitIndices.contains(c.getUnitIndex(unitType)))
+                                    .and(c -> c.getBox() == box && Helper.getDistinctUnits(unitType, formation.cells()).contains(c.getUnitIndex(unitType)))
                                     .and(Predicates.in(formation.cells()).negate()))) {
                         cell.removeCandidate(digit);
                         changed.add(cell);
@@ -48,21 +43,11 @@ public class FinnedXWings extends SolvingTechnique {
     }
 
     private Cell[] findFinnedCells(Formation formation, int digit, UnitType unitType) {
-        List<Integer> unitIndices = Arrays.stream(formation.cells())
-                .mapToInt(cell -> cell.getUnitIndex(unitType))
-                .distinct()
-                .boxed()
-                .toList();
-        List<Integer> boxes = Arrays.stream(formation.cells())
-                .mapToInt(Cell::getBox)
-                .distinct()
-                .boxed()
-                .toList();
         var cells = grid.getCells(Predicates.containsCandidate(digit)
                 .and(Predicates.in(formation.cells()).negate())
-                .and(cell -> unitIndices.contains(cell.getUnitIndex(unitType))));
+                .and(cell -> Helper.getDistinctUnits(unitType, formation.cells()).contains(cell.getUnitIndex(unitType))));
         if (cells.length == 1 || (cells.length == 2 && cells[0].getBox() == cells[1].getBox())
-                && boxes.contains(cells[0].getBox())) {
+                && Helper.getDistinctUnits(UnitType.BOX, formation.cells()).contains(cells[0].getBox())) {
             return cells;
         }
         return new Cell[0];

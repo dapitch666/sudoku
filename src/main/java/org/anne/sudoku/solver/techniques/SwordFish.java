@@ -28,7 +28,7 @@ public class SwordFish extends SolvingTechnique {
                     for (int j = i + 1; j < candidateUnits.size(); j++) {
                         for (int k = j + 1; k < candidateUnits.size(); k++) {
                             List<Cell> swordfish = mergeArrays(candidateUnits.get(i), candidateUnits.get(j), candidateUnits.get(k));
-                            List<Integer> distinctUnits = getDistinctUnits(swordfish, unitType);
+                            List<Integer> distinctUnits = Helper.getDistinctUnits(unitType.opposite(), swordfish);
                             if (distinctUnits.size() != 3) continue;
 
                             List<Cell> changed = getChangedCells(unitType, digit, swordfish, distinctUnits);
@@ -58,18 +58,11 @@ public class SwordFish extends SolvingTechnique {
         return candidateUnits;
     }
 
-    private List<Integer> getDistinctUnits(List<Cell> cells, UnitType unitType) {
-        return cells.stream()
-                .map(cell -> cell.getUnitIndex(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW))
-                .distinct()
-                .toList();
-    }
-
     private List<Cell> getChangedCells(UnitType unitType, int digit, List<Cell> swordfish, List<Integer> distinctUnits) {
         List<Cell> changed = new ArrayList<>();
         for (int index : distinctUnits) {
             changed.addAll(List.of(grid.getCells(
-                    Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, index)
+                    Predicates.inUnit(unitType.opposite(), index)
                             .and(Predicates.containsCandidate(digit))
                             .and(cell -> !swordfish.contains(cell))
             )));

@@ -2,10 +2,8 @@ package org.anne.sudoku.solver.techniques;
 
 import java.util.*;
 import java.util.function.Predicate;
-import org.anne.sudoku.model.Cell;
-import org.anne.sudoku.model.Grid;
-import org.anne.sudoku.model.Predicates;
-import org.anne.sudoku.model.UnitType;
+
+import org.anne.sudoku.model.*;
 
 public class Helper {
 
@@ -95,5 +93,16 @@ public class Helper {
 
         // Convert coordinates back to index
         return y4 * 3 + x4;
+    }
+
+    public static List<Integer> getDistinctUnits(UnitType unitType, Cell... cells) {
+        return Arrays.stream(cells)
+                .map(cell -> cell.getUnitIndex(unitType))
+                .distinct()
+                .toList();
+    }
+
+    public static List<Integer> getDistinctUnits(UnitType unitType, List<Cell> cells) {
+        return getDistinctUnits(unitType, cells.toArray(new Cell[0]));
     }
 }

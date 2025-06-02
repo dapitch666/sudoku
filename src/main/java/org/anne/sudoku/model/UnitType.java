@@ -10,4 +10,12 @@ public enum UnitType {
             case BOX -> "Box " + (unitIndex + 1);
         };
     }
+
+    public UnitType opposite() {
+        return switch (this) {
+            case ROW -> COL;
+            case COL -> ROW;
+            case BOX -> BOX; // BOX has no opposite
+        };
+    }
 }

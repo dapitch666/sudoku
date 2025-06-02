@@ -2,6 +2,7 @@ package org.anne.sudoku.model;
 
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 public record Formation(Cell... cells) {
 
@@ -20,6 +21,6 @@ public record Formation(Cell... cells) {
 
     @Override
     public String toString() {
-        return Arrays.stream(cells).toList().toString();
+        return Arrays.stream(cells).sorted(Comparator.comparingInt(Cell::index)).toList().toString();
     }
 }

@@ -44,7 +44,7 @@ public class JellyFish extends SolvingTechnique {
                                 if (unitsIndex.size() != 4) continue;
                                 List<Cell> changed = new ArrayList<>();
                                 for (int unitIndex : unitsIndex) {
-                                    changed.addAll(Arrays.asList(grid.getCells(Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitIndex)
+                                    changed.addAll(Arrays.asList(grid.getCells(Predicates.inUnit(unitType.opposite(), unitIndex)
                                             .and(Predicates.containsCandidate(digit))
                                             .and(cell -> !jellyFish.contains(cell)))));
                                 }

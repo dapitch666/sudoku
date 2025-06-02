@@ -3,6 +3,7 @@ package org.anne.sudoku.model;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 public class Predicates {
@@ -41,6 +42,10 @@ public class Predicates {
 
     public static Predicate<Cell> in(Cell[] cells) {
         return cell -> Arrays.asList(cells).contains(cell);
+    }
+
+    public static Predicate<Cell> in(List<Cell> cells) {
+        return cells::contains;
     }
 
     public static Predicate<Cell> inChute(UnitType unitType, Cell other) {

@@ -32,8 +32,8 @@ public class XWings extends SolvingTechnique {
                         List<Cell> changed = new ArrayList<>();
 
                         for (Cell cell : grid.getCells(
-                                Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitIndices.getFirst())
-                                        .or(Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitIndices.getLast()))
+                                Predicates.inUnit(unitType.opposite(), unitIndices.getFirst())
+                                        .or(Predicates.inUnit(unitType.opposite(), unitIndices.getLast()))
                                         .and(Predicates.containsCandidate(digit))
                                         .and(c -> !xWing.contains(c)))) {
                             cell.removeCandidate(digit);

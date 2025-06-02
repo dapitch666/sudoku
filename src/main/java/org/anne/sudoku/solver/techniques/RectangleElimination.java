@@ -25,7 +25,7 @@ public class RectangleElimination extends SolvingTechnique {
                     for (Cell hinge : map.get(candidate)) {
                         // Find a weak link in opposite direction
                         Cell[] oppositeCells = grid.getCells(
-                                Predicates.inUnit(unitType == UnitType.ROW ? UnitType.COL : UnitType.ROW, unitType == UnitType.ROW ? hinge.getCol() : hinge.getRow())
+                                Predicates.inUnit(unitType.opposite(), unitType == UnitType.ROW ? hinge.getCol() : hinge.getRow())
                                         .and(Predicates.containsCandidate(candidate)));
                         if (oppositeCells.length == 2) continue;
                         for (Cell wing2 : oppositeCells) {
