@@ -55,7 +55,7 @@ public class ThreeDMedusa extends SolvingTechnique {
         Set<ColoredCandidate> visited = new HashSet<>(List.of(start));
 
         if (startCell.isBiValue()) {
-            int otherCandidate = startCell.candidates().stream().filter(c -> c != startCandidate).findFirst().orElseThrow();
+            int otherCandidate = startCell.getOtherCandidate(startCandidate);
             ColoredCandidate cc = new ColoredCandidate(startCell, otherCandidate, YELLOW);
             coloredCandidates.add(cc);
             visited.add(cc);
@@ -84,7 +84,7 @@ public class ThreeDMedusa extends SolvingTechnique {
 
             // Look for bi-value connections (different candidate in the same cell)
             if (current.cell.isBiValue()) {
-                int otherCandidate = current.cell.candidates().stream().filter(c -> c != current.candidate).findFirst().orElseThrow();
+                int otherCandidate = current.cell.getOtherCandidate(current.candidate);
 
                 ColoredCandidate newCC = new ColoredCandidate(current.cell, otherCandidate, oppositeColor);
                 if (visited.contains(newCC) || isAlreadyColored(newCC)) continue;

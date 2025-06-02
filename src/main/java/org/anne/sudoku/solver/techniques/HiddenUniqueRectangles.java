@@ -50,7 +50,7 @@ public class HiddenUniqueRectangles extends SolvingTechnique {
         if (strongDigits(rectangle.cell1, rectangle.cell2).cardinality() != 2) return List.of();
         // cell1 and cell2 are the floor cells
         for (int digit : rectangle.cell1.getCandidates()) {
-            int otherDigit = rectangle.cell1.candidates().stream().filter(i -> i != digit).findFirst().orElseThrow();
+            int otherDigit = rectangle.cell1.getOtherCandidate(digit);
             if (grid.isConjugatePair(rectangle.cell1, rectangle.cell3, digit)) {
                 changed.put(rectangle.cell4, otherDigit);
             }

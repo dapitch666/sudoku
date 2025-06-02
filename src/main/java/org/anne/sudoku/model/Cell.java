@@ -81,6 +81,17 @@ public class Cell {
         return candidates.nextSetBit(0);
     }
 
+    public int getOtherCandidate(int digit) {
+        if (candidates.cardinality() != 2) {
+            throw new IllegalStateException("Cell does not have exactly two candidates");
+        }
+        if (!candidates.get(digit)) {
+            throw new IllegalArgumentException("Digit is not a candidate in this cell");
+        }
+        int otherCandidate = candidates.nextSetBit(digit + 1);
+        return otherCandidate == -1 ? candidates.nextSetBit(0) : otherCandidate;
+    }
+
     public boolean isPeer(Cell other) {
         return this != other && (this.getRow() == other.getRow() || this.getCol() == other.getCol() || this.getBox() == other.getBox());
     }

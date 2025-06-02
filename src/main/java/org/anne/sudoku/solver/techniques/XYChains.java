@@ -42,7 +42,7 @@ public class XYChains extends SolvingTechnique {
     private void findXYChain(int targetDigit, int currentDigit, List<Cell> currentChain, Set<List<Cell>> results) {
         Cell currentCell = currentChain.getLast();
         // Get the other digit in current bi-value cell
-        int otherDigit = currentCell.candidates().stream().filter(c -> c != currentDigit).findFirst().orElseThrow();
+        int otherDigit = currentCell.getOtherCandidate(currentDigit);
         // If other digit is target digit, we closed the chain
         if (otherDigit == targetDigit && currentChain.size() > 2) {
             results.add(new ArrayList<>(currentChain));
