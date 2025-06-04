@@ -15,9 +15,7 @@ class SubsetExclusionTest {
     @Test
     void subsetExclusionTest2() {
         String puzzle = "...138...5.39..4..7...5.....79..2.1...........8.5..96.....9...3..6..31.7...641...";
-        String solved = "...138...5.39..4..7.8.5.....79..2.1...5..9...38.5..96....7956.3.56..31.7.37641...";
-        // Need Alternating Infer. Chains
-        // String solved = "694138275523976481718254396479362518165489732382517964841795623956823147237641859";
+        String solved = "694138275523976481718254396479362518165489732382517964841795623956823147237641859";
         runTest(puzzle, solved, new String[]{"Aligned Pair Exclusion"}, new int[]{5}, false);
     }
 

@@ -26,7 +26,7 @@ public class XCycles extends SolvingTechnique {
             var cycles = new Graph<>(strongLinks, weakLinks).findAllCycles();
             for (Cycle<Cell> cycle : cycles) {
                 // Classify the cycle
-                Cycle.CycleType cycleType = cycle.getCycleType(strongLinks);
+                Cycle.CycleType cycleType = cycle.getCycleType();
                 // Apply the appropriate rule based on the cycle type
                 Rule rule = switch (cycleType) {
                     case CONTINUOUS -> this::rule1;

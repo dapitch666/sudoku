@@ -4,10 +4,26 @@ import java.util.*;
 import java.util.function.UnaryOperator;
 
 public class Cycle<T> implements List<T> {
-    List<T> list;
+    private final List<T> list;
+    private final CycleType cycleType;
 
     public Cycle(List<T> path) {
+        this(path, new HashMap<>());
+    }
+
+    public Cycle(List<T> path, Map<T, List<T>> strongLinks) {
         this.list = new ArrayList<>(path);
+        if (path.size() % 2 == 0) {
+            this.cycleType = CycleType.CONTINUOUS;
+        } else if (!strongLinks.getOrDefault(path.getFirst(), List.of()).contains(path.getLast())) {
+            this.cycleType = CycleType.DISCONTINUOUS_WEAK;
+        } else {
+            this.cycleType = CycleType.DISCONTINUOUS_STRONG;
+        }
+    }
+
+    public CycleType getCycleType() {
+        return cycleType;
     }
 
     @Override
@@ -167,16 +183,6 @@ public class Cycle<T> implements List<T> {
                 case DISCONTINUOUS_WEAK -> "Discontinuous Alternating Nice Loop (Weak)";
             };
         }
-    }
-
-    public CycleType getCycleType(Map<T, List<T>> strongLinks) {
-        if (size() % 2 == 0) {
-            return CycleType.CONTINUOUS;
-        }
-        if (!strongLinks.getOrDefault(getFirst(), List.of()).contains(getLast())) {
-            return CycleType.DISCONTINUOUS_WEAK;
-        }
-        return CycleType.DISCONTINUOUS_STRONG;
     }
 }
 

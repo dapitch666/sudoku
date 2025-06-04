@@ -47,12 +47,11 @@ public class ThreeDMedusaTest {
         runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, false);
     }
 
-    @Test // Need Hidden Unique Rectangle, WXYZ Wing and Alternating Infer. Chains
-    void ThreeDMedusaTestRule3() {
+    @Test
+    void ThreeDMedusaTestRule3and5() {
         String puzzle = ".5..2....192.....4..46..........8..5..69418..9..7..........63..3.....621....8..9.";
-        String solved = "65..2..8.1928...648.46.........689.55.69418..9..7....6.....63.83.....621.6..8..97";
-        // String solved = "653427189192835764874619253247368915536941872918752436725196348389574621461283597";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, false);
+        String solved = "653427189192835764874619253247368915536941872918752436725196348389574621461283597";
+        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{2}, true);
     }
 
     @Test

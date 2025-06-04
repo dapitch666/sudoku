@@ -16,9 +16,7 @@ class FireworksTest {
     @Test
     void fireworksTest2() {
         String puzzle = "23...8..5.6.2.........9.1....6...32.4.3...5.1.25...9....7.8.........2.7.1..9...58";
-        String solved = "23...87.5.6.2..8.4....9.1.2.16...3274.3.2.581.25...946..7.8.21......247.1429..658";
-        // Need Extended Unique Rectangle, Aligned Pair Exclusion and Alternating Infer. Chains
-        // String solved = "239418765761253894584796132916845327473629581825371946697584213358162479142937658";
+        String solved = "239418765761253894584796132916845327473629581825371946697584213358162479142937658";
         runTest(puzzle, solved, new String[]{"Fireworks"}, new int[]{1}, false);
     }
 

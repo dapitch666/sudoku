@@ -53,7 +53,8 @@ public class Solver {
                 new Exocets(),
                 new GroupedXCycles(),
                 new FinnedXWings(),
-                new FinnedSwordFish()
+                new FinnedSwordFish(),
+                new AlternatingInferenceChains()
         );
     }
 

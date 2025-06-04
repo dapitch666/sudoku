@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.anne.sudoku.solver.SolverTest.runTest;
 
 class FinnedXWingsTest {
-    @Disabled("Works only with Grouped X-Cycles disabled / Need Alternating Infer. Chains and Finned Sword-Fish")
+    @Disabled("Works only with Grouped X-Cycles disabled / Need Alternating Infer. Chains w. groups")
     @Test
     void finnedXWingsTest1() {
         String puzzle = "7....8.3..36..........5.84.2.59........745........36.4.29.1..........91..1.5....8";

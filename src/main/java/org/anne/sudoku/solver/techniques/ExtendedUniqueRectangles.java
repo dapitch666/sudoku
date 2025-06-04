@@ -35,10 +35,11 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
     private List<Cell> rule1(Rectangle rectangle) {
         BitSet floorCandidates = rectangle.floorCandidates();
         List<Cell> roofCell = Arrays.stream(rectangle.roof())
-                .filter(cell -> getExtraCandidates(cell, floorCandidates).cardinality() == 1)
+                .filter(cell -> getExtraCandidates(cell, floorCandidates).cardinality() > 0)
                 .toList();
         if (roofCell.size() != 1) return List.of();
         Cell cell = roofCell.getFirst();
+        if (getExtraCandidates(cell, floorCandidates).cardinality() != 1) return List.of();
         var removed = cell.removeCandidates(floorCandidates);
         if (removed.isEmpty()) return List.of();
         incrementCounter();
@@ -46,16 +47,16 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
         return List.of(cell);
     }
 
-    // Rule 2: Remove a candidate from isPeerOf of two roof cells if they share the same extra candidate
+    // Rule 2: Remove a candidate from peers of two roof cells if they share the same extra candidate
     private List<Cell> rule2(Rectangle rectangle) {
         BitSet floorCandidates = rectangle.floorCandidates();
-        Map<Cell, BitSet> roofExtraCandidates = Arrays.stream(rectangle.roof())
+        Map<Cell, Integer> roofExtraCandidates = Arrays.stream(rectangle.roof())
                 .filter(cell -> getExtraCandidates(cell, floorCandidates).cardinality() == 1)
-                .collect(Collectors.toMap(cell -> cell, cell -> getExtraCandidates(cell, floorCandidates)));
+                .collect(Collectors.toMap(cell -> cell, cell -> getExtraCandidates(cell, floorCandidates).nextSetBit(0)));
         if (roofExtraCandidates.size() != 2 ||
-                roofExtraCandidates.get(rectangle.cell5) != roofExtraCandidates.get(rectangle.cell6))
+                !roofExtraCandidates.get(rectangle.cell5).equals(roofExtraCandidates.get(rectangle.cell6)))
             return List.of();
-        int digit = roofExtraCandidates.get(rectangle.cell5).nextSetBit(0);
+        int digit = roofExtraCandidates.get(rectangle.cell5);
         List<Cell> peers = Arrays.stream(grid.getCells(Predicates.isPeerOf(rectangle.cell5)
                         .and(Predicates.isPeerOf(rectangle.cell6))
                         .and(Predicates.containsCandidate(digit))))

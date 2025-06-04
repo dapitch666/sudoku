@@ -25,16 +25,23 @@ public class Graph<T> {
     }
 
     public Set<Cycle<T>> findAllCycles() {
+        return findAllCycles(12); // default max path length is 12
+    }
+
+    public Set<Cycle<T>> findAllCycles(int maxPathLength) {
         Set<T> visited = new HashSet<>();
         for (T vertex : weakLinks.keySet()) {
             if (!visited.contains(vertex)) {
-                dfs(vertex, vertex, new ArrayList<>(), visited, false);
+                dfs(vertex, vertex, new ArrayList<>(), visited, false, maxPathLength);
             }
         }
         return cycles;
     }
 
-    private void dfs(T start, T current, List<T> path, Set<T> visited, boolean useStrongLink) {
+    private void dfs(T start, T current, List<T> path, Set<T> visited, boolean useStrongLink, int maxPathLength) {
+        if (path.size() > maxPathLength) {
+            return; // Give up if path is already more than maxPathLength nodes long
+        }
         visited.add(current);
         path.add(current);
 
@@ -42,10 +49,10 @@ public class Graph<T> {
 
         for (T neighbor : neighbors) {
             if (neighbor.equals(start) && path.size() > 2) {
-                Cycle<T> cycle = new Cycle<>(path);
+                Cycle<T> cycle = new Cycle<>(path, strongLinks);
                 cycles.add(cycle);
             } else if (!visited.contains(neighbor)) {
-                dfs(start, neighbor, path, visited, !useStrongLink);
+                dfs(start, neighbor, path, visited, !useStrongLink, maxPathLength);
             }
         }
 

@@ -9,9 +9,7 @@ class HiddenUniqueRectanglesTest {
     @Test
     void hiddenUniqueRectanglesTestType1() {
         String puzzle = "..27.1.3....5.3.....9...58..3.....9.4.8...7.3.1.....6..46...1.....4.9....9.1.86..";
-        String solved = "..27.1.3.1.45.3...379...581.3..1..9.4.89..71391.....6.846...1.9..14693.8.931.864.";
-        // Need Alternating Infer. Chains
-        // String solved = "652781934184593276379246581237614895468952713915837462846375129721469358593128647";
+        String solved = "652781934184593276379246581237614895468952713915837462846375129721469358593128647";
         runTest(puzzle, solved, new String[]{"Hidden Unique Rectangles"}, new int[]{1}, false);
     }
 

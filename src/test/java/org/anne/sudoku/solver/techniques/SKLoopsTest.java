@@ -22,9 +22,7 @@ class SKLoopsTest {
     @Test
     void testSKLoops3() {
         String puzzle = "2.......4.8.5...7...1.2.3.....7...9.....6.....7...8.....3...1...9...7.5.4....1..2";
-        String solved = "2...7...4.8.5..27.7.1.2.3.....7...9.....6.7...7...8.....3...1.719...7.5.4.7..19.2";
-        // Need Aligned Pair Exclusion, WXYZ Wing and Alternating Infer. Chains
-        // String solved = "259673814386514279741829365815732496934165728672498531523986147198247653467351982";
+        String solved = "259673814386514279741829365815732496934165728672498531523986147198247653467351982";
         runTest(puzzle, solved, new String[]{"SK Loops"}, new int[]{1}, false);
     }
 
@@ -38,9 +36,7 @@ class SKLoopsTest {
     @Test
     void testSKLoops5() {
         String puzzle = "..1..23...4..5..6.7.......8...8.......5.3.2.......4...8.......7.6..9..4...23..1..";
-        String solved = "..1..23...4..5..6.7.......8...8.......5.3.2.......4...8.......7.6..9..4...23..1..";
-        // Need Alternating Infer. Chains
-        // String solved = "651782394248953761739416528326879415485631279197524683814265937563197842972348156";
+        String solved = "651782394248953761739416528326879415485631279197524683814265937563197842972348156";
         runTest(puzzle, solved, new String[]{"SK Loops"}, new int[]{2}, false);
     }
 }
