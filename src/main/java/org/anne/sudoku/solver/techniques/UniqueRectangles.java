@@ -51,8 +51,7 @@ public class UniqueRectangles extends SolvingTechnique {
                 .filter(d -> !rectangle.commonCandidates().get(d))
                 .findFirst()
                 .orElseThrow();
-        var changed = removeCandidateFromCellsAndLog(List.of(grid.getCells(Predicates.isPeerOf(rectangle.cellC())
-                        .and(Predicates.isPeerOf(rectangle.cellD()))
+        var changed = removeCandidateFromCellsAndLog(List.of(grid.getCells(Predicates.isPeerOf(rectangle.cellC(), rectangle.cellD())
                         .and(Predicates.containsCandidate(digit)))),
                 digit);
         if (!changed.isEmpty()) {
@@ -100,7 +99,7 @@ public class UniqueRectangles extends SolvingTechnique {
     }
 
     // Rule 5: If the roof cells are diagonally opposed and one of the common candidates is a conjugate pair,
-    // the other candidate can be removed from the floor cell.
+    // the other candidate can be removed from the floor cells.
     private List<Cell> rule5(Rectangle rectangle) {
         if (rectangle.cellA.isPeer(rectangle.cellB)) return List.of();
         Map<Cell, Integer> candidatesToRemove = new HashMap<>();
@@ -157,47 +156,30 @@ public class UniqueRectangles extends SolvingTechnique {
 
     private List<Rectangle> getRectangles() {
         List<Rectangle> rectangles = new ArrayList<>();
-        Cell[] biValueCells = grid.getCells(Predicates.biValueCells);
-
-        for (int i = 0; i < biValueCells.length; i++) {
-            Cell cellA = biValueCells[i];
-            BitSet candidates = cellA.candidates();
-
-            for (int j = i + 1; j < biValueCells.length; j++) {
-                Cell cellB = biValueCells[j];
-                if (!candidates.equals(cellB.candidates())) continue;
-
-                Cell[] perpendicularCells = findPerpendicularCells(cellA, cellB, candidates);
-                if (perpendicularCells == null) continue;
-
-                for (Cell cellD : perpendicularCells) {
-                    if (cellD == cellA || cellD == cellB) continue;
-                    if (!isValidRectangle(cellA, cellB, cellD)) continue;
-
-                    Cell cellC = grid.findFourthCorner(cellA, cellB, cellD);
-                    if (cellC.hasCandidates(candidates)) {
-                        rectangles.add(new Rectangle(cellA, cellB, cellC, cellD));
+        for (Cell cell1 : grid.getCells(Predicates.biValueCells)) {
+            BitSet candidates = cell1.candidates();
+            for (Cell cell2 : grid.getCells(Predicates.isPeerOf(cell1)
+                    .and(Predicates.inUnit(UnitType.BOX, cell1.getBox()))
+                    .and((Predicates.inUnit(UnitType.ROW, cell1.getRow())).or(Predicates.inUnit(UnitType.COL, cell1.getCol())))
+                    .and(Predicates.containsAllCandidates(candidates)))) {
+                for (Cell cell3 : grid.getCells(Predicates.isPeerOf(cell1)
+                        .and(Predicates.isPeerOf(cell2).negate())
+                        .and(Predicates.inUnit(UnitType.BOX, cell1.getBox()).negate())
+                        .and(Predicates.containsAllCandidates(candidates)))) {
+                    Cell cell4 = grid.findFourthCorner(cell1, cell2, cell3);
+                    if (!cell4.isSolved() && cell4.hasCandidates(candidates) && isValidRectangle(cell1, cell2, cell3, cell4)) {
+                        if (cell2.isBiValue()) {
+                            rectangles.add(new Rectangle(cell1, cell2, cell3, cell4));
+                        } else if (cell3.isBiValue()) {
+                            rectangles.add(new Rectangle(cell1, cell3, cell2, cell4));
+                        } else if (cell4.isBiValue()) {
+                            rectangles.add(new Rectangle(cell1, cell4, cell3, cell2));
+                        }
                     }
                 }
             }
         }
         return rectangles;
-    }
-
-    private Cell[] findPerpendicularCells(Cell cellA, Cell cellB, BitSet candidates) {
-        UnitType unitType;
-        if (cellA.getRow() == cellB.getRow()) {
-            unitType = UnitType.COL;
-        } else if (cellA.getCol() == cellB.getCol()) {
-            unitType = UnitType.ROW;
-        } else if (cellA.getHorizontalChute() == cellB.getHorizontalChute()) {
-            unitType = UnitType.BOX;
-        } else {
-            return null; // Not a valid rectangle
-        }
-        return grid.getCells(Predicates.inUnit(unitType, cellA.getUnitIndex(unitType))
-                .and(Predicates.containsAllCandidates(candidates))
-                .and(cell -> cell != cellA && cell != cellB));
     }
 
     private boolean isValidRectangle(Cell... cells) {

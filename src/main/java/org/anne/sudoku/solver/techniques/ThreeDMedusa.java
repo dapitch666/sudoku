@@ -179,7 +179,7 @@ public class ThreeDMedusa extends SolvingTechnique {
                     .filter(cc -> cc.candidate == candidate && cc.color != color && cc.cell != cell)
                     .toList()) {
 
-                for (Cell peer : grid.getCells(Predicates.isPeerOf(cell).and(Predicates.isPeerOf(other.cell)).and(Predicates.containsCandidate(candidate)))) {
+                for (Cell peer : grid.getCells(Predicates.isPeerOf(cell, other.cell).and(Predicates.containsCandidate(candidate)))) {
                     if (candidatesToRemove.stream().anyMatch(cc -> cc.cell() == peer && cc.candidate() == candidate)) {
                         continue; // Ignore candidates that are already marked for removal
                     }

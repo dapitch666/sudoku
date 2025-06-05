@@ -29,28 +29,24 @@ public class Graph<T> {
     }
 
     public Set<Cycle<T>> findAllCycles(int maxPathLength) {
-        Set<T> visited = new HashSet<>();
         for (T vertex : weakLinks.keySet()) {
-            if (!visited.contains(vertex)) {
-                dfs(vertex, vertex, new ArrayList<>(), visited, false, maxPathLength);
-            }
+            dfs(vertex, vertex, new ArrayDeque<>(), new HashSet<>(), false, maxPathLength);
         }
         return cycles;
     }
 
-    private void dfs(T start, T current, List<T> path, Set<T> visited, boolean useStrongLink, int maxPathLength) {
-        if (path.size() > maxPathLength) {
-            return; // Give up if path is already more than maxPathLength nodes long
+    private void dfs(T start, T current, Deque<T> path, Set<T> visited, boolean useStrongLink, int maxPathLength) {
+        if (path.size() >= maxPathLength) {
+            return; // Stop if path exceeds max length
         }
         visited.add(current);
-        path.add(current);
+        path.addLast(current);
 
-        List<T> neighbors = useStrongLink ? strongLinks.getOrDefault(current, new ArrayList<>()) : weakLinks.getOrDefault(current, new ArrayList<>());
+        List<T> neighbors = useStrongLink ? strongLinks.getOrDefault(current, Collections.emptyList()) : weakLinks.getOrDefault(current, Collections.emptyList());
 
         for (T neighbor : neighbors) {
             if (neighbor.equals(start) && path.size() > 2) {
-                Cycle<T> cycle = new Cycle<>(path, strongLinks);
-                cycles.add(cycle);
+                cycles.add(new Cycle<>(new ArrayList<>(path), strongLinks));
             } else if (!visited.contains(neighbor)) {
                 dfs(start, neighbor, path, visited, !useStrongLink, maxPathLength);
             }

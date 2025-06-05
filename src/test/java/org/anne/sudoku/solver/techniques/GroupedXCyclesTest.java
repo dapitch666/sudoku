@@ -17,7 +17,7 @@ class GroupedXCyclesTest {
     void groupedXCyclesTest2() {
         String puzzle = "185.2637..6........97..81...1..52.9.....6.....3.179.4..416..95...........5629.7..";
         String solved = "185926374263741589497538126714852693529463817638179245341687952972315468856294731";
-        runTest(puzzle, solved, new String[]{"Grouped X-Cycles"}, new int[]{1}, false);
+        runTest(puzzle, solved, new String[]{"Grouped X-Cycles"}, new int[]{2}, false);
     }
 
     @Test

@@ -49,12 +49,11 @@ public class UniqueRectanglesTest {
         runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, false);
     }
 
-    @Disabled ("Need Alternating Infer. Chain w. groups")
     @Test
     void uniqueRectanglesTestType2c() {
         String puzzle = "..9....5..3.8.7.......9.8...9.6..13.7..9.1..4.15..4.9...2.8.......1.3.7..6....4..";
         String solved = "879462351536817942421395867294678135783951624615234798342786519958143276167529483";
-        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, true);
+        runTest(puzzle, solved, new String[]{"Unique Rectangles"}, new int[]{1}, false);
     }
 
     @Test

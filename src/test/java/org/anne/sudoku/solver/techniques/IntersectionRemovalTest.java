@@ -23,6 +23,6 @@ class IntersectionRemovalTest {
     void intersectionRemovalTestTriple() {
         String puzzle = "...921..3..9....6.......5...8.4.3..6..7...8..5..7...4...3.......2....7..8..195...";
         String solved = "765921483319548267248367519182453976437619825596782341653274198921836754874195632";
-        runTest(puzzle, solved, new String[]{"Intersection Removal"}, new int[]{10}, true);
+        runTest(puzzle, solved, new String[]{"Intersection Removal"}, new int[]{10}, false);
     }
 }

@@ -27,7 +27,7 @@ public class YWings extends SolvingTechnique {
                     for (Cell cell2 : grid.getCells(Predicates.isPeerOf(hinge)
                             .and(Predicates.biValueCells)
                             .and(Predicates.containsAllCandidates(List.of(a, c))))) {
-                        for (Cell peer : grid.getCells(Predicates.isPeerOf(cell1).and(Predicates.isPeerOf(cell2)).and(Predicates.containsCandidate(c)))) {
+                        for (Cell peer : grid.getCells(Predicates.isPeerOf(cell1, cell2).and(Predicates.containsCandidate(c)))) {
                             peer.removeCandidate(c);
                             changed.add(peer);
                         }

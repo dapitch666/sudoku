@@ -51,7 +51,7 @@ public class ThreeDMedusaTest {
     void ThreeDMedusaTestRule3and5() {
         String puzzle = ".5..2....192.....4..46..........8..5..69418..9..7..........63..3.....621....8..9.";
         String solved = "653427189192835764874619253247368915536941872918752436725196348389574621461283597";
-        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{2}, true);
+        runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{3}, false);
     }
 
     @Test
@@ -60,7 +60,6 @@ public class ThreeDMedusaTest {
         String solved = "587412693246937851139568274962351748853724916714896532675243189391685427428179365";
         runTest(puzzle, solved, new String[]{"3D Medusa"}, new int[]{1}, false);
     }
-
 
     @Test
     void ThreeDMedusaTestRule5() {

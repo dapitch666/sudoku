@@ -88,7 +88,6 @@ public class HiddenUniqueRectangles extends SolvingTechnique {
             for (Cell cell2 : grid.getCells(Predicates.isPeerOf(cell1)
                     .and(Predicates.inUnit(UnitType.BOX, cell1.getBox()))
                     .and(Predicates.containsAllCandidates(cell1.candidates())))) {
-                if (strongDigits(cell1, cell2).isEmpty()) continue;
                 for (Cell cell3 : grid.getCells(Predicates.isPeerOf(cell1)
                         .and(Predicates.inUnit(UnitType.BOX, cell1.getBox()).negate())
                         .and(Predicates.containsAllCandidates(cell1.candidates())))) {

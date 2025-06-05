@@ -20,8 +20,8 @@ public class GroupedXCycles extends SolvingTechnique {
     public List<Cell> apply(Grid grid) {
         this.grid = grid;
         for (int digit = 1; digit <= 9; digit++) {
-            var strongLinks = findGroupedLinks(digit, true);
-            var weakLinks = findGroupedLinks(digit, false);
+            var strongLinks = findLinks(digit, true);
+            var weakLinks = findLinks(digit, false);
             var cycles = new Graph<>(strongLinks, weakLinks).findAllCycles().stream()
                     .filter(this::hasNoDuplicatedCells) // Skip cycles where the same cell appears multiple times
                     .toList();
@@ -47,18 +47,18 @@ public class GroupedXCycles extends SolvingTechnique {
     private boolean hasNoDuplicatedCells(Cycle<GroupedCell> cycle) {
         Set<Cell> seenCells = new HashSet<>();
         return cycle.stream()
-                .flatMap(groupedCell -> Arrays.stream(groupedCell.cells))
+                .flatMap(groupedCell -> Arrays.stream(groupedCell.cells()))
                 .allMatch(seenCells::add);
     }
 
     private List<Cell> rule1(int digit, Cycle<GroupedCell> cycle) {
         List<Cell> changed = new ArrayList<>();
         Cell[] cycleCells = cycle.stream()
-                .flatMap(groupedCell -> Arrays.stream(groupedCell.cells))
+                .flatMap(groupedCell -> Arrays.stream(groupedCell.cells()))
                 .toArray(Cell[]::new);
         for (int i = 0; i < cycle.size() - 1; i += 2) { // Get all weak links
-            // // collect all the cells that are in both cycle.get(i) and cycle.get(i + 1)
-            Cell[] linkCells = Stream.of(cycle.get(i).cells, cycle.get(i + 1).cells)
+            // collect all the cells that are in both cycle.get(i) and cycle.get(i + 1)
+            Cell[] linkCells = Stream.of(cycle.get(i).cells(), cycle.get(i + 1).cells())
                     .flatMap(Arrays::stream)
                     .toArray(Cell[]::new);
 
@@ -80,7 +80,7 @@ public class GroupedXCycles extends SolvingTechnique {
         // As the first link in the cycle is considered a weak link,
         // the cell with the discontinuity is the last one.
         if (!cycle.getLast().isSingleCell()) return List.of();
-        Cell cell = cycle.getLast().cells[0];
+        Cell cell = cycle.getLast().cells()[0];
         var removed = cell.removeAllBut(List.of(digit));
         if (removed.isEmpty()) return List.of();
         log("- Removed candidate(s) %s from %s%n", removed, cell);
@@ -93,18 +93,18 @@ public class GroupedXCycles extends SolvingTechnique {
         // As the first link in the cycle is considered a weak link,
         // the cell with the discontinuity is the first one.
         if (!cycle.getFirst().isSingleCell()) return List.of();
-        Cell cell = cycle.getFirst().cells[0];
+        Cell cell = cycle.getFirst().cells()[0];
         cell.removeCandidate(digit);
         log("- Removed candidate {%d} from %s%n", digit, cell);
         return List.of(cell);
     }
 
-    private Map<GroupedCell, List<GroupedCell>> findGroupedLinks(int digit, boolean isStrong) {
+    private Map<GroupedCell, List<GroupedCell>> findLinks(int digit, boolean isStrong) {
         Map<GroupedCell, List<GroupedCell>> links = new HashMap<>();
-        Set<GroupedCell> groupedCellSet = getSuperCells(digit);
+        Set<GroupedCell> groupedCellSet = getGroupedCells(digit);
         for (GroupedCell groupedCell : groupedCellSet) {
             List<GroupedCell> peers = groupedCellSet.stream()
-                    .filter(s -> !s.equals(groupedCell) && !groupedCell.intersects(s) && Arrays.stream(s.cells).allMatch(cell -> Arrays.stream(groupedCell.cells).allMatch(cell::isPeer)))
+                    .filter(s -> !s.equals(groupedCell) && !groupedCell.intersects(s) && Arrays.stream(s.cells()).allMatch(cell -> Arrays.stream(groupedCell.cells()).allMatch(cell::isPeer)))
                     .filter(s -> !isStrong || isConjugatePair(groupedCell, s, digit))
                     .toList();
             if (!peers.isEmpty()) {
@@ -119,13 +119,13 @@ public class GroupedXCycles extends SolvingTechnique {
             // Both are in the same box
             return grid.getCells(Predicates.inUnit(BOX, groupedCell1.box())
                     .and(Predicates.containsCandidate(digit))
-                    .and(Predicate.not(Predicates.in(groupedCell1.cells).or(Predicates.in(groupedCell2.cells)))))
+                    .and(Predicate.not(Predicates.in(groupedCell1.cells()).or(Predicates.in(groupedCell2.cells())))))
                     .length == 0;
         }
 
         if (groupedCell1.isSingleCell() && groupedCell2.isSingleCell()) {
             // Both are single cells
-            return grid.isConjugatePair(groupedCell1.cells[0], groupedCell2.cells[0], digit);
+            return grid.isConjugatePair(groupedCell1.cells()[0], groupedCell2.cells()[0], digit);
         }
 
         if (!groupedCell1.isSingleCell() && !groupedCell2.isSingleCell()) {
@@ -133,21 +133,21 @@ public class GroupedXCycles extends SolvingTechnique {
             return groupedCell1.unitType() == groupedCell2.unitType() && groupedCell1.unitIndex() == groupedCell2.unitIndex() &&
                     grid.getCells(Predicates.inUnit(groupedCell1.unitType(), groupedCell1.unitIndex())
                             .and(Predicates.containsCandidate(digit))
-                            .and(Predicate.not(Predicates.in(groupedCell1.cells).or(Predicates.in(groupedCell2.cells)))))
+                            .and(Predicate.not(Predicates.in(groupedCell1.cells()).or(Predicates.in(groupedCell2.cells())))))
                             .length == 0;
         }
 
         // One is a single cell, the other is a grouped cell
         GroupedCell singleCell = groupedCell1.isSingleCell() ? groupedCell1 : groupedCell2;
         GroupedCell groupedCell = groupedCell1.isSingleCell() ? groupedCell2 : groupedCell1;
-        return singleCell.cells[0].getUnitIndex(groupedCell.unitType()) == groupedCell.unitIndex()
+        return singleCell.cells()[0].getUnitIndex(groupedCell.unitType()) == groupedCell.unitIndex()
                 && grid.getCells(Predicates.inUnit(groupedCell.unitType(), groupedCell.unitIndex())
                 .and(Predicates.containsCandidate(digit))
-                .and(Predicate.not(Predicates.in(singleCell.cells).or(Predicates.in(groupedCell.cells)))))
+                .and(Predicate.not(Predicates.in(singleCell.cells()).or(Predicates.in(groupedCell.cells())))))
                 .length == 0;
     }
 
-    private Set<GroupedCell> getSuperCells(int digit) {
+    private Set<GroupedCell> getGroupedCells(int digit) {
         Set<GroupedCell> groupedCellSet = new HashSet<>();
         for (Cell cell : grid.getCells(Predicates.containsCandidate(digit))) {
             groupedCellSet.add(new GroupedCell(cell));
@@ -159,46 +159,6 @@ public class GroupedXCycles extends SolvingTechnique {
                     .and(Predicates.containsCandidate(digit)))));
         }
         return groupedCellSet;
-    }
-
-    record GroupedCell(Cell... cells) {
-        UnitType unitType() {
-            if (Arrays.stream(cells).map(Cell::getRow).distinct().count() == 1) return ROW;
-            if (Arrays.stream(cells).map(Cell::getCol).distinct().count() == 1) return COL;
-            throw new IllegalStateException("GroupedCell must be in a single row or column");
-        }
-
-        int unitIndex() {
-            return unitType() == ROW ? cells[0].getRow() : cells[0].getCol();
-        }
-
-        int box() {
-            return cells[0].getBox();
-        }
-
-        boolean isSingleCell() {
-            return cells.length == 1;
-        }
-
-        boolean intersects(GroupedCell other) {
-            return Arrays.stream(cells).anyMatch(Arrays.asList(other.cells)::contains);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof GroupedCell(Cell[] cells1))) return false;
-            return new HashSet<>(Arrays.asList(cells)).equals(new HashSet<>(Arrays.asList(cells1)));
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.stream(cells).mapToInt(Cell::hashCode).sum();
-        }
-
-        @Override
-        public String toString() {
-            return Arrays.toString(cells);
-        }
     }
 
     @FunctionalInterface

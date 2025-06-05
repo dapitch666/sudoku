@@ -51,8 +51,8 @@ public class Solver {
                 new SubsetExclusion(),
                 // INSANE
                 new Exocets(),
-                new GroupedXCycles(),
                 new FinnedXWings(),
+                new GroupedXCycles(),
                 new FinnedSwordFish(),
                 new AlternatingInferenceChains()
         );

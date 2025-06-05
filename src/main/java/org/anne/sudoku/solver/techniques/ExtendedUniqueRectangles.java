@@ -31,7 +31,7 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
         return List.of();
     }
 
-    // Rule 1: Remove floor candidates from a roof cell if it has exactly one extra candidate
+    // Rule 1: Remove floor candidates from a roof cells if it has exactly one extra candidate
     private List<Cell> rule1(Rectangle rectangle) {
         BitSet floorCandidates = rectangle.floorCandidates();
         List<Cell> roofCell = Arrays.stream(rectangle.roof())
@@ -57,8 +57,7 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
                 !roofExtraCandidates.get(rectangle.cell5).equals(roofExtraCandidates.get(rectangle.cell6)))
             return List.of();
         int digit = roofExtraCandidates.get(rectangle.cell5);
-        List<Cell> peers = Arrays.stream(grid.getCells(Predicates.isPeerOf(rectangle.cell5)
-                        .and(Predicates.isPeerOf(rectangle.cell6))
+        List<Cell> peers = Arrays.stream(grid.getCells(Predicates.isPeerOf(rectangle.cell5, rectangle.cell6)
                         .and(Predicates.containsCandidate(digit))))
                 .toList();
         List<Cell> changed = removeCandidateFromCellsAndLog(peers, digit);
@@ -89,7 +88,7 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
         return List.of();
     }
 
-    // Get the extra candidates of a cell that are not part of the given candidates
+    // Get the extra candidates of a cells that are not part of the given candidates
     private BitSet getExtraCandidates(Cell cell, BitSet candidates) {
         BitSet extraCandidates = (BitSet) cell.candidates().clone();
         extraCandidates.andNot(candidates);

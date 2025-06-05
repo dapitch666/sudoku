@@ -92,7 +92,7 @@ public class WXYZWings extends SolvingTechnique {
             BitSet removed = cell.removeCandidates(boxCell.candidates());
             log("- Removed %s from %s%n", removed, cell);
         }
-        for (Cell cell : grid.getCells(Predicates.isPeerOf(hinge.getFirst()).and(Predicates.isPeerOf(rowOrColCell))
+        for (Cell cell : grid.getCells(Predicates.isPeerOf(hinge.getFirst(), rowOrColCell)
                 .and(Predicates.in(formation.cells).negate())
                 .and(Predicates.intersectCandidates(rowOrColCell.candidates())))) {
             changes.add(cell);

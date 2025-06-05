@@ -26,14 +26,4 @@ class WXYZWingsTest {
         String solved = "896327514572491368431586792145869237623175849987243651369712485258934176714658923";
         runTest(puzzle, solved, new String[]{"WXYZ-Wings"}, new int[]{2}, false);
     }
-
-    @Disabled ("Need Alternating Infer. Chains with groups")
-    @Test
-    void testWXYZWingsType2_1() {
-        String puzzle = ".1......36.8...2.7..39..5.....6.4.1..3..5..2..4.3.2.....1..76..3.5...1.92......3.";
-        String solved = "914275863658143297723968541572694318836751924149382756491537682385426179267819435";
-        runTest(puzzle, solved, new String[]{"WXYZ-Wings"}, new int[]{2}, true);
-    }
-
-
 }

@@ -16,8 +16,8 @@ public class Predicates {
         return cell -> cell.getCandidateCount() >= min && cell.getCandidateCount() <= max;
     }
 
-    public static Predicate<Cell> isPeerOf(Cell cell) {
-        return c -> c.isPeer(cell);
+    public static Predicate<Cell> isPeerOf(Cell... cells) {
+        return c -> Arrays.stream(cells).allMatch(c::isPeer);
     }
 
     public static Predicate<Cell> containsCandidate(int digit) {

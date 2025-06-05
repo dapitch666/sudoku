@@ -203,7 +203,7 @@ public class Grid {
 
     public boolean isConjugatePair(Cell cell1, Cell cell2, int digit) {
         return cell1 != cell2 && cell1.isPeer(cell2) && cell1.hasCandidate(digit) && cell2.hasCandidate(digit)
-                && getCells(Predicates.isPeerOf(cell1).and(Predicates.isPeerOf(cell2)).and(Predicates.containsCandidate(digit)))
+                && getCells(Predicates.isPeerOf(cell1, cell2).and(Predicates.containsCandidate(digit)))
                 .length == 0;
     }
 

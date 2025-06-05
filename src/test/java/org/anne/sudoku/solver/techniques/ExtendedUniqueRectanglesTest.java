@@ -24,7 +24,7 @@ public class ExtendedUniqueRectanglesTest {
     void extendedUniqueRectanglesTestType2() {
         String puzzle = "18..76..3..7...68.9..2.8....5.7243....28915677916...4....1.7..5.79......51..4...6";
         String solved = "185476923237915684964238751856724319342891567791653842623187495479562138518349276";
-        runTest(puzzle, solved, new String[]{"Extended Unique Rectangles"}, new int[]{1}, true);
+        runTest(puzzle, solved, new String[]{"Extended Unique Rectangles"}, new int[]{1}, false);
     }
 
     @Test

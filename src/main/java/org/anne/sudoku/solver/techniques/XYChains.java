@@ -26,8 +26,7 @@ public class XYChains extends SolvingTechnique {
                 for (List<Cell> chain : chains) {
                     Cell cell1 = chain.getFirst();
                     Cell cell2 = chain.getLast();
-                    List<Cell> changed = Arrays.stream(grid.getCells(Predicates.isPeerOf(cell1)
-                            .and(Predicates.isPeerOf(cell2))
+                    List<Cell> changed = Arrays.stream(grid.getCells(Predicates.isPeerOf(cell1, cell2)
                             .and(Predicates.containsCandidate(digit))))
                             .toList();
                     if (changed.isEmpty()) continue;

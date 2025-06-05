@@ -58,18 +58,18 @@ public class SubsetExclusion extends SolvingTechnique {
 
     private List<int[]> getAllAllowedCombinations(Cell cell1, Cell cell2, StringBuilder sb) {
         List<int[]> allowedCombinations = new ArrayList<>();
-        var amostLockedSets = getAlmostLockedSets((Predicates.isPeerOf(cell1).and(Predicates.isPeerOf(cell2))));
+        var amostLockedSets = getAlmostLockedSets((Predicates.isPeerOf(cell1, cell2)));
         for (int digit1 : cell1.getCandidates()) {
             for (int digit2 : cell2.getCandidates()) {
                 if (digit1 == digit2) {
                     if (!cell1.isPeer(cell2)) {
-                        // If the two cells are not isPeerOf, they can contain the same digit
+                        // If the two cells are not peers, they can contain the same digit
                         allowedCombinations.add(new int[]{digit1, digit2});
                     }
                     continue;
                 }
                 boolean isAllowed = true;
-                // Check if it exists any combination of isPeerOf of both cells that would be an almost locked set with these digits
+                // Check if it exists any combination of peers of both cells that would be an almost locked set with these digits
                 for (var als : amostLockedSets.entrySet()) {
                     if (als.getKey().get(digit1) && als.getKey().get(digit2)) {
                         isAllowed = false; // This combination is not allowed

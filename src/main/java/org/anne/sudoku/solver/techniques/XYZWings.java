@@ -35,7 +35,7 @@ public class XYZWings extends SolvingTechnique {
                     }
                 }
                 if (wing2 == null) continue;
-                List<Cell> changed = Arrays.stream(peers).filter(Predicates.isPeerOf(wing1).and(Predicates.isPeerOf(wing2))).toList();
+                List<Cell> changed = Arrays.stream(peers).filter(Predicates.isPeerOf(wing1, wing2)).toList();
 
                 if (changed.isEmpty()) continue;
                 for (Cell peer : changed) {
