@@ -54,7 +54,8 @@ public class Solver {
                 new FinnedXWings(),
                 new GroupedXCycles(),
                 new FinnedSwordFish(),
-                new AlternatingInferenceChains()
+                new AlternatingInferenceChains(),
+                new SueDeCoq()
         );
     }
 
