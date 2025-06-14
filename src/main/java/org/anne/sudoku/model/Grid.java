@@ -118,7 +118,7 @@ public class Grid {
     public String getSolution() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 81; i++) {
-            sb.append(get(i));
+            sb.append(get(i) == 0 ? "." : get(i));
         }
         return sb.toString();
     }

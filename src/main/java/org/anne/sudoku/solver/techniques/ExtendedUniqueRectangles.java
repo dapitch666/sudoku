@@ -31,7 +31,7 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
         return List.of();
     }
 
-    // Rule 1: Remove floor candidates from a roof cells if it has exactly one extra candidate
+    // Rule 1: Remove floor candidates from a roof cell
     private List<Cell> rule1(Rectangle rectangle) {
         BitSet floorCandidates = rectangle.floorCandidates();
         List<Cell> roofCell = Arrays.stream(rectangle.roof())
@@ -39,7 +39,6 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
                 .toList();
         if (roofCell.size() != 1) return List.of();
         Cell cell = roofCell.getFirst();
-        if (getExtraCandidates(cell, floorCandidates).cardinality() != 1) return List.of();
         var removed = cell.removeCandidates(floorCandidates);
         if (removed.isEmpty()) return List.of();
         incrementCounter();
@@ -126,7 +125,7 @@ public class ExtendedUniqueRectangles extends SolvingTechnique {
                             .and(Predicates.inUnit(UnitType.BOX, targetBox))
                             .and(Predicates.intersectCandidates(mergedCandidates)))) {
                         Cell cellF = grid.findFourthCorner(cellA, cellB, cellE);
-                        if (cellF.isSolved()) continue;
+                        if (cellF.isSolved() || !cellF.candidates().intersects(mergedCandidates)) continue;
 
                         if (isValidRectangle(cellA, cellB, cellC, cellD, cellE, cellF)) {
                             rectangles.add(new Rectangle(cellA, cellB, cellC, cellD, cellE, cellF));
