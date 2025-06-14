@@ -59,14 +59,16 @@ public class Solver {
         );
     }
 
-    public void solve() {
+    public void solve(boolean debug) {
         int steps = 0;
         boolean changed;
         StringBuilder sb = new StringBuilder();
         do {
             if (grid.isSolved()) {
-                System.out.println();
-                techniques.forEach(SolvingTechnique::printCounters);
+                if (debug) {
+                    System.out.println();
+                    techniques.forEach(SolvingTechnique::printCounters);
+                }
                 break;
             }
             changed = false;
@@ -83,14 +85,14 @@ public class Solver {
                 if (technique.getDifficulty().getLevel() > highestDifficulty.getLevel()) {
                     highestDifficulty = technique.getDifficulty();
                 }
-                System.out.printf("Step %d: %s%n%s", steps, technique.getName(), technique.getLog());
+                if (debug) System.out.printf("Step %d: %s%n%s", steps, technique.getName(), technique.getLog());
                 for (Cell cell : changedCells) {
                     if (cell.getCandidateCount() == 1) {
                         grid.set(cell.index(), cell.getFirstCandidate(), false);
                         sb.append(String.format("Last candidate {%d} in %s changed to solution%n", cell.getValue(), cell));
                     }
                 }
-                System.out.println(sb);
+                if (debug) System.out.println(sb);
                 sb.setLength(0);
                 changed = true;
                 break;

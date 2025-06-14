@@ -59,7 +59,7 @@ class AlternatingInferenceChainsTest {
     void alternatingInferenceChainsTest8() {
         String puzzle = "......9..6..1.3..5..129.6..........8.28.4.36.7..........7.194..5..3.6..7..9......";
         String solved = "273658914694173825851294673416932758928745361735861249367519482542386197189427536";
-        runTest(puzzle, solved, new String[]{"Alternating Inference Chains"}, new int[]{5}, false);
+        runTest(puzzle, solved, new String[]{"Alternating Inference Chains"}, new int[]{3}, false);
     }
 
     @Test
@@ -80,6 +80,13 @@ class AlternatingInferenceChainsTest {
     void alternatingInferenceChainsTest11() {
         String puzzle = ".1.......7.94...65...7.32..5..1.48.............89.6..3..62.9...19...84.6.......7.";
         String solved = "813562947729481365654793281567134892931827654248956713476219538195378426382645179";
-        runTest(puzzle, solved, new String[]{"Alternating Inference Chains"}, new int[]{7}, false);
+        runTest(puzzle, solved, new String[]{"Alternating Inference Chains"}, new int[]{11}, false);
+    }
+
+    @Test
+    void alternatingInferenceChainsALSTest1() {
+        String puzzle = ".5.........7.4.........7364....36....841...7.7.3......3.1.8.9....9.....8...9..42.";
+        String solved = "456319782837642195912857364125736849684195273793428516361284957249571638578963421";
+        runTest(puzzle, solved, new String[]{"Alternating Inference Chains"}, new int[]{1}, false);
     }
 }

@@ -22,7 +22,7 @@ public class SolverTest {
         // Capture output
         if (!debug) System.setOut(new PrintStream(new ByteArrayOutputStream()));
 
-        solver.solve();
+        solver.solve(debug);
 
         // Reset the standard output
         if (!debug) System.setOut(System.out);
@@ -38,7 +38,7 @@ public class SolverTest {
         // Capture output
         if (!debug) System.setOut(new PrintStream(new ByteArrayOutputStream()));
 
-        solver.solve();
+        solver.solve(debug);
 
         // Reset the standard output
         if (!debug) System.setOut(System.out);

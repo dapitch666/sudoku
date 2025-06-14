@@ -19,15 +19,15 @@ public class AlternatingInferenceChains extends SolvingTechnique {
     @Override
     public List<Cell> apply(Grid grid) {
         this.grid = grid;
-
-        for (var cycle : new Graph<>(findLinks(true), findLinks(false))
+        List<Cycle<Candidate>> cycles = new Graph<>(findLinks(true), findLinks(false))
                 .findAllCycles()
                 .stream()
                 .filter(this::hasNoDuplicatedCells) // Skip cycles where the same cells appear multiple times
                 .sorted(Comparator.<Cycle<Candidate>, Cycle.CycleType>comparing(Cycle::getCycleType)
                         .thenComparingInt(Cycle::size)
                         .thenComparing(this::withGroups))
-                .toList()) {
+                .toList();
+        for (var cycle : cycles) {
 
             var cycleType = cycle.getCycleType();
             var changed = switch (cycleType) {
@@ -122,21 +122,58 @@ public class AlternatingInferenceChains extends SolvingTechnique {
                         }
                     } else {
                         cell.candidates().stream()
-                            .filter(candidate -> candidate != digit)
-                            .mapToObj(otherDigit -> new Candidate(groupedCell, otherDigit))
-                            .forEach(peers::add);
+                                .filter(candidate -> candidate != digit)
+                                .mapToObj(otherDigit -> new Candidate(groupedCell, otherDigit))
+                                .forEach(peers::add);
                     }
                 }
-
                 peers.addAll(groupedCells.stream()
-                    .filter(gc -> !gc.equals(groupedCell) && !groupedCell.intersects(gc) &&
-                            Arrays.stream(gc.cells()).allMatch(cell -> Arrays.stream(groupedCell.cells()).allMatch(cell::isPeer)))
-                    .filter(gc -> !isStrong || isConjugatePair(groupedCell, gc, digit))
-                    .map(gc -> new Candidate(gc, digit))
-                    .toList());
+                        .filter(gc -> !gc.equals(groupedCell) && !groupedCell.intersects(gc) &&
+                                Arrays.stream(gc.cells()).allMatch(cell -> Arrays.stream(groupedCell.cells()).allMatch(cell::isPeer)))
+                        .filter(gc -> !isStrong || isConjugatePair(groupedCell, gc, digit))
+                        .map(gc -> new Candidate(gc, digit))
+                        .toList());
 
                 if (!peers.isEmpty()) {
                     links.put(new Candidate(groupedCell, digit), peers);
+                }
+            }
+        }
+        // Add ALS links
+        if (isStrong) {
+            for (Cell cell1 : grid.getCells(Predicates.biValueCells)) {
+                for (Cell cell2 : grid.getCells(Predicates.inUnit(BOX, cell1.getUnitIndex(BOX))
+                        .and(Predicates.inUnit(ROW, cell1.getUnitIndex(ROW)).or(Predicates.inUnit(COL, cell1.getUnitIndex(COL))))
+                        .and(Predicates.containsAllCandidates(cell1.candidates()))
+                        .and(cell -> cell.getCandidateCount() == 3))) {
+                    BitSet extraCandidates = (BitSet) cell2.candidates().clone();
+                    extraCandidates.andNot(cell1.candidates());
+                    int digit = extraCandidates.nextSetBit(0);
+                    Candidate candidate1 = new Candidate(new GroupedCell(cell2), digit);
+                    Candidate candidate2 = new Candidate(new GroupedCell(cell1, cell2), cell1.getFirstCandidate());
+                    Candidate candidate3 = new Candidate(new GroupedCell(cell1, cell2), cell1.getOtherCandidate(cell1.getFirstCandidate()));
+                    if (links.containsKey(candidate1)) {
+                        List<Candidate> existingLinks = new ArrayList<>(links.get(candidate1));
+                        existingLinks.add(candidate2);
+                        existingLinks.add(candidate3);
+                        links.put(candidate1, existingLinks);
+                    } else {
+                        links.put(candidate1, List.of(candidate2, candidate3));
+                    }
+                    if (links.containsKey(candidate2)) {
+                        List<Candidate> existingLinks = new ArrayList<>(links.get(candidate2));
+                        existingLinks.add(candidate1);
+                        links.put(candidate2, existingLinks);
+                    } else {
+                        links.put(candidate2, List.of(candidate1));
+                    }
+                    if (links.containsKey(candidate3)) {
+                        List<Candidate> existingLinks = new ArrayList<>(links.get(candidate3));
+                        existingLinks.add(candidate1);
+                        links.put(candidate3, existingLinks);
+                    } else {
+                        links.put(candidate3, List.of(candidate1));
+                    }
                 }
             }
         }
