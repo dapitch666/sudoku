@@ -142,8 +142,7 @@ public class AlternatingInferenceChains extends SolvingTechnique {
         // Add ALS links
         if (isStrong) {
             for (Cell cell1 : grid.getCells(Predicates.biValueCells)) {
-                for (Cell cell2 : grid.getCells(Predicates.inUnit(BOX, cell1.getUnitIndex(BOX))
-                        .and(Predicates.inUnit(ROW, cell1.getUnitIndex(ROW)).or(Predicates.inUnit(COL, cell1.getUnitIndex(COL))))
+                for (Cell cell2 : grid.getCells(Predicates.isPeerOf(cell1)
                         .and(Predicates.containsAllCandidates(cell1.candidates()))
                         .and(cell -> cell.getCandidateCount() == 3))) {
                     BitSet extraCandidates = (BitSet) cell2.candidates().clone();
